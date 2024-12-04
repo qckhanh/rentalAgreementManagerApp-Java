@@ -1,4 +1,4 @@
-package org.example._4knightsasm2;
+package org.example.groupproject_4knights;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
