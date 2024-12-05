@@ -1,27 +1,58 @@
 package org.rmit.entity;
+//
+//import UIHelper.UserInterfaceManager;
+//import UIHelper.DateCreator;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+// class Tenant
 @Entity
-@Table(name = "renter")
 public class Renter extends Person{
-    private int numOfPayments;
-    private int numOfRentals;
+    private List<RentalAgreement> agreementList = new ArrayList<>();
+    private List<Payment> payments = new ArrayList<>();
 
-
-    public Renter() {
+    public Renter(){
         super();
     }
-
-    public Renter(String name, int age, int numOfPayments, int numOfRentals) {
-        super(name, age);
-        this.numOfPayments = numOfPayments;
-        this.numOfRentals = numOfRentals;
+    public Renter(String name, Date dateOfBirth, String contact) {
+        super(name, dateOfBirth, contact);
     }
 
-    public int getNumOfPayments() {
-        return numOfPayments;
+    public List<RentalAgreement> getAgreementList() {
+        return agreementList;
     }
 
+    public void setAgreementList(List<RentalAgreement> agreementList) {
+        this.agreementList = agreementList;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
+
+    public void addAgreement(RentalAgreement agreement){
+        agreementList.add(agreement);
+    }
+
+    public void addPayment(Payment payment){
+        payments.add(payment);
+    }
+
+
+    @Override
+    public String toString() {
+        return  super.toString() +
+                ", Payments=" + (payments.isEmpty() ? "NA" : payments)+
+                ", agreementList=" +  ((agreementList.isEmpty()) ? "NA" : agreementList) +
+                '\n';
+    }
 }

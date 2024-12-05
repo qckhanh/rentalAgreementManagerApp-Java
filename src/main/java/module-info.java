@@ -8,7 +8,8 @@ module org.rmit.demo {
     requires java.xml;
     requires org.slf4j;
     requires com.fasterxml.classmate;
-    requires java.transaction.xa;  // Add this
+    requires java.transaction.xa;
+    requires org.postgresql.jdbc;  // Add this
 
     // Open all packages that contain entities to Hibernate
     opens org.rmit.demo to javafx.fxml, org.hibernate.orm.core;
