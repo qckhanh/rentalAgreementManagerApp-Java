@@ -2,11 +2,10 @@ package org.rmit.entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "person")
+@MappedSuperclass
 public class Person {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "name")

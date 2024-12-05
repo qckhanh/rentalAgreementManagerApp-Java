@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.rmit.entity.Renter;
 
 public class MainTest {
     public static void main(String[] args) {
@@ -17,19 +18,20 @@ public class MainTest {
                 Transaction transaction = session.beginTransaction();
 
                 try {
-                    Person person = new Person("asdas", 34);
+//                    Person person = new Person("asasdasdasasdass", 34);
 
-                    session.persist(person);
+                    Renter renter = new Renter("asdasd", 34, 3, 4);
+                    session.persist(renter);
+//                    session.persist(person);
 
                     transaction.commit();
 
-                    System.out.println("added person with id" + person.getId());
                 }
                 catch (Exception e) {
                     if (transaction != null) {
                         transaction.rollback();
                     }
-                    System.out.println("Error occurred");
+                    e.printStackTrace();
                 }
             }
         }

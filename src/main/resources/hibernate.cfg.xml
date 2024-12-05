@@ -17,10 +17,13 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="show_sql">true</property>
 
+        <property name="hibernate.connection.autocommit">true</property>
+
         <!-- Show SQL in console -->
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
         <mapping class="org.rmit.entity.Person"/>
+        <mapping class="org.rmit.entity.Renter"/>
     </session-factory>
 </hibernate-configuration>
