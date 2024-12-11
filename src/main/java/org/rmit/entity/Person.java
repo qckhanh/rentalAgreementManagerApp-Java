@@ -16,24 +16,21 @@ import java.util.Objects;
 @MappedSuperclass
 public abstract class Person {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
     protected String name;
     protected Date dateOfBirth;
     protected String contact;
 
 
-    public Person() {
-    }
+    public Person() {}
 
     public Person(String name, Date dateOfBirth, String contact) {
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.contact = contact;
-//        id = Database.IDGenerator(Person.class);
     }
-
-
+///////////////////////////////////////////////////////////////////////////////
     public int getId() {
         return id;
     }
@@ -65,11 +62,4 @@ public abstract class Person {
     public void setContact(String contact) {
         this.contact = contact;
     }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, dateOfBirth, contact);
-    }
-
 }

@@ -117,7 +117,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.rmit.demo/org.rmit.demo.HelloApplication</mainClass>
+                            <mainClass>org.rmit.demo/org.rmit.RentalAgreementApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

@@ -2,44 +2,38 @@ package org.rmit.entity;
 
 //import Database.Database;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@Entity
 public abstract class Property {
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
+
     private String address;
     private double price;
+
+    @Enumerated(EnumType.STRING)
     private PropertyStatus status;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private List<Host> hosts = new ArrayList<>();
-    private List<RentalAgreement> agreementList = new ArrayList<>();
 
-    public Property() {
-//        this.id = Database.IDGenerator(Payment.class);
+    @ManyToMany(mappedBy = "propertiesManaged")
+    private Set<Host> hosts = new HashSet<>();
 
-    }
+    @OneToMany(mappedBy = "property")
+    private Set<RentalAgreement> agreementList = new HashSet<>();
 
-    public Property(String address, double price, PropertyStatus status) {
-        this.address = address;
-        this.price = price;
-        this.status = status;
-//        this.id = Database.IDGenerator(Payment.class);
-    }
+    // Add constructors, getters, and setters as needed
 
-    public void addRentAgreement(RentalAgreement agreement) {
-        agreement.setProperty(this);
-    }
-
-    public void remove() {
-        if(owner != null) owner.getPropertiesOwned().remove(this);
-        for (Host host : hosts) {
-            host.getPropertiesManaged().remove(this);
-        }
-        for (RentalAgreement agreement : agreementList) {
-            agreement.setProperty(null);
-        }
-    }
 
     public Owner getOwner() {
         return owner;
@@ -81,34 +75,20 @@ public abstract class Property {
         this.id = id;
     }
 
-    public List<Host> getHosts() {
+    public Set<Host> getHosts() {
         return hosts;
     }
 
-    public void setHosts(List<Host> hosts) {
+    public void setHosts(Set<Host> hosts) {
         this.hosts = hosts;
     }
 
-    public List<RentalAgreement> getAgreementList() {
+    public Set<RentalAgreement> getAgreementList() {
         return agreementList;
     }
 
-    public void setAgreementList(List<RentalAgreement> agreementList) {
+    public void setAgreementList(Set<RentalAgreement> agreementList) {
         this.agreementList = agreementList;
     }
-
-    public void addHost(Host host) {
-        hosts.add(host);
-    }
-
-//    public String toString() {
-//        return "Property [" +
-//                " ID = " + id +
-//                ", Owner = " + (owner == null ? "null" : owner.getName()) +
-//                ", Address = '" + address + '\'' +
-//                ", Price = " + price +
-//                ", Status = " + status.name();
-//    }
-
 }
 

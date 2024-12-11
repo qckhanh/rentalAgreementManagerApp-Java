@@ -4,16 +4,18 @@ package org.rmit.entity;
 //import UIHelper.DateCreator;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 // class Tenant
-@Entity
-public class Renter extends Person{
-    private List<RentalAgreement> agreementList = new ArrayList<>();
-    private List<Payment> payments = new ArrayList<>();
+@Entity(name = "Renter")
+public class Renter extends Person {
+    @OneToMany(mappedBy = "mainTenant")
+    private Set<RentalAgreement> agreementList = new HashSet<>();
+
+    @OneToMany(mappedBy = "mainRenter")
+    private Set<Payment> payments = new HashSet<>();
 
     public Renter(){
         super();
@@ -21,38 +23,20 @@ public class Renter extends Person{
     public Renter(String name, Date dateOfBirth, String contact) {
         super(name, dateOfBirth, contact);
     }
-
-    public List<RentalAgreement> getAgreementList() {
+//////////////////////////////////////////////////////////////////////
+    public Set<RentalAgreement> getAgreementList() {
         return agreementList;
     }
 
-    public void setAgreementList(List<RentalAgreement> agreementList) {
+    public void setAgreementList(Set<RentalAgreement> agreementList) {
         this.agreementList = agreementList;
     }
 
-    public List<Payment> getPayments() {
+    public Set<Payment> getPayments() {
         return payments;
     }
 
-    public void setPayments(List<Payment> payments) {
+    public void setPayments(Set<Payment> payments) {
         this.payments = payments;
-    }
-
-
-    public void addAgreement(RentalAgreement agreement){
-        agreementList.add(agreement);
-    }
-
-    public void addPayment(Payment payment){
-        payments.add(payment);
-    }
-
-
-    @Override
-    public String toString() {
-        return  super.toString() +
-                ", Payments=" + (payments.isEmpty() ? "NA" : payments)+
-                ", agreementList=" +  ((agreementList.isEmpty()) ? "NA" : agreementList) +
-                '\n';
     }
 }
