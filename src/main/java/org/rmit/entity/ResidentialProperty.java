@@ -3,21 +3,20 @@ package org.rmit.entity;
 //import UIHelper.UserInterfaceManager;
 //import UIHelper.DateCreator;
 
+import jakarta.persistence.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class ResidentialProperty extends Property {
     private int totalRoom;
     private int totalBedroom;
     private boolean isPetAllowed;
     private boolean hasGarden;
 
-    public ResidentialProperty(String address, double price, PropertyStatus status, int totalRoom, int totalBedroom, boolean isPetAllowed, boolean hasGarden) {
-        super(address, price, status);
-        this.totalRoom = totalRoom;
-        this.totalBedroom = totalBedroom;
-        this.isPetAllowed = isPetAllowed;
-        this.hasGarden = hasGarden;
+    public ResidentialProperty() {
+        super();
     }
 
     public int getTotalRoom() {
@@ -51,15 +50,4 @@ public class ResidentialProperty extends Property {
     public void setHasGarden(boolean hasGarden) {
         this.hasGarden = hasGarden;
     }
-
-    @Override
-    public String toString() {
-        return super. toString() +
-                " Total Room = " + totalRoom +
-                ", Total Bedroom = " + totalBedroom +
-                ", PetAllowed = " + isPetAllowed +
-                ", Garden = " + hasGarden +
-                ']';
-    }
-
 }

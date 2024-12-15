@@ -1,31 +1,50 @@
 package org.rmit.entity;
 
-import java.io.Serializable;
+import jakarta.persistence.*;
 import java.util.Date;
-import java.util.List;
-//
-//import Database.*;
-//import UIHelper.UserInterfaceManager;
 
-public class Payment{
+@Entity
+public class Payment {
+    @Id
+    @GeneratedValue
     private int paymentId;
-    private RentalAgreement agreement;
+
+    @ManyToOne
+    @JoinColumn(name = "agreement_id")
+    private RentalAgreement rentalAgreement;
+
+    @ManyToOne
     private Renter mainRenter;
+
+    @ManyToOne
     private Property property;
+
     private double amount;
+
+    @Temporal(TemporalType.DATE)
     private Date date;
+
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
+    // Constructors, getters, and setters
+
+    public Payment() {}
+
+    public int getPaymentId() {
+        return paymentId;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
     }
 
-    public Payment() {
-//        this.paymentId = Database.IDGenerator(Payment.class);
+    public RentalAgreement getRentalAgreement() {
+        return rentalAgreement;
+    }
+
+    public void setRentalAgreement(RentalAgreement rentalAgreement) {
+        this.rentalAgreement = rentalAgreement;
     }
 
     public Renter getMainRenter() {
@@ -44,22 +63,6 @@ public class Payment{
         this.property = property;
     }
 
-    public RentalAgreement getAgreement() {
-        return agreement;
-    }
-
-    public void setAgreement(RentalAgreement agreement) {
-        this.agreement = agreement;
-    }
-
-    public int getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(int paymentId) {
-        this.paymentId = paymentId;
-    }
-
     public double getAmount() {
         return amount;
     }
@@ -76,4 +79,11 @@ public class Payment{
         this.date = date;
     }
 
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 }

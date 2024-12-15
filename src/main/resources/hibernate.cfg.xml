@@ -33,7 +33,16 @@
         <property name="hibernate.connection.autocommit">false</property>
 
         <!-- Class mappings -->
-<!--        <mapping class="org.rmit.entity.Person"/>-->
-<!--        <mapping class="org.rmit.entity.Renter"/>-->
+        <mapping class="org.rmit.entity.Person"/>
+        <mapping class="org.rmit.entity.Renter"/>
+        <mapping class="org.rmit.entity.Host"/>
+        <mapping class="org.rmit.entity.Owner"/>
+        <mapping class="org.rmit.entity.Property"/>
+<!--        <mapping class="org.rmit.entity.CommercialProperty"/>-->
+<!--        <mapping class="org.rmit.entity.ResidentialProperty"/>-->
+        <mapping class="org.rmit.entity.RentalAgreement"/>
+        <mapping class="org.rmit.entity.Payment"/>
+
+
     </session-factory>
 </hibernate-configuration>

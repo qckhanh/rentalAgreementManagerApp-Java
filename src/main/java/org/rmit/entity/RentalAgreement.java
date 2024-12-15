@@ -1,33 +1,47 @@
 package org.rmit.entity;
 
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+@Entity
 public class RentalAgreement {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int agreementId;
-    private Renter mainTenant = null;
-    private List<Renter> subTenants = new ArrayList<>();
-    private Property property = null;
-    private Host host = null;       // in the Property
-    private RentalPeriod period = null;
-    private Date contractDate = null;
+
+    @ManyToOne
+    @JoinColumn(name = "main_renter_id", nullable = false)
+    private Renter mainTenant;
+
+    @ManyToMany
+    @JoinTable(
+            name = "rental_agreement_subtenants",
+            joinColumns = @JoinColumn(name = "agreement_id"),
+            inverseJoinColumns = @JoinColumn(name = "subtenant_id")
+    )
+    private Set<Renter> subTenants = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "property_id", nullable = false)
+    private Property property;
+
+    @ManyToOne
+    @JoinColumn(name = "host_id", nullable = false)
+    private Host host;
+
+    private RentalPeriod period;
+    private Date contractDate;
     private double rentingFee;
-    private AgreementStatus status = null;
-    private final List<Payment> payments = new ArrayList<>();
+    private AgreementStatus status;
 
-    public List<Payment> getPayments() {
-        return payments;
-    }
+    @OneToMany(mappedBy = "rentalAgreement")
+    private final Set<Payment> payments = new HashSet<>();
 
-    public RentalAgreement() {
-//        this.agreementId = Database.IDGenerator(Payment.class);
-    }
-
+    public RentalAgreement() {}
     public RentalAgreement(RentalPeriod period, Date contractDate, double rentingFee, AgreementStatus status) {
-//        this.agreementId = Database.IDGenerator(Payment.class);
         this.period = period;
         this.contractDate = contractDate;
         this.rentingFee = rentingFee;
@@ -50,11 +64,11 @@ public class RentalAgreement {
         this.mainTenant = mainTenant;
     }
 
-    public List<Renter> getSubTenants() {
+    public Set<Renter> getSubTenants() {
         return subTenants;
     }
 
-    public void setSubTenants(List<Renter> subTenants) {
+    public void setSubTenants(Set<Renter> subTenants) {
         this.subTenants = subTenants;
     }
 
@@ -63,7 +77,6 @@ public class RentalAgreement {
     }
 
     public void setProperty(Property property) {
-        if(property != null) property.getAgreementList().add(this);
         this.property = property;
     }
 
@@ -107,5 +120,7 @@ public class RentalAgreement {
         this.status = status;
     }
 
-
+    public Set<Payment> getPayments() {
+        return payments;
+    }
 }
