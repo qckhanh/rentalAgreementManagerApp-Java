@@ -11,8 +11,6 @@
         </property>
         <property name="hibernate.connection.username">postgres.qzrobawhuhlydmxxhcjo</property>
         <property name="hibernate.connection.password">11022005</property>
-
-        <!-- PostgreSQL dialect -->
 <!--        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>-->
 
         <!-- Automatic schema generation -->
@@ -33,15 +31,17 @@
         <property name="hibernate.connection.autocommit">false</property>
 
         <!-- Class mappings -->
-        <mapping class="org.rmit.entity.Person"/>
-        <mapping class="org.rmit.entity.Renter"/>
-        <mapping class="org.rmit.entity.Host"/>
-        <mapping class="org.rmit.entity.Owner"/>
-        <mapping class="org.rmit.entity.Property"/>
-<!--        <mapping class="org.rmit.entity.CommercialProperty"/>-->
-<!--        <mapping class="org.rmit.entity.ResidentialProperty"/>-->
-        <mapping class="org.rmit.entity.RentalAgreement"/>
-        <mapping class="org.rmit.entity.Payment"/>
+        <mapping class="org.rmit.model.Person"/>
+        <mapping class="org.rmit.model.Admin"/>
+        <mapping class="org.rmit.model.Guest"/>
+        <mapping class="org.rmit.model.Renter"/>
+        <mapping class="org.rmit.model.Host"/>
+        <mapping class="org.rmit.model.Owner"/>
+        <mapping class="org.rmit.model.Property"/>
+        <mapping class="org.rmit.model.CommercialProperty"/>
+        <mapping class="org.rmit.model.ResidentialProperty"/>
+        <mapping class="org.rmit.model.RentalAgreement"/>
+        <mapping class="org.rmit.model.Payment"/>
 
 
     </session-factory>

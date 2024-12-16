@@ -13,7 +13,7 @@ module org.rmit.demo {
 
     // Open all packages that contain entities to Hibernate
     opens org.rmit.demo to javafx.fxml, org.hibernate.orm.core;
-    opens org.rmit.entity to org.hibernate.orm.core;
+    opens org.rmit.model to org.hibernate.orm.core;
     exports org.rmit to javafx.graphics;
 
 }
