@@ -1,37 +1,86 @@
 package org.rmit.database;
 
-import org.rmit.entity.Payment;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.rmit.model.Payment;
 
 import java.util.List;
 
 public class PaymentDAO implements DAOInterface<Payment> {
     @Override
     public boolean add(Payment payment) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = session.beginTransaction();
+            session.merge(payment);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+            return false;
+        }
     }
 
     @Override
     public boolean update(Payment payment) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = session.beginTransaction();
+            session.update(payment);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+            return false;
+        }
     }
 
     @Override
     public boolean delete(Payment payment) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = session.beginTransaction();
+            session.delete(payment);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+            return false;
+        }
     }
 
     @Override
     public Payment get(int id) {
-        return null;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Payment payment = session.get(Payment.class, id);
+            DatabaseUtil.shutdown(session);
+            return payment;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+            return null;
+        }
     }
 
     @Override
     public List<Payment> getAll() {
-        return List.of();
+        try{
+            Session session = DatabaseUtil.getSession();
+            List<Payment> payments = session.createQuery("from Payment").list();
+            DatabaseUtil.shutdown(session);
+            return payments;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e);
+            return List.of();
+        }
     }
 
-    @Override
-    public void close() {
-
-    }
 }

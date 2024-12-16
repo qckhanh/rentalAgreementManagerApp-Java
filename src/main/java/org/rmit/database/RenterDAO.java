@@ -1,44 +1,88 @@
 package org.rmit.database;
 
 import org.hibernate.Session;
-import org.rmit.entity.Renter;
+import org.hibernate.Transaction;
+import org.rmit.model.Renter;
 
 import java.util.List;
 
 public class RenterDAO implements DAOInterface<Renter> {
-    private final Session session;
-
-    public RenterDAO() {
-        session = HibernateUtil.getSessionFactory().openSession();
-    }
 
     @Override
     public boolean add(Renter renter) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
+            session.persist(renter);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+
     }
 
     @Override
     public boolean update(Renter renter) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
+            session.update(renter);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean delete(Renter renter) {
-        return false;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
+            session.delete(renter);
+            transaction.commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
     public Renter get(int id) {
-        return null;
+        try{
+            Session session = DatabaseUtil.getSession();
+            Renter renter = session.get(Renter.class, id);
+            DatabaseUtil.shutdown(session);
+            return renter;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 
     @Override
     public List<Renter> getAll() {
-        return null;
+        try{
+            Session session = DatabaseUtil.getSession();
+            List<Renter> renters = session.createQuery("from Renter").list();
+            DatabaseUtil.shutdown(session);
+            return renters;
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 
-    @Override
-    public void close() {
-        HibernateUtil.shutdown(session);
-    }
 }
