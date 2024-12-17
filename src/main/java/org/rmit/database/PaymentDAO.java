@@ -2,7 +2,7 @@ package org.rmit.database;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.Payment;
+import org.rmit.model.Rental.Payment;
 
 import java.util.List;
 

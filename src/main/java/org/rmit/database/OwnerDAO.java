@@ -2,7 +2,7 @@ package org.rmit.database;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.Owner;
+import org.rmit.model.Persons.Owner;
 
 import java.util.List;
 

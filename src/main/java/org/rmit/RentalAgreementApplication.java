@@ -14,6 +14,7 @@ public class RentalAgreementApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        ModelCentral.getInstance().getViewFactory().startInit();
     }
 
     @Override
@@ -23,18 +24,6 @@ public class RentalAgreementApplication extends Application {
     }
 
     public static void main(String[] args) {
-//        launch(args);
-
-
-
-
-
-
-
-
-
-
-
-
+        launch(args);
     }
 }

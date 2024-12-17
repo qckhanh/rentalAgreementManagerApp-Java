@@ -31,17 +31,17 @@
         <property name="hibernate.connection.autocommit">false</property>
 
         <!-- Class mappings -->
-        <mapping class="org.rmit.model.Person"/>
-        <mapping class="org.rmit.model.Admin"/>
-        <mapping class="org.rmit.model.Guest"/>
-        <mapping class="org.rmit.model.Renter"/>
-        <mapping class="org.rmit.model.Host"/>
-        <mapping class="org.rmit.model.Owner"/>
-        <mapping class="org.rmit.model.Property"/>
-        <mapping class="org.rmit.model.CommercialProperty"/>
-        <mapping class="org.rmit.model.ResidentialProperty"/>
-        <mapping class="org.rmit.model.RentalAgreement"/>
-        <mapping class="org.rmit.model.Payment"/>
+        <mapping class="org.rmit.model.Persons.Person"/>
+        <mapping class="org.rmit.model.Persons.Admin"/>
+        <mapping class="org.rmit.model.Persons.Guest"/>
+        <mapping class="org.rmit.model.Persons.Renter"/>
+        <mapping class="org.rmit.model.Persons.Host"/>
+        <mapping class="org.rmit.model.Persons.Owner"/>
+        <mapping class="org.rmit.model.Property.Property"/>
+        <mapping class="org.rmit.model.Property.CommercialProperty"/>
+        <mapping class="org.rmit.model.Property.ResidentialProperty"/>
+        <mapping class="org.rmit.model.Rental.RentalAgreement"/>
+        <mapping class="org.rmit.model.Rental.Payment"/>
 
 
     </session-factory>
