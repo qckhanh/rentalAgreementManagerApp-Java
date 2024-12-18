@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Session;
+import org.rmit.view.Renter.RenterMenuOption;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -36,24 +37,27 @@ public class RenterMenuController implements Initializable {
     }
 
     private void logOut(){
+        System.out.println("Hello");
         Stage stage = (Stage) logOut_btn.getScene().getWindow();
         ModelCentral.getInstance().getViewFactory().closeStage(stage);
         ModelCentral.getInstance().getViewFactory().startInit();
     }
 
     private void openDashboard(){
-
+        ModelCentral.getInstance().getViewFactory().setRenterOption(RenterMenuOption.DASHBOARD);
     }
 
     private void editProfile(){
+        ModelCentral.getInstance().getViewFactory().setRenterOption(RenterMenuOption.EDIT_PROFILE);
 
     }
 
     private void paymentManager(){
+        ModelCentral.getInstance().getViewFactory().setRenterOption(RenterMenuOption.PAYMENT_MANAGER);
 
     }
 
     private void rentalManager(){
-
+        ModelCentral.getInstance().getViewFactory().setRenterOption(RenterMenuOption.AGREEMENT_MANAGER);
     }
 }

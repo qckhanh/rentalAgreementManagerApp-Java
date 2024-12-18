@@ -1,36 +1,37 @@
 package org.rmit.view;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.InitController;
 import org.rmit.controller.Renter.RenterController;
 import org.rmit.model.Session;
+import org.rmit.view.Renter.RenterMenuOption;
 
 public class ViewFactory {
+    private String FXML_PATH = "/org/rmit/demo/FXMLs/";
     private ACCOUNT_TYPE accountLoginType;
-
+    private InitController initController;
     private AnchorPane loginView;
     private AnchorPane registerView;
 
-    private String FXML_PATH = "/org/rmit/demo/FXMLs/";
+    private final ObjectProperty<RenterMenuOption> renterOption;
 
-    private FXMLLoader loginFXML;
-    private FXMLLoader registerFXML;
-    private FXMLLoader renterFXML;
-    private FXMLLoader initFXML;
-    private InitController initController;
 
     public ViewFactory() {
         accountLoginType = ACCOUNT_TYPE.RENTER;
+        this.renterOption = new SimpleObjectProperty<>();
     }
 
     public AnchorPane getLoginView(){
         if (loginView == null){
             try {
-                getLoginFXML();
-                loginView = loginFXML.load();
+                loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading login.fxml");
             }
@@ -41,7 +42,7 @@ public class ViewFactory {
     public AnchorPane getRegisterView(){
         if (registerView == null){
             try {
-                registerView = getRegisterFXML().load();
+                registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading register.fxml");
             }
@@ -50,65 +51,25 @@ public class ViewFactory {
     }
 
 
-    ////////////////
+    public void startInit(){
+        FXMLLoader initLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "init.fxml"));
+        showStage(initLoad);
+        initController = initLoad.getController();
 
-
-    public FXMLLoader getLoginFXML() {
-        if (loginFXML == null) {
-            try {
-                loginFXML = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml"));
-            } catch (Exception e) {
-                System.out.println("Error loading register.fxml");
-
-            }
-        }
-        return loginFXML;
     }
 
-    public FXMLLoader getRegisterFXML() {
-        if (registerView == null) {
-            try {
-                registerFXML = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml"));
-            } catch (Exception e) {
-                System.out.println("Error loading register.fxml");
-            }
-        }
-        return registerFXML;
+    public void showRegisterView() {
+        initController.openRegister();
     }
 
-    public FXMLLoader getRenterView(){
-        if(renterFXML == null) renterFXML = new FXMLLoader(getClass().getResource(FXML_PATH + "HOME.fxml"));
-        return renterFXML;
-    }
-
-    ///////////////
-    public void showRenterView(){
-        getRenterView();
-        createStage(renterFXML);
-    }
     public void showLoginView() {
         initController.openLogin();
     }
 
-    public void startInit(){
-        FXMLLoader initLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "init.fxml"));
-        createStage(initLoad);
-        initController = initLoad.getController();
-    }
-
-    public void showRegisterView() {
-        try{
-            initController.openRegister();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void createStage(FXMLLoader loader) {
+    private void showStage(FXMLLoader newFXML) {
         Scene scene = null;
         try {
-            scene = new Scene(loader.load());
+            scene = new Scene(newFXML.load());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,6 +79,12 @@ public class ViewFactory {
         stage.show();
     }
 
+
+    public void logOut(){
+
+    }
+
+
     public void closeStage(Stage stage) {
         stage.close();
     }
@@ -126,12 +93,22 @@ public class ViewFactory {
         return accountLoginType;
     }
 
+    public ObjectProperty<RenterMenuOption> renterOptionProperty() {
+        return renterOption;
+    }
+
+    public void setRenterOption(RenterMenuOption option) {
+        renterOption.setValue(option);
+    }
+
     public void setAccountLoginType(ACCOUNT_TYPE accountLoginType) {
         this.accountLoginType = accountLoginType;
     }
 
-    public void logOut(){
-        Session.getInstance().setCurrentUser(null);
-        startInit();
+    public void showRenterView() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH + "renter.fxml"));
+        RenterController controller = new RenterController();
+        loader.setController(controller);
+        showStage(loader);
     }
 }

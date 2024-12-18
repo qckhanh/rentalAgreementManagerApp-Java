@@ -76,6 +76,14 @@ public class RegisterController implements Initializable {
         rePassword_input.setText("");
         contact_input.setText("");
         dob_datePicker.setValue(null);
+
+        try{
+            Thread.sleep(3000);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        openLogin();
+
     }
 
     private <T extends Person> void UserFactory(T newUser) {
