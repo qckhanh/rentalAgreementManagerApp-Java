@@ -27,6 +27,9 @@ public class RenterMenuController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userType_label.setText(Session.getInstance().getCurrentUser().getClass().getSimpleName());
         name_label.setText(Session.getInstance().getCurrentUser().getName());
+        Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
+                name_label.setText(newValue)
+        );
 
         editProfile_btn.setOnAction(e -> editProfile());
         dashboard_btn.setOnAction(e -> openDashboard());
@@ -37,9 +40,12 @@ public class RenterMenuController implements Initializable {
     }
 
     private void logOut(){
+        Session.getInstance().setCurrentUser(null);
         Stage stage = (Stage) logOut_btn.getScene().getWindow();
         ModelCentral.getInstance().getViewFactory().closeStage(stage);
+        ModelCentral.getInstance().getViewFactory().resetView();
         ModelCentral.getInstance().getViewFactory().startInit();
+
     }
 
     private void openDashboard(){

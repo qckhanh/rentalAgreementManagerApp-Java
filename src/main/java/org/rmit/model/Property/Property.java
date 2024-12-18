@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import javafx.beans.property.*;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
-import org.rmit.model.Rental.RentalAgreement;
+import org.rmit.model.Agreement.RentalAgreement;
 
 import java.util.HashSet;
 import java.util.Set;

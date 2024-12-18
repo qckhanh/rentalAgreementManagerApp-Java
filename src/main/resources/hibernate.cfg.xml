@@ -40,8 +40,8 @@
         <mapping class="org.rmit.model.Property.Property"/>
         <mapping class="org.rmit.model.Property.CommercialProperty"/>
         <mapping class="org.rmit.model.Property.ResidentialProperty"/>
-        <mapping class="org.rmit.model.Rental.RentalAgreement"/>
-        <mapping class="org.rmit.model.Rental.Payment"/>
+        <mapping class="org.rmit.model.Agreement.RentalAgreement"/>
+        <mapping class="org.rmit.model.Agreement.Payment"/>
 
 
     </session-factory>

@@ -19,13 +19,13 @@ module org.rmit.demo {
 //    exports org.rmit to javafx.graphics;
 //    opens org.rmit.model.Persons to org.hibernate.orm.core;
 //    opens org.rmit.model.Property to org.hibernate.orm.core;
-//    opens org.rmit.model.Rental to org.hibernate.orm.core;
+//    opens org.rmit.model.Agreement to org.hibernate.orm.core;
 
 
     opens org.rmit to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.model.Persons to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.model.Property to org.hibernate.orm.core, javafx.fxml;
-    opens org.rmit.model.Rental to org.hibernate.orm.core, javafx.fxml;
+    opens org.rmit.model.Agreement to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.controller to javafx.fxml;
     opens org.rmit.controller.Renter to javafx.fxml;
 
@@ -35,7 +35,7 @@ module org.rmit.demo {
     exports org.rmit.controller;
     exports org.rmit.controller.Renter;
     exports org.rmit.model.Property;
-    exports org.rmit.model.Rental;
+    exports org.rmit.model.Agreement;
     exports org.rmit.view;
 
 

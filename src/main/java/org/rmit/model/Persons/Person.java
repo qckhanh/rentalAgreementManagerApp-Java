@@ -85,7 +85,7 @@ public abstract class Person {
     }
 
     public void setName(String name) {
-        this.nameProperty = new SimpleStringProperty(this, "name", name);
+        this.nameProperty.setValue(name);
         this.name = nameProperty.get();
     }
 

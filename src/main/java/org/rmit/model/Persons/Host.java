@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.rmit.model.Property.Property;
-import org.rmit.model.Rental.RentalAgreement;
+import org.rmit.model.Agreement.RentalAgreement;
 
 import java.util.*;
 

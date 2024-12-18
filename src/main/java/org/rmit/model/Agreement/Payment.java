@@ -1,4 +1,4 @@
-package org.rmit.model.Rental;
+package org.rmit.model.Agreement;
 
 import jakarta.persistence.*;
 import javafx.beans.property.DoubleProperty;

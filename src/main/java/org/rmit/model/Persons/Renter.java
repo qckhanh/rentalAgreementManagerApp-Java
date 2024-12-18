@@ -9,8 +9,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import org.rmit.model.Rental.Payment;
-import org.rmit.model.Rental.RentalAgreement;
+import org.rmit.model.Agreement.Payment;
+import org.rmit.model.Agreement.RentalAgreement;
 
 import java.util.*;
 

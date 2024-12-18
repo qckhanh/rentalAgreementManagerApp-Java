@@ -1,13 +1,15 @@
 package org.rmit.model;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.rmit.model.Persons.Person;
 
 public class Session {
     private static Session session;
-    private Person currentUser;
+    private ObjectProperty<Person> currentUser;
 
     private Session(){
-        Person currentUser = null;
+        currentUser = new SimpleObjectProperty<>(null);
     }
 
     public static Session getInstance(){
@@ -17,11 +19,17 @@ public class Session {
         return session;
     }
 
-    public void setCurrentUser(Person currentUser){
-        this.currentUser = currentUser;
+    public Person getCurrentUser(){
+        return currentUser.get();
     }
 
-    public Person getCurrentUser() {
+    public ObjectProperty<Person> currentUserProperty(){
         return currentUser;
     }
+
+    public void setCurrentUser(Person currentUser){
+        this.currentUser.set(currentUser);
+    }
+
+
 }
