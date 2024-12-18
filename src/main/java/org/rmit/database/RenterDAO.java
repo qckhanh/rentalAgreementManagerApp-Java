@@ -2,7 +2,7 @@ package org.rmit.database;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.Renter;
+import org.rmit.model.Persons.Renter;
 
 import java.util.List;
 

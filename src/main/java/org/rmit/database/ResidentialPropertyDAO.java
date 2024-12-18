@@ -2,7 +2,7 @@ package org.rmit.database;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.ResidentialProperty;
+import org.rmit.model.Property.ResidentialProperty;
 
 import java.util.List;
 
