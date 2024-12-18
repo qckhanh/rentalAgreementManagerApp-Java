@@ -5,17 +5,12 @@ import javafx.stage.Stage;
 import org.hibernate.SessionFactory;
 import org.rmit.database.*;
 import org.rmit.model.*;
+import org.rmit.model.Persons.Renter;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 public class RentalAgreementApplication extends Application {
-
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        ModelCentral.getInstance().getViewFactory().startInit();
-    }
 
     @Override
     public void init() throws Exception {
@@ -23,7 +18,12 @@ public class RentalAgreementApplication extends Application {
         else System.out.println("Database  connected");
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    @Override
+    public void start(Stage stage) throws Exception {
+//        RenterDAO renterDAO = new RenterDAO();
+//        Renter tmp = renterDAO.get(2);
+//        Session.getInstance().setCurrentUser(tmp);
+
+        ModelCentral.getInstance().getViewFactory().startInit();
     }
 }
