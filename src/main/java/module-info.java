@@ -5,11 +5,11 @@ module org.rmit.demo {
     requires org.hibernate.orm.core;
     requires java.naming;
     requires java.sql;
-    requires java.xml;
     requires org.slf4j;
     requires com.fasterxml.classmate;
     requires java.transaction.xa;
-    requires org.postgresql.jdbc;  // Add this
+    requires org.postgresql.jdbc;
+    requires java.desktop;  // Add this
 
     // Open all packages that contain entities to Hibernate
 //    opens org.rmit.demo to javafx.fxml, org.hibernate.orm.core;
@@ -27,6 +27,8 @@ module org.rmit.demo {
     opens org.rmit.model.Property to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.model.Rental to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.controller to javafx.fxml;
+    opens org.rmit.controller.Renter to javafx.fxml;
+
     exports org.rmit;
     exports org.rmit.model;
     exports org.rmit.model.Persons;

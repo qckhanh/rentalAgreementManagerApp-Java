@@ -2,6 +2,8 @@ package org.rmit.view;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -11,26 +13,66 @@ import javafx.stage.Stage;
 import org.rmit.controller.InitController;
 import org.rmit.controller.Renter.RenterController;
 import org.rmit.model.Session;
-import org.rmit.view.Renter.RenterMenuOption;
+import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 public class ViewFactory {
     private String FXML_PATH = "/org/rmit/demo/FXMLs/";
     private ACCOUNT_TYPE accountLoginType;
-    private InitController initController;
+
+    public RENTER_MENU_OPTION getRenterSelectedMenuItem() {
+        return renterSelectedMenuItem.get();
+    }
+
+    public ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItemProperty() {
+        return renterSelectedMenuItem;
+    }
+
+    public void setRenterSelectedMenuItem(RENTER_MENU_OPTION renterSelectedMenuItem) {
+        this.renterSelectedMenuItem.set(renterSelectedMenuItem);
+    }
+
+    private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;
+
+    private AnchorPane editProfileView;
+    private AnchorPane dashboardView;
+
     private AnchorPane loginView;
     private AnchorPane registerView;
+    private String FXML_PATH = "/org/rmit/demo/FXMLs/";
 
-    private final ObjectProperty<RenterMenuOption> renterOption;
-
+    private InitController initController;
 
     public ViewFactory() {
+        renterSelectedMenuItem = new SimpleObjectProperty<>();
         accountLoginType = ACCOUNT_TYPE.RENTER;
-        this.renterOption = new SimpleObjectProperty<>();
+    }
+
+    public AnchorPane getEditProfile(){
+        if (editProfileView == null){
+            try {
+                editProfileView = new FXMLLoader(getClass().getResource(FXML_PATH + "editProfile.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading edit profile.fxml");
+            }
+        }
+        return editProfileView;
+    }
+
+    public AnchorPane getDashboardView(){
+        if (dashboardView == null){
+            try {
+                dashboardView = new FXMLLoader(getClass().getResource(FXML_PATH + "dashboard.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading dashboard.fxml");
+            }
+        }
+        return dashboardView;
     }
 
     public AnchorPane getLoginView(){
         if (loginView == null){
             try {
+                loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
                 loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading login.fxml");
@@ -43,6 +85,7 @@ public class ViewFactory {
         if (registerView == null){
             try {
                 registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
+                registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading register.fxml");
             }
@@ -50,20 +93,23 @@ public class ViewFactory {
         return registerView;
     }
 
+    public void showRenterView(){
+        FXMLLoader renterLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "renter.fxml"));
+        RenterController renterController = new RenterController();
+        renterLoad.setController(renterController);
+        createStage(renterLoad);
+    }
 
     public void startInit(){
         FXMLLoader initLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "init.fxml"));
         showStage(initLoad);
         initController = initLoad.getController();
-
     }
-
-    public void showRegisterView() {
-        initController.openRegister();
-    }
-
     public void showLoginView() {
         initController.openLogin();
+    }
+    public void showRegisterView() {
+        initController.openRegister();
     }
 
     private void showStage(FXMLLoader newFXML) {
@@ -105,10 +151,4 @@ public class ViewFactory {
         this.accountLoginType = accountLoginType;
     }
 
-    public void showRenterView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH + "renter.fxml"));
-        RenterController controller = new RenterController();
-        loader.setController(controller);
-        showStage(loader);
-    }
 }
