@@ -37,6 +37,7 @@ public class RenterMenuController implements Initializable {
     }
 
     private void logOut(){
+        System.out.println("Hello");
         Stage stage = (Stage) logOut_btn.getScene().getWindow();
         ModelCentral.getInstance().getViewFactory().closeStage(stage);
         ModelCentral.getInstance().getViewFactory().startInit();

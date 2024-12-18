@@ -2,7 +2,11 @@ package org.rmit.view;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -12,6 +16,7 @@ import org.rmit.model.Session;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 public class ViewFactory {
+    private String FXML_PATH = "/org/rmit/demo/FXMLs/";
     private ACCOUNT_TYPE accountLoginType;
 
     public RENTER_MENU_OPTION getRenterSelectedMenuItem() {
@@ -68,6 +73,7 @@ public class ViewFactory {
         if (loginView == null){
             try {
                 loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
+                loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading login.fxml");
             }
@@ -78,6 +84,7 @@ public class ViewFactory {
     public AnchorPane getRegisterView(){
         if (registerView == null){
             try {
+                registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
                 registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading register.fxml");
@@ -95,7 +102,7 @@ public class ViewFactory {
 
     public void startInit(){
         FXMLLoader initLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "init.fxml"));
-        createStage(initLoad);
+        showStage(initLoad);
         initController = initLoad.getController();
     }
     public void showLoginView() {
@@ -105,10 +112,10 @@ public class ViewFactory {
         initController.openRegister();
     }
 
-    private void createStage(FXMLLoader loader) {
+    private void showStage(FXMLLoader newFXML) {
         Scene scene = null;
         try {
-            scene = new Scene(loader.load());
+            scene = new Scene(newFXML.load());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,12 +125,26 @@ public class ViewFactory {
         stage.show();
     }
 
+
+    public void logOut(){
+
+    }
+
+
     public void closeStage(Stage stage) {
         stage.close();
     }
 
     public ACCOUNT_TYPE getAccountLoginType() {
         return accountLoginType;
+    }
+
+    public ObjectProperty<RenterMenuOption> renterOptionProperty() {
+        return renterOption;
+    }
+
+    public void setRenterOption(RenterMenuOption option) {
+        renterOption.setValue(option);
     }
 
     public void setAccountLoginType(ACCOUNT_TYPE accountLoginType) {

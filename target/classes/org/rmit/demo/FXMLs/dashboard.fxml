@@ -13,7 +13,7 @@
    <children>
       <TextField fx:id="search_input" layoutX="50.0" layoutY="131.0" prefHeight="39.0" prefWidth="666.0" promptText="Search for properties, host, owner, and more!" />
       <Button fx:id="search_button" layoutX="740.0" layoutY="131.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="52.0" text="Search" />
-      <Label fx:id="welcomeLabel" layoutX="50.0" layoutY="48.0" prefHeight="59.0" prefWidth="307.0" text="Welcome, Quoc Khanh">
+      <Label fx:id="welcomeLabel" layoutX="50.0" layoutY="48.0" prefHeight="59.0" prefWidth="666.0" text="Welcome, Quoc Khanh">
          <font>
             <Font name="System Bold" size="28.0" />
          </font>
