@@ -28,15 +28,17 @@ module org.rmit.demo {
     opens org.rmit.model.Agreement to org.hibernate.orm.core, javafx.fxml;
 
     //controller
-    opens org.rmit.controller to javafx.fxml;
     opens org.rmit.controller.Renter to javafx.fxml;
+    opens org.rmit.controller.Start to javafx.fxml;
+    opens org.rmit.controller.Owner to javafx.fxml;
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports org.rmit;
     exports org.rmit.model;
-    exports org.rmit.controller;
     //    exports org.rmit.view;
+    //    exports org.rmit.controller;
+
 
     //model
     exports org.rmit.model.Persons;
@@ -45,10 +47,13 @@ module org.rmit.demo {
 
     //controller
     exports org.rmit.controller.Renter;
+    exports org.rmit.controller.Start;
+    exports org.rmit.controller.Owner;
 
     //view
-    exports org.rmit.view.StartView;
+    exports org.rmit.view.Start;
     exports org.rmit.view.Renter;
+    exports org.rmit.view.Owner;
 
 
 }

@@ -10,7 +10,7 @@ import org.rmit.controller.Renter.RenterController;
 
 public class RenterViewFactory {
     String RENTER_PATH = "/org/rmit/demo/FXMLs/Renter/";
-    private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;
+    private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;        // for tracking which menu option is selected
     private ObjectProperty<PAYMENT_FILTER> paymentFilter;
 
     private AnchorPane renter_editProfileView;
@@ -19,19 +19,22 @@ public class RenterViewFactory {
     private AnchorPane renter_agreementManagerView;
 
     public RenterViewFactory() {
-        renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);
+        renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
     }
 
+    //start renter view when user login as renter
     public void startRenterView(){
         FXMLLoader renterLoad = new FXMLLoader(getClass().getResource(RENTER_PATH + "renter.fxml"));
         RenterController renterController = new RenterController();
         renterLoad.setController(renterController);
         createStage(renterLoad);
     }
+
+    //generate renter view for each menu option
     public AnchorPane getRenter_EditProfileView(){
         if (renter_editProfileView == null){
             try {
-                renter_editProfileView = new FXMLLoader(getClass().getResource(RENTER_PATH + "editProfile.fxml")).load();
+                renter_editProfileView = new FXMLLoader(getClass().getResource(RENTER_PATH + "editProfileRenter.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading edit profile.fxml");
             }
@@ -41,7 +44,7 @@ public class RenterViewFactory {
     public AnchorPane getRenter_dashboardView(){
         if (renter_dashboardView == null){
             try {
-                renter_dashboardView = new FXMLLoader(getClass().getResource(RENTER_PATH + "dashboard.fxml")).load();
+                renter_dashboardView = new FXMLLoader(getClass().getResource(RENTER_PATH + "dashboardRenter.fxml")).load();
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -51,9 +54,9 @@ public class RenterViewFactory {
     public AnchorPane getRenter_paymentManagerView(){
         if (renter_paymentManagerView == null){
             try {
-                renter_paymentManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "paymentManager.fxml")).load();
+                renter_paymentManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "paymentManagerRenter.fxml")).load();
             } catch (Exception e){
-                System.out.println("Error loading paymentManager.fxml");
+                System.out.println("Error loading paymentManagerRenter.fxml");
             }
         }
         return renter_paymentManagerView;
@@ -61,14 +64,16 @@ public class RenterViewFactory {
     public AnchorPane getRenter_agreementManagerView(){
         if (renter_agreementManagerView == null){
             try {
-                renter_agreementManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "agreementManager.fxml")).load();
+                renter_agreementManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "agreementManagerRenter.fxml")).load();
             } catch (Exception e){
-                System.out.println("Error loading paymentManager.fxml");
+                System.out.println("Error loading paymentManagerRenter.fxml");
             }
         }
         return renter_agreementManagerView;
     }
 
+
+    //helper method
     private void createStage(FXMLLoader loader) {
         Scene scene = null;
         try {
@@ -89,10 +94,10 @@ public class RenterViewFactory {
         renter_agreementManagerView = null;
     }
 
+    //getter and setter
     public RENTER_MENU_OPTION getRenterSelectedMenuItem() {
         return renterSelectedMenuItem.get();
     }
-
     public ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItemProperty() {
         return renterSelectedMenuItem;
     }

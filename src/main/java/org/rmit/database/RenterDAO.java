@@ -93,13 +93,14 @@ public class RenterDAO implements DAOInterface<Renter> {
             Session session = DatabaseUtil.getSession();
             // Query to search for a Renter based on username or contact and password
             String hql = "from Renter where (username = :input or contact = :input) and password = :password";
-            Renter renter = session.createQuery(hql, Renter.class)
+            Renter user = session.createQuery(hql, Renter.class)
                     .setParameter("input", usernameOrContact)
                     .setParameter("password", password)
                     .uniqueResult();
-            Hibernate.initialize(renter.getPayments()); // Initialize the payments
+            Hibernate.initialize(user.getPayments()); // Initialize the payments
+            Hibernate.initialize(user.getAgreementList()); // Initialize the rental agreements
             DatabaseUtil.shutdown(session);
-            return renter;
+            return user;
         } catch (Exception e) {
             System.out.println("Error: not found user");
             return null;

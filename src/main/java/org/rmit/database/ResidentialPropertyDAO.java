@@ -85,7 +85,7 @@ public class ResidentialPropertyDAO implements DAOInterface<ResidentialProperty>
     }
 
     @Override
-    public ResidentialProperty validateLogin(String username, String password) {
+    public ResidentialProperty validateLogin(String usernameOrContact, String password) {
         return null;
     }
 

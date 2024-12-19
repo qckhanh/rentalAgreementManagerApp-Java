@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../../Style/Start/login.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Start.LoginController">
+   <children>
+      <VBox alignment="CENTER" layoutX="342.0" layoutY="122.0" prefHeight="498.0" prefWidth="341.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="107.0" prefWidth="376.0" spacing="10.0">
+               <children>
+                  <Label text="Welcome back">
+                     <font>
+                        <Font name="System Bold" size="40.0" />
+                     </font>
+                  </Label>
+                  <Label text="We're excited to see you again">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <ChoiceBox fx:id="userLOGINType_ChoiceBox" prefHeight="40.0" prefWidth="150.0" />
+            <VBox prefHeight="93.0" prefWidth="318.0">
+               <children>
+                  <Label fx:id="username_lbl" prefHeight="25.0" prefWidth="241.0" text="USERNAME, EMAIL OR PHONE">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="username_input" prefHeight="41.0" prefWidth="318.0" promptText="Enter your username" />
+               </children>
+            </VBox>
+            <VBox prefHeight="107.0" prefWidth="375.0" spacing="3.0">
+               <children>
+                  <Label fx:id="password" prefHeight="25.0" prefWidth="241.0" text="PASSWORD">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="375.0" spacing="3.0">
+                     <children>
+                        <PasswordField fx:id="password_input" prefHeight="43.0" prefWidth="340.0" />
+                     </children>
+                  </HBox>
+                  <Button fx:id="forgetPass_btn" mnemonicParsing="false" text="Forget password?" underline="true">
+                     <font>
+                        <Font name="System Italic" size="12.0" />
+                     </font>
+                     <effect>
+                        <Blend />
+                     </effect>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="93.0" prefWidth="315.0" spacing="5.0">
+               <children>
+                  <Button fx:id="signIn_btn" mnemonicParsing="false" prefHeight="58.0" prefWidth="433.0" text="Sign In">
+                     <font>
+                        <Font name="System Bold" size="25.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="register_btn" mnemonicParsing="false" text="Need an account? Register now!" underline="true">
+                     <font>
+                        <Font name="System Italic" size="12.0" />
+                     </font>
+                     <effect>
+                        <Blend />
+                     </effect>
+                  </Button>
+               </children>
+            </VBox>
+            <Label fx:id="status_label" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="330.0" text="Incorrect username or password">
+               <font>
+                  <Font name="System Bold" size="19.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

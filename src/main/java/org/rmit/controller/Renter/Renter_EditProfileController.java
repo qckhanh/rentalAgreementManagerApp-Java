@@ -35,22 +35,16 @@ public class Renter_EditProfileController implements Initializable {
         newContact_input.setText(currentUser.getContact());
         newDOB_input.setValue(currentUser.getDateOfBirth());
         newPassword_input.setText(currentUser.getPassword());
-
-        // Initially disable all fields
-        newName_input.setDisable(true);
-        newContact_input.setDisable(true);
-        newDOB_input.setDisable(true);
-        newPassword_input.setDisable(true);
-        edit_btn.setText("Edit");
-        edit_btn.setDisable(false);
-
         // Add listeners to monitor changes
         newName_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newContact_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
 
-        // Button action
+        // Initially disable all fields
+        setDisableAll(true);
+        edit_btn.setText("Edit");
+        edit_btn.setDisable(false);
         edit_btn.setOnAction(event -> editProfile());
     }
 
@@ -62,16 +56,8 @@ public class Renter_EditProfileController implements Initializable {
                 saveChanges();
             }
         } else {
-            enableEditing();
+            setDisableAll(false);
         }
-    }
-
-    private void enableEditing() {
-        newName_input.setDisable(false);
-        newContact_input.setDisable(false);
-        newDOB_input.setDisable(false);
-        newPassword_input.setDisable(false);
-        edit_btn.setDisable(false);
     }
 
     private void saveChanges() {
@@ -85,10 +71,7 @@ public class Renter_EditProfileController implements Initializable {
         renterDAO.update((Renter)currentUser);
 
         // Reset fields and button
-        newName_input.setDisable(true);
-        newContact_input.setDisable(true);
-        newDOB_input.setDisable(true);
-        newPassword_input.setDisable(true);
+        setDisableAll(true);
         edit_btn.setText("Edit");
         edit_btn.setDisable(false);
     }
@@ -105,7 +88,16 @@ public class Renter_EditProfileController implements Initializable {
             edit_btn.setDisable(false);
         } else {
             edit_btn.setText("Edit");
+            setDisableAll(true);
             edit_btn.setDisable(false);
         }
+    }
+
+    void setDisableAll(boolean status){
+        newName_input.setDisable(status);
+        newContact_input.setDisable(status);
+        newDOB_input.setDisable(status);
+        newPassword_input.setDisable(status);
+        edit_btn.setDisable(status);
     }
 }

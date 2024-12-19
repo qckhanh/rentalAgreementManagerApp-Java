@@ -15,7 +15,7 @@ public class RenterController implements Initializable{
     BorderPane borderPane;
 
     public RenterController() {
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
+        // khi nguoi dung bam nut --> selectedMenuItem thay doi --> thay doi view
         ModelCentral.getInstance().getRenterViewFactory().renterSelectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case DASHBOARD -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_dashboardView());
@@ -25,10 +25,12 @@ public class RenterController implements Initializable{
                 case SEARCH -> System.out.println("Search");
             }
         });
+        //set default view
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        // nothing here
     }
 }

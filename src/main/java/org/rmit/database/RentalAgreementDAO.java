@@ -84,7 +84,7 @@ public class RentalAgreementDAO implements DAOInterface<RentalAgreement>{
     }
 
     @Override
-    public RentalAgreement validateLogin(String username, String password) {
+    public RentalAgreement validateLogin(String usernameOrContact, String password) {
         return null;
     }
 

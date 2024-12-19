@@ -4,6 +4,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.rmit.model.Persons.Person;
 
+
+
 public class Session {
     private static Session session;
     private ObjectProperty<Person> currentUser;

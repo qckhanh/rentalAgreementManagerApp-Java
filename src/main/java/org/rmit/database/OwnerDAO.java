@@ -1,8 +1,10 @@
 package org.rmit.database;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Renter;
 
 import java.util.List;
 
@@ -90,8 +92,23 @@ public class OwnerDAO implements DAOInterface<Owner>{
     }
 
     @Override
-    public Owner validateLogin(String username, String password) {
-        return null;
+    public Owner validateLogin(String usernameOrContact, String password) {
+        try {
+            Session session = DatabaseUtil.getSession();
+            // Query to search for a Renter based on username or contact and password
+            String hql = "from Owner where (username = :input or contact = :input) and password = :password";
+            Owner user = session.createQuery(hql, Owner.class)
+                    .setParameter("input", usernameOrContact)
+                    .setParameter("password", password)
+                    .uniqueResult();
+            Hibernate.initialize(user.getHosts()); // Initialize the payments
+            Hibernate.initialize(user.getPropertiesOwned()); // Initialize the rental agreements
+            DatabaseUtil.shutdown(session);
+            return user;
+        } catch (Exception e) {
+            System.out.println("Error: not found user");
+            return null;
+        }
     }
 
 }
