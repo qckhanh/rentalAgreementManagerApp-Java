@@ -1,13 +1,8 @@
 package org.rmit.controller;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.rmit.database.HostDAO;
@@ -17,8 +12,8 @@ import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
-import org.rmit.view.ACCOUNT_TYPE;
-import org.rmit.view.ViewFactory;
+import org.rmit.view.StartView.ACCOUNT_TYPE;
+import org.rmit.view.StartView.ViewFactory;
 
 import java.net.URL;
 import java.util.List;
@@ -28,8 +23,7 @@ public class LoginController implements Initializable {
     public Label username_lbl;
     public TextField username_input;
     public Label password;
-    public TextField password_input;
-    public Button showPassword_btn;
+    public PasswordField password_input;
     public Button forgetPass_btn;
     public Button signIn_btn;
     public Button register_btn;
@@ -82,11 +76,21 @@ public class LoginController implements Initializable {
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.RENTER) {
             if(renterDAO == null) renterDAO = new RenterDAO();
-            if(findUser(username, password, renterDAO.getAll())){
+//            if(findUser(username, password, renterDAO.getAll())){
+//                Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
+//                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
+//                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
+//            }
+            Renter loginUser = renterDAO.validateLogin(username, password);
+            if(loginUser == null) System.out.println("Incorrect username or password");
+            else {
+                Session.getInstance().setCurrentUser(loginUser);
+
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
                 ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getViewFactory().showRenterView();
+                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
             }
+
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.OWNER) {
             if(ownerDAO == null) ownerDAO = new OwnerDAO();

@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.rmit.model.ModelCentral;
-import org.rmit.model.Persons.Person;
 import org.rmit.model.Session;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
@@ -40,27 +39,28 @@ public class RenterMenuController implements Initializable {
     }
 
     private void logOut(){
+
         Session.getInstance().setCurrentUser(null);
         Stage stage = (Stage) logOut_btn.getScene().getWindow();
+        ModelCentral.getInstance().getRenterViewFactory().resetView();
         ModelCentral.getInstance().getViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getViewFactory().resetView();
-        ModelCentral.getInstance().getViewFactory().startInit();
 
+        ModelCentral.getInstance().getViewFactory().startApplication();
     }
 
     private void openDashboard(){
-        ModelCentral.getInstance().getViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
     }
 
     private void editProfile(){
-        ModelCentral.getInstance().getViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.EDIT_PROFILE);
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void paymentManager(){
-        ModelCentral.getInstance().getViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.PAYMENT_MANAGER);
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.PAYMENT_MANAGER);
     }
 
     private void rentalManager(){
-        ModelCentral.getInstance().getViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.AGREEMENT_MANAGER);
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.AGREEMENT_MANAGER);
     }
 }

@@ -1,0 +1,160 @@
+/* Base styles for AnchorPane */
+AnchorPane {
+    -fx-background-color: #f5f6fa;
+    -fx-padding: 20;
+}
+
+/* Main VBox container */
+VBox {
+    -fx-spacing: 5;
+}
+
+/* Create account label */
+#createAccount_label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d3436;
+}
+
+/* Labels styling */
+Label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d3436;
+}
+
+/* Text fields styling */
+TextField, PasswordField {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-pref-height: 41px;
+}
+
+TextField:focused, PasswordField:focused {
+    -fx-border-color: #4834d4;
+    -fx-border-width: 2;
+}
+
+/* Choice box styling */
+#typeOfUser_choiceBox {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-pref-height: 42px;
+    -fx-pref-width: 150px;
+}
+
+#typeOfUser_choiceBox:hover {
+    -fx-border-color: #4834d4;
+}
+
+.choice-box .context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #4834d4;
+}
+
+.choice-box .menu-item:focused > .label {
+    -fx-text-fill: white;
+}
+
+/* Date Picker styling */
+.date-picker {
+    -fx-background-color: transparent;
+    -fx-pref-height: 43px;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #4834d4;
+    -fx-background-radius: 0 5 5 0;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #686de0;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.date-picker .text-field {
+    -fx-background-radius: 5 0 0 5;
+}
+
+/* Register button */
+#submitRegister_btn {
+    -fx-background-color: #4834d4;
+    -fx-text-fill: white;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-pref-height: 61px;
+}
+
+#submitRegister_btn:hover {
+    -fx-background-color: #686de0;
+}
+
+/* Back to login button */
+#backToLogin_btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4834d4;
+    -fx-border-color: transparent;
+    -fx-underline: true;
+    -fx-font-style: italic;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+
+#backToLogin_btn:hover {
+    -fx-text-fill: #686de0;
+}
+
+/* Date Picker popup styling */
+.date-picker-popup {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #4834d4;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: white;
+}
+
+.date-picker-popup .week-number-cell {
+    -fx-text-fill: #4834d4;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #dfe6e9;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: #4834d4;
+    -fx-text-fill: white;
+}
+
+/* Error states */
+.error {
+    -fx-border-color: #e74c3c;
+}
+
+.error-label {
+    -fx-text-fill: #e74c3c;
+}

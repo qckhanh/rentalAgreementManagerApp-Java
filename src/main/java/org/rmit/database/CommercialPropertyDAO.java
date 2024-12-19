@@ -84,4 +84,9 @@ public class CommercialPropertyDAO implements DAOInterface<CommercialProperty> {
         }
     }
 
+    @Override
+    public CommercialProperty validateLogin(String username, String password) {
+        return null;
+    }
+
 }

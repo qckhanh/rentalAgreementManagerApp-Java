@@ -17,6 +17,7 @@ public abstract class Person {
     protected long id;
     protected String name;
     protected LocalDate dateOfBirth;
+    @Column(unique = true)
     protected String contact;
 
     @Column(unique = true)

@@ -1,80 +1,28 @@
-package org.rmit.view;
+package org.rmit.view.Renter;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.rmit.controller.InitController;
 import org.rmit.controller.Renter.RenterController;
-import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
-public class ViewFactory {
-    private String FXML_PATH;
-    private String RENTER_PATH;
-
-    private ACCOUNT_TYPE accountLoginType;
+public class RenterViewFactory {
+    String RENTER_PATH = "/org/rmit/demo/FXMLs/Renter/";
     private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;
-    private InitController initController;
+    private ObjectProperty<PAYMENT_FILTER> paymentFilter;
 
-    //Common
-    private AnchorPane loginView;
-    private AnchorPane registerView;
-
-    //Renter
     private AnchorPane renter_editProfileView;
     private AnchorPane renter_dashboardView;
     private AnchorPane renter_paymentManagerView;
     private AnchorPane renter_agreementManagerView;
 
-
-    //Constructor
-    public ViewFactory() {
-        FXML_PATH = "/org/rmit/demo/FXMLs/";
-        RENTER_PATH = FXML_PATH + "Renter/";
-
+    public RenterViewFactory() {
         renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);
-        accountLoginType = ACCOUNT_TYPE.RENTER;
     }
 
-
-    //Common: Login, Register
-    public void startInit(){
-        FXMLLoader initLoad = new FXMLLoader(getClass().getResource(FXML_PATH + "init.fxml"));
-        createStage(initLoad);
-        initController = initLoad.getController();
-    }
-    public AnchorPane getLoginView(){
-        if (loginView == null){
-            try {
-                loginView = new FXMLLoader(getClass().getResource(FXML_PATH + "login.fxml")).load();
-            } catch (Exception e){
-                System.out.println("Error loading login.fxml");
-            }
-        }
-        return loginView;
-    }
-    public AnchorPane getRegisterView(){
-        if (registerView == null){
-            try {
-                registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
-            } catch (Exception e){
-                System.out.println("Error loading register.fxml");
-            }
-        }
-        return registerView;
-    }
-    public void showLoginView() {
-        initController.openLogin();
-    }
-    public void showRegisterView() {
-        initController.openRegister();
-    }
-
-    //Renter
-    public void showRenterView(){
+    public void startRenterView(){
         FXMLLoader renterLoad = new FXMLLoader(getClass().getResource(RENTER_PATH + "renter.fxml"));
         RenterController renterController = new RenterController();
         renterLoad.setController(renterController);
@@ -95,7 +43,7 @@ public class ViewFactory {
             try {
                 renter_dashboardView = new FXMLLoader(getClass().getResource(RENTER_PATH + "dashboard.fxml")).load();
             } catch (Exception e){
-                System.out.println("Error loading dashboard.fxml");
+                e.printStackTrace();
             }
         }
         return renter_dashboardView;
@@ -110,7 +58,6 @@ public class ViewFactory {
         }
         return renter_paymentManagerView;
     }
-
     public AnchorPane getRenter_agreementManagerView(){
         if (renter_agreementManagerView == null){
             try {
@@ -122,8 +69,6 @@ public class ViewFactory {
         return renter_agreementManagerView;
     }
 
-
-    //helper methods
     private void createStage(FXMLLoader loader) {
         Scene scene = null;
         try {
@@ -137,34 +82,11 @@ public class ViewFactory {
         stage.show();
     }
 
-    public void closeStage(Stage stage) {
-        stage.close();
-    }
-
     public void resetView(){
         renter_editProfileView = null;
         renter_dashboardView = null;
-    }
-
-    public boolean confirmMessage(String message){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Rental Agreement Application");
-        alert.setHeaderText(message);
-        alert.setContentText("ALL CHANGES CANNOT BE REVERTED");
-        alert.setResizable(false);
-        alert.showAndWait();
-        return alert.getResult().getText().equals("OK");
-    }
-
-
-
-    //Getters and Setters
-    public ACCOUNT_TYPE getAccountLoginType() {
-        return accountLoginType;
-    }
-
-    public void setAccountLoginType(ACCOUNT_TYPE accountLoginType) {
-        this.accountLoginType = accountLoginType;
+        renter_paymentManagerView = null;
+        renter_agreementManagerView = null;
     }
 
     public RENTER_MENU_OPTION getRenterSelectedMenuItem() {

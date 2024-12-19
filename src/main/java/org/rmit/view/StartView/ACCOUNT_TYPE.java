@@ -1,4 +1,4 @@
-package org.rmit.view;
+package org.rmit.view.StartView;
 
 public enum ACCOUNT_TYPE {
     ADMIN,

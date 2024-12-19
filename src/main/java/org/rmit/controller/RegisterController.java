@@ -2,11 +2,7 @@ package org.rmit.controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import javafx.scene.control.*;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
 import org.rmit.database.RenterDAO;
@@ -15,7 +11,7 @@ import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
-import org.rmit.view.ACCOUNT_TYPE;
+import org.rmit.view.StartView.ACCOUNT_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -23,12 +19,12 @@ import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable {
     public TextField fullName_input;
-    public TextField password_input;
+    public PasswordField password_input;
     public Button submitRegister_btn;
     public Button backToLogin_btn;
     public TextField username_input;
     public TextField contact_input;
-    public TextField rePassword_input;
+    public PasswordField rePassword_input;
     public DatePicker dob_datePicker;
     public ChoiceBox<ACCOUNT_TYPE> typeOfUser_choiceBox;
 

@@ -79,4 +79,9 @@ public class HostDAO implements DAOInterface<Host> {
         }
     }
 
+    @Override
+    public Host validateLogin(String username, String password) {
+        return null;
+    }
+
 }

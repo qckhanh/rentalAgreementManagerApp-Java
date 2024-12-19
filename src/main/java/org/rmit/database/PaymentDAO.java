@@ -83,4 +83,9 @@ public class PaymentDAO implements DAOInterface<Payment> {
         }
     }
 
+    @Override
+    public Payment validateLogin(String username, String password) {
+        return null;
+    }
+
 }

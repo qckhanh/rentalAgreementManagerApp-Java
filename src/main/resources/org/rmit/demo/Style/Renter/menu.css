@@ -1,0 +1,72 @@
+/* General Styles */
+* {
+    -fx-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.root {
+    -fx-background-color: #ECF0F1; /* Lighter background */
+}
+
+.label {
+    -fx-text-fill: #2C3E50; /* Darker text for better contrast */
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.label.user-type {
+    -fx-text-fill: #7F8C8D; /* Lighter text for user type */
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color: #3498DB; /* Bright blue for buttons */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25px;
+    -fx-pref-height: 40px;
+    -fx-pref-width: 186px;
+    -fx-padding: 10px;
+}
+
+.button:hover {
+    -fx-background-color: #2980B9; /* Slightly darker blue when hovered */
+}
+
+.button:pressed {
+    -fx-background-color: #1C5982; /* Darker blue when pressed */
+}
+
+.button.logout {
+    -fx-background-color: #E74C3C; /* Red for logout button */
+}
+
+.button.logout:hover {
+    -fx-background-color: #C0392B; /* Darker red on hover */
+}
+
+.separator {
+    -fx-stroke: #BDC3C7;
+    -fx-stroke-width: 2;
+}
+
+.image-view {
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+}
+
+.hbox {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10px;
+}
+
+.vbox {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 5px;
+}
+
+.vbox.label {
+    -fx-padding: 5px 0;
+}

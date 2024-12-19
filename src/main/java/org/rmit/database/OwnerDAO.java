@@ -89,4 +89,9 @@ public class OwnerDAO implements DAOInterface<Owner>{
         }
     }
 
+    @Override
+    public Owner validateLogin(String username, String password) {
+        return null;
+    }
+
 }

@@ -8,4 +8,5 @@ public interface DAOInterface<T>{
     boolean delete(T t);
     T get(int id);
     List<T> getAll();
+    T validateLogin(String username, String password);
 }
