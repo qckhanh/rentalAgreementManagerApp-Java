@@ -16,17 +16,18 @@ public class RenterController implements Initializable{
 
     public RenterController() {
         // khi nguoi dung bam nut --> selectedMenuItem thay doi --> thay doi view
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getRenterViewFactory().renterSelectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case DASHBOARD -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_dashboardView());
                 case PAYMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_paymentManagerView());
                 case AGREEMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_agreementManagerView());
                 case EDIT_PROFILE -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_EditProfileView());
+                case MAKE_PAYMENT -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_makePaymentView());
                 case SEARCH -> System.out.println("Search");
             }
         });
         //set default view
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
     }
 
     @Override

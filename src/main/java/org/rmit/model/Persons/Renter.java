@@ -20,7 +20,11 @@ public class Renter extends Person {
     @OneToMany(mappedBy = "mainTenant")
     private Set<RentalAgreement> agreementList = new HashSet<>();
 
-    @OneToMany(mappedBy = "mainRenter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "mainRenter",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<Payment> payments = new HashSet<>();
 
     @Transient
@@ -62,6 +66,12 @@ public class Renter extends Person {
     public void setPayments(Set<Payment> payments) {
         this.paymentsProperty.setValue(payments);
         this.payments = paymentsProperty.get();
+    }
+
+    public void addPayment(Payment payment) {
+        Set<Payment> updatedPayments = new HashSet<>(paymentsProperty.get());
+        updatedPayments.add(payment);
+        setPayments(updatedPayments);
     }
 
     /////////////////////

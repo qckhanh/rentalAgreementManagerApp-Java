@@ -241,4 +241,12 @@ public class RentalAgreement {
     public ObjectProperty<Set<Payment>> paymentsPropertyProperty() {
         return paymentsProperty;
     }
+
+    @Override
+    public String toString() {
+        return "RentalAgreement{" +
+                "contractDate=" + contractDate +
+                ", agreementId=" + agreementId +
+                '}';
+    }
 }

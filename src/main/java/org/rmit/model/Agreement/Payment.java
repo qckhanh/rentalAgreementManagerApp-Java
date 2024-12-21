@@ -85,6 +85,7 @@ public class Payment {
     public void setMainRenter(Renter mainRenter) {
         this.mainRenterProperty.setValue(mainRenter);
         this.mainRenter = mainRenterProperty.get();
+//        mainRenter.addPayment(this);
     }
 
     public Property getProperty() {
@@ -172,5 +173,13 @@ public class Payment {
 
     public ObjectProperty<LocalDate> datePropertyProperty() {
         return dateProperty;
+    }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "paymentId=" + paymentId +
+                ", date=" + date +
+                '}';
     }
 }
