@@ -4,5 +4,6 @@ public enum RentalPeriod {
     DAILY,
     WEEKLY,
     FORTNIGHTLY,
-    MONTHLY
+    MONTHLY,
+    NONE
 }

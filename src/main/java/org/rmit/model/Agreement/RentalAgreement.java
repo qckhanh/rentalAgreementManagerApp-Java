@@ -24,7 +24,7 @@ public class RentalAgreement {
     @JoinColumn(name = "main_renter_id", nullable = false)
     private Renter mainTenant;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "rental_agreement_subtenants",
             joinColumns = @JoinColumn(name = "agreement_id"),
@@ -45,7 +45,7 @@ public class RentalAgreement {
     private double rentingFee;
     private AgreementStatus status;
 
-    @OneToMany(mappedBy = "rentalAgreement")
+    @OneToMany(mappedBy = "rentalAgreement", fetch = FetchType.EAGER)
     private final Set<Payment> payments = new HashSet<>();
 
     //////////////////////////

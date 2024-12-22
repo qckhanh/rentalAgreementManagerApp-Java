@@ -1,6 +1,5 @@
 package org.rmit.controller.Renter;
 
-import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -18,15 +17,14 @@ import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.PaymentMethod;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
 
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 public class Renter_MakePaymentController implements Initializable {
     public TextField mainRenter_input;
@@ -47,6 +45,7 @@ public class Renter_MakePaymentController implements Initializable {
             selectedProperty = new SimpleObjectProperty<>();
             selectedPaymentMethod = new SimpleObjectProperty<>();
             selectedRentalAgreement = new SimpleObjectProperty<>();
+
             mainRenter_input.setDisable(true);
             property_input.setDisable(true);
 
@@ -97,6 +96,7 @@ public class Renter_MakePaymentController implements Initializable {
     }
 
     private void submitPayment() {
+        if(!ModelCentral.getInstance().getViewFactory().confirmMessage("Do you want to make this payment?")) return;
         Payment newPayment = new Payment();
         newPayment.setRentalAgreement(selectedRentalAgreement.get());
         newPayment.setProperty(selectedProperty.get());
