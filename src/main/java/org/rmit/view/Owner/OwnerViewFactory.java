@@ -13,16 +13,15 @@ import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 public class OwnerViewFactory {
     String OWNER_PATH = "/org/rmit/demo/FXMLs/Owner/";
-//    private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;        // for tracking which menu option is selected
-//    private ObjectProperty<PAYMENT_FILTER> paymentFilter;
-//
-//    private AnchorPane renter_editProfileView;
-//    private AnchorPane renter_dashboardView;
-//    private AnchorPane renter_paymentManagerView;
-//    private AnchorPane renter_agreementManagerView;
+    private ObjectProperty<OWNER_MENU_OPTION> ownerSelectedMenuItem;
+    private ObjectProperty<PROPERTY_FILTER> propertyFilter;
+
+    private AnchorPane owner_editProfileView;
+    private AnchorPane owner_dashboardView;
+    private AnchorPane owner_propertyManagerView;
 
     public OwnerViewFactory() {
-//        renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
+        ownerSelectedMenuItem = new SimpleObjectProperty<>(OWNER_MENU_OPTION.DASHBOARD);
     }
 
     //start renter view when user login as renter
@@ -33,17 +32,29 @@ public class OwnerViewFactory {
         createStage(load);
     }
 
-    //generate renter view for each menu option
+    //generate owner view for each menu option
+    public AnchorPane getOwner_editProfileView() {
+        if (owner_editProfileView == null) {
+            try {
+                owner_editProfileView = new FXMLLoader(getClass().getResource(OWNER_PATH + "editProfileOwner.fxml")).load();
+            } catch (Exception e) {
+                System.out.println("Error loading edit profile.fxml");
+            }
+        }
+        return owner_editProfileView;
+    }
 
-//    public AnchorPane getRenter_EditProfileView(){
-//        if (renter_editProfileView == null){
-//            try {
-//                renter_editProfileView = new FXMLLoader(getClass().getResource(RENTER_PATH + "editProfileRenter.fxml")).load();
-//            } catch (Exception e){
-//                System.out.println("Error loading edit profile.fxml");
-//            }
-//        }
-//        return renter_editProfileView;
+    public AnchorPane getOwner_dashboardView() {
+        if (owner_dashboardView == null) {
+            try {
+                owner_dashboardView = new FXMLLoader(getClass().getResource(OWNER_PATH + "dashboardOwner.fxml")).load();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return owner_dashboardView;
+    }
 
     //helper method
     private void createStage(FXMLLoader loader) {
@@ -61,12 +72,23 @@ public class OwnerViewFactory {
 
     public void resetView(){
         //set all view to null
-//        renter_editProfileView = null;
-//        renter_dashboardView = null;
-//        renter_paymentManagerView = null;
-//        renter_agreementManagerView = null;
+        owner_editProfileView = null;
+        owner_dashboardView = null;
+    }
+
+    public OWNER_MENU_OPTION getOwnerSelectedMenuItem() {
+        return ownerSelectedMenuItem.get();
+    }
+
+    public ObjectProperty<OWNER_MENU_OPTION> ownerSelectedMenuItemProperty() {
+        return ownerSelectedMenuItem;
+    }
+
+    public void setOwnerSelectedMenuItem(OWNER_MENU_OPTION ownerSelectedMenuItem) {
+        this.ownerSelectedMenuItem.set(ownerSelectedMenuItem);
     }
 
     //getter and setter
+
 
 }
