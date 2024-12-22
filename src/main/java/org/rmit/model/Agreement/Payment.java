@@ -33,7 +33,7 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-//////////////////////////////////////////////////
+    //////////////////////////////////////////////////
     @Transient
     transient private ObjectProperty<RentalAgreement> rentalAgreementProperty = new SimpleObjectProperty<>();
     @Transient

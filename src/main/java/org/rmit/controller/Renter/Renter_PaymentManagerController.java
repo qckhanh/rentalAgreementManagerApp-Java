@@ -13,20 +13,71 @@ import org.rmit.model.Persons.*;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Renter_PaymentManagerController implements Initializable {
     public TableView paymentList_tableView;
+    public ComboBox<PaymentMethod> paymentFilter_comboBox;
+    public ComboBox<Property> propertyFilter_comboBox;
+    public ComboBox<RentalAgreement> agreementFilter_comboBox;
+
+    ObjectProperty<PaymentMethod> selectedPaymentFilter = new SimpleObjectProperty<>();
+    ObjectProperty<Property> selectedPropertyFilter = new SimpleObjectProperty<>();
+    ObjectProperty<RentalAgreement> selectedAgreementFilter = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ((Renter) Session.getInstance().getCurrentUser()).paymentsPropertyProperty().addListener((observable, oldValue, newValue) -> {
-            loadPayments();
+            loadPayments(((Renter) Session.getInstance().getCurrentUser()).getPayments());
             System.out.println(" >> Payment list updated");
         });
+
+        paymentFilter_comboBox.setOnAction(event -> {
+            selectedPaymentFilter.set(paymentFilter_comboBox.getValue());
+        });
+        paymentFilter_comboBox.getItems().addAll(
+                PaymentMethod.CARD,
+                PaymentMethod.CASH,
+                PaymentMethod.NONE
+        );
+        propertyFilter_comboBox.setOnAction(event -> {
+            selectedPropertyFilter.set(propertyFilter_comboBox.getValue());
+        });
+        propertyFilter_comboBox.getItems().addAll(createPropertyList());
+        agreementFilter_comboBox.setOnAction(event -> {
+            selectedAgreementFilter.set(agreementFilter_comboBox.getValue());
+        });
+        agreementFilter_comboBox.getItems().addAll(createRentalAgreementList());
+
+        selectedPropertyFilter.set(null);
+        selectedAgreementFilter.set(null);
+        selectedPaymentFilter.set(PaymentMethod.NONE);
+
+        selectedPropertyFilter.addListener((observable, oldValue, newValue) -> {
+            Set<Payment> filter = noFilter();
+            filter = filterByProperty(filter, newValue);
+            filter = filterByAgreement(filter, selectedAgreementFilter.get());
+            filter = filterByPaymentMethod(filter, selectedPaymentFilter.get());
+            loadPayments(filter);
+        });
+
+        selectedAgreementFilter.addListener((observable, oldValue, newValue) -> {
+            Set<Payment> filter = noFilter();
+            filter = filterByProperty(filter, selectedPropertyFilter.get());
+            filter = filterByAgreement(filter, newValue);
+            filter = filterByPaymentMethod(filter, selectedPaymentFilter.get());
+            loadPayments(filter);
+        });
+
+        selectedPaymentFilter.addListener((observable, oldValue, newValue) -> {
+            Set<Payment> filter = noFilter();
+            filter = filterByProperty(filter, selectedPropertyFilter.get());
+            filter = filterByAgreement(filter, selectedAgreementFilter.get());
+            filter = filterByPaymentMethod(filter, newValue);
+            loadPayments(filter);
+        });
+
+
         paymentList_tableView.getColumns().addAll(
                 createColumn("Payment ID", "paymentId"),
                 createColumn(
@@ -45,10 +96,9 @@ public class Renter_PaymentManagerController implements Initializable {
                 createColumn("Date", "date"),
                 createColumn("Method", "paymentMethod")
         );
-        loadPayments();
+        loadPayments(((Renter) Session.getInstance().getCurrentUser()).getPayments());
     }
 
-    // for clickable cell
     private <T> TableColumn<Payment, T> createColumn(String columnName, String propertyName, java.util.function.Function<Payment, T> extractor, java.util.function.Consumer<Payment> onClickAction) {
         TableColumn<Payment, T> column = new TableColumn<>(columnName);
 
@@ -78,16 +128,71 @@ public class Renter_PaymentManagerController implements Initializable {
 
         return column;
     }
-
-    //for primitive cell, no clickable
     private TableColumn<Payment, ?> createColumn(String columnName, String propertyName) {
         TableColumn<Payment, ?> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         return column;
     }
 
-    private void loadPayments() {
-        ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList(((Renter) Session.getInstance().getCurrentUser()).getPayments());
+    ObservableList<Property> createPropertyList() {
+        Set<Property> properties = new HashSet<>();
+        properties.add(null);
+        for (RentalAgreement ra : ((Renter) Session.getInstance().getCurrentUser()).getAgreementList()) {
+            properties.add(ra.getProperty());
+        }
+        return FXCollections.observableArrayList(properties);
+    }
+
+    ObservableList<RentalAgreement> createRentalAgreementList() {
+        Set<RentalAgreement> rentalAgreements = new HashSet<>();
+        rentalAgreements.add(null);
+        for (RentalAgreement ra : ((Renter) Session.getInstance().getCurrentUser()).getAgreementList()) {
+            if(!ra.getMainTenant().equals(Session.getInstance().getCurrentUser())) continue;
+            rentalAgreements.add(ra);
+        }
+        return FXCollections.observableArrayList(rentalAgreements);
+    }
+
+    private Set<Payment> noFilter(){
+        return ((Renter) Session.getInstance().getCurrentUser()).getPayments();
+    }
+
+    private Set<Payment> filterByPaymentMethod(Set<Payment> payments, PaymentMethod paymentMethod){
+        if(paymentMethod == PaymentMethod.NONE) return payments;
+        if(paymentMethod == null) return payments;
+        Set<Payment> filteredPayments = new HashSet<>();
+        for(Payment payment : payments){
+            if(payment.getPaymentMethod().equals(paymentMethod)){
+                filteredPayments.add(payment);
+            }
+        }
+        return filteredPayments;
+    }
+
+    private Set<Payment> filterByProperty(Set<Payment> payments, Property property){
+        if(property == null) return payments;
+        Set<Payment> filteredPayments = new HashSet<>();
+        for(Payment payment : payments){
+            if(payment.getProperty().equals(property)){
+                filteredPayments.add(payment);
+            }
+        }
+        return filteredPayments;
+    }
+
+    private Set<Payment> filterByAgreement(Set<Payment> payments, RentalAgreement agreement){
+        if(agreement == null) return payments;
+        Set<Payment> filteredPayments = new HashSet<>();
+        for(Payment payment : payments){
+            if(payment.getRentalAgreement().equals(agreement)){
+                filteredPayments.add(payment);
+            }
+        }
+        return filteredPayments;
+    }
+
+    private void loadPayments(Set<Payment> payments) {
+        ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList(payments);
         paymentList_tableView.setItems(paymentObservableList);
         System.out.println("Im done");
     }
