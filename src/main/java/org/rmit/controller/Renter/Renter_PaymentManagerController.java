@@ -1,6 +1,8 @@
 package org.rmit.controller.Renter;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,13 +16,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class Renter_PaymentManagerController implements Initializable {
     public TableView paymentList_tableView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Add the columns to the TableView
+        ((Renter) Session.getInstance().getCurrentUser()).paymentsPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            loadPayments();
+            System.out.println(" >> Payment list updated");
+        });
         paymentList_tableView.getColumns().addAll(
                 createColumn("Payment ID", "paymentId"),
                 createColumn(
@@ -81,15 +87,9 @@ public class Renter_PaymentManagerController implements Initializable {
     }
 
     private void loadPayments() {
-        //Extract the data
-        Renter renter = (Renter)Session.getInstance().getCurrentUser();
-        List<Payment> payments = new ArrayList<>(renter.getPayments());
-
-        // Convert the list of payments to an ObservableList
-        ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList(payments);
-
-        // Set the data to the TableView
+        ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList(((Renter) Session.getInstance().getCurrentUser()).getPayments());
         paymentList_tableView.setItems(paymentObservableList);
+        System.out.println("Im done");
     }
 
     private void showProperty(Property property){

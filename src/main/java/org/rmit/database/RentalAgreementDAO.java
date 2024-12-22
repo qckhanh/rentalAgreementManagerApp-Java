@@ -1,5 +1,6 @@
 package org.rmit.database;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Agreement.RentalAgreement;

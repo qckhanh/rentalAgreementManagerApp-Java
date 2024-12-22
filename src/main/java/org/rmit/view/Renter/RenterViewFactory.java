@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.Renter.RenterController;
+import org.rmit.controller.Renter.Renter_PaymentManagerController;
 
 public class RenterViewFactory {
     String RENTER_PATH = "/org/rmit/demo/FXMLs/Renter/";
@@ -17,6 +18,7 @@ public class RenterViewFactory {
     private AnchorPane renter_dashboardView;
     private AnchorPane renter_paymentManagerView;
     private AnchorPane renter_agreementManagerView;
+    private AnchorPane renter_makePaymentView;
 
     public RenterViewFactory() {
         renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
@@ -52,7 +54,7 @@ public class RenterViewFactory {
         return renter_dashboardView;
     }
     public AnchorPane getRenter_paymentManagerView(){
-        if (renter_paymentManagerView == null){
+        if (1 == 1){
             try {
                 renter_paymentManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "paymentManagerRenter.fxml")).load();
             } catch (Exception e){
@@ -70,6 +72,16 @@ public class RenterViewFactory {
             }
         }
         return renter_agreementManagerView;
+    }
+    public AnchorPane getRenter_makePaymentView(){
+        if(renter_makePaymentView == null){
+            try {
+                renter_makePaymentView = new FXMLLoader(getClass().getResource(RENTER_PATH + "makePaymentRenter.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading makePaymentRenter.fxml");
+            }
+        }
+        return renter_makePaymentView;
     }
 
 
@@ -92,6 +104,7 @@ public class RenterViewFactory {
         renter_dashboardView = null;
         renter_paymentManagerView = null;
         renter_agreementManagerView = null;
+        renter_makePaymentView = null;
     }
 
     //getter and setter

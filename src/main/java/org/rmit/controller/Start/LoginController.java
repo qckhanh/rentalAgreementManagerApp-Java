@@ -54,6 +54,7 @@ public class LoginController implements Initializable {
         userLOGINType_ChoiceBox.valueProperty().addListener(observable -> {
             viewFactory.setAccountLoginType(userLOGINType_ChoiceBox.getValue());
         });
+        password_input.setOnAction(actionEvent -> signInValidate());
         register_btn.setOnAction(actionEvent -> openRegister());
         signIn_btn.setOnAction(actionEvent -> signInValidate());
 

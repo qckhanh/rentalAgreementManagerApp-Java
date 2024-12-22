@@ -3,9 +3,12 @@ package org.rmit.database;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.model.Agreement.Payment;
+import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Renter;
 
 import java.util.List;
+import java.util.Set;
 
 public class RenterDAO implements DAOInterface<Renter> {
 
@@ -32,6 +35,7 @@ public class RenterDAO implements DAOInterface<Renter> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.update(renter);
+
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
