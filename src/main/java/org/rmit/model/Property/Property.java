@@ -23,6 +23,9 @@ public abstract class Property {
     @Enumerated(EnumType.STRING)
     private PropertyStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private PropertyType type;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -43,6 +46,8 @@ public abstract class Property {
     @Transient
     protected ObjectProperty<PropertyStatus> statusProperty = new SimpleObjectProperty<>();
     @Transient
+    protected ObjectProperty<PropertyType> typeProperty = new SimpleObjectProperty<>();
+    @Transient
     protected LongProperty idProperty = new SimpleLongProperty();
     @Transient
     protected ObjectProperty<Set<Host>> hostsProperty = new SimpleObjectProperty<>();
@@ -51,17 +56,18 @@ public abstract class Property {
 
     // Constructor
     public Property() {
+        this.type = PropertyType.NONE;
     }
 
     @PostLoad
     protected abstract void synWithSimpleProperty();
 
-    public Property(Owner owner, String address, double price, PropertyStatus status) {
+    public Property(Owner owner, String address, double price, PropertyStatus status, PropertyType type) {
         this.owner = owner;
         this.address = address;
         this.price = price;
         this.status = status;
-
+        this.type = type;
     }
 
 
@@ -96,9 +102,18 @@ public abstract class Property {
         return status;
     }
 
+    public PropertyType getType() {
+        return type;
+    }
+
     public void setStatus(PropertyStatus status) {
         this.statusProperty.setValue(status);
         this.status = statusProperty.get();
+    }
+
+    public void setType(PropertyType type) {
+        this.typeProperty.setValue(type);
+        this.type = typeProperty.get();
     }
 
     public long getId() {
@@ -161,6 +176,10 @@ public abstract class Property {
 
     public ObjectProperty<PropertyStatus> statusPropertyProperty() {
         return statusProperty;
+    }
+
+    public ObjectProperty<PropertyType> typeOfPropertyProperty() {
+        return typeProperty;
     }
 
     public long getIdProperty() {

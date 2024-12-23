@@ -38,6 +38,7 @@ public class ResidentialProperty extends Property {
         super.addressProperty.setValue(super.getAddress());
         super.priceProperty.setValue(super.getPrice());
         super.statusProperty.setValue(super.getStatus());
+        super.typeProperty.setValue(super.getType());
         super.idProperty.setValue(super.getId());
         super.hostsProperty.setValue(super.getHosts());
         super.agreementListProperty.setValue(super.getAgreementList());

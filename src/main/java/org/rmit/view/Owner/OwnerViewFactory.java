@@ -56,6 +56,18 @@ public class OwnerViewFactory {
         return owner_dashboardView;
     }
 
+    public AnchorPane getOwner_propertyManagerView() {
+        if (owner_propertyManagerView == null) {
+            try {
+                owner_propertyManagerView = new FXMLLoader(getClass().getResource(OWNER_PATH + "propertiesManager.fxml")).load();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return  owner_propertyManagerView;
+    }
+
     //helper method
     private void createStage(FXMLLoader loader) {
         Scene scene = null;

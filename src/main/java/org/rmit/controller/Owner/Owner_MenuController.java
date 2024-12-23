@@ -46,10 +46,12 @@ public class Owner_MenuController implements Initializable {
 
     private void propertiesManager() {
         System.out.println("hallo! ich bin lam");
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
     }
 
     private void editProfile() {
         ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.EDIT_PROFILE);
     }
+
 
 }
