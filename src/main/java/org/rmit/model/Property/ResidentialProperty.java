@@ -3,6 +3,7 @@ package org.rmit.model.Property;
 //import UIHelper.UserInterfaceManager;
 //import UIHelper.DateCreator;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 import javafx.beans.property.BooleanProperty;
@@ -11,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 @Entity
+@DiscriminatorValue("RESIDENTIAL")
 public class ResidentialProperty extends Property {
     private int totalRoom;
     private int totalBedroom;
@@ -38,6 +40,7 @@ public class ResidentialProperty extends Property {
         super.addressProperty.setValue(super.getAddress());
         super.priceProperty.setValue(super.getPrice());
         super.statusProperty.setValue(super.getStatus());
+        super.typeProperty.setValue(super.getType());
         super.idProperty.setValue(super.getId());
         super.hostsProperty.setValue(super.getHosts());
         super.agreementListProperty.setValue(super.getAgreementList());

@@ -3,6 +3,7 @@ package org.rmit;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 
@@ -17,8 +18,8 @@ public class RentalAgreementApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Session.getInstance().setCurrentUser(new Renter());
-        ModelCentral.getInstance().getRenterViewFactory().startRenterView();
+        Session.getInstance().setCurrentUser(new Host());
+        ModelCentral.getInstance().getHostViewFactory().startHostView();
 //        ModelCentral.getInstance().getStartViewFactory().startApplication();
 
 

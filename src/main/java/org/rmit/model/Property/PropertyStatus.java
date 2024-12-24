@@ -4,7 +4,8 @@ public enum PropertyStatus {
     AVAILABLE("Available"),
     UNAVAILABLE("Unavailable"),
     RENTED("Rented"),
-    UNDER_MAINTENANCE("Under Maintenance");
+    UNDER_MAINTENANCE("Under Maintenance"),
+    NONE("None");
 
     private final String status;
 

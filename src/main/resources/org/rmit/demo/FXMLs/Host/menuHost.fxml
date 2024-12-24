@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="220.0" stylesheets="@../../Style/Renter/menuBar.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Host.Host_MenuController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="220.0" stylesheets="@../../Style/Renter/menuBar.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Host.Host_MenuController">
     <children>
         <AnchorPane prefHeight="768.0" prefWidth="220.0">
             <children>
@@ -42,17 +42,17 @@
                         <Font name="System Bold" size="17.0" />
                     </font>
                 </Button>
-                <Button fx:id="paymentManager_btn" layoutX="17.0" layoutY="290.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Payment Manager">
+                <Button fx:id="propertyManager_btn" layoutX="17.0" layoutY="290.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Property Manager">
                     <font>
                         <Font name="System Bold" size="17.0" />
                     </font>
                 </Button>
-                <Button fx:id="rentalManager_btn" layoutX="17.0" layoutY="353.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Rental Manager">
+                <Button fx:id="rentalManager_btn" layoutX="17.0" layoutY="353.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Nothing here">
                     <font>
                         <Font name="System Bold" size="17.0" />
                     </font>
                 </Button>
-            <Button fx:id="makePayment_btn" layoutX="17.0" layoutY="418.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Make a payment">
+            <Button fx:id="makePayment_btn" layoutX="17.0" layoutY="418.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Nothing here">
                <font>
                   <Font name="System Bold" size="17.0" />
                </font>

@@ -3,6 +3,7 @@ package org.rmit.view.Host;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -16,6 +17,7 @@ public class HostViewFactory {
 
     private AnchorPane editProfileView;
     private AnchorPane dashboardView;
+    private AnchorPane managePropertyView;
 
     public HostViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(HOST_MENU_OPTION.DASHBOARD);      // default view
@@ -115,5 +117,16 @@ public class HostViewFactory {
 
     public void setSelectedMenuItem(HOST_MENU_OPTION selectedMenuItem) {
         this.selectedMenuItem.set(selectedMenuItem);
+    }
+
+    public AnchorPane getHost_ManagePropertyView() {
+        if(managePropertyView == null){
+            try{
+                managePropertyView = new FXMLLoader(getClass().getResource(HOST_PATH + "manageProperty.fxml")).load();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return managePropertyView;
     }
 }

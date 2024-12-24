@@ -14,13 +14,13 @@ import java.util.*;
 
 @Entity
 public class Host extends Person {
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Property> propertiesManaged = new HashSet<>();
 
-    @OneToMany
+    @OneToMany()
     private Set<RentalAgreement> rentalAgreements = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Owner> cooperatingOwners = new HashSet<>();
 ////////////////////////////////////////
     @Transient

@@ -18,7 +18,7 @@ public class Host_MenuController implements Initializable {
     public Button editProfile_btn;
     public Button dashboard_btn;
     public Button logOut_btn;
-//    public Button paymentManager_btn;
+    public Button propertyManager_btn;
 //    public Button rentalManager_btn;
 //    public Button makePayment_btn;
 
@@ -34,7 +34,10 @@ public class Host_MenuController implements Initializable {
         editProfile_btn.setOnAction(e -> editProfile());
         dashboard_btn.setOnAction(e -> openDashboard());
         logOut_btn.setOnAction(e -> logOut());
+        propertyManager_btn.setOnAction(e -> manageProperty());
     }
+
+
 
     private void logOut() {
         Session.getInstance().setCurrentUser(null);
@@ -50,5 +53,9 @@ public class Host_MenuController implements Initializable {
 
     private void editProfile() {
         ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.EDIT_PROFILE);
+    }
+
+    private void manageProperty() {
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_PROPERTY);
     }
 }
