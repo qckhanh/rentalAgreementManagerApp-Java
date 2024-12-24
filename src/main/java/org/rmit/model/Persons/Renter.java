@@ -14,13 +14,12 @@ import java.util.*;
 // class Tenant
 @Entity(name = "Renter")
 public class Renter extends Person {
-    @OneToMany(mappedBy = "mainTenant", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "mainTenant", fetch = FetchType.LAZY)
     private Set<RentalAgreement> agreementList = new HashSet<>();
 
     @OneToMany(
             mappedBy = "mainRenter",
             cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
             orphanRemoval = true
     )
     private Set<Payment> payments = new HashSet<>();

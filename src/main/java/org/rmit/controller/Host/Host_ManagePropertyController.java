@@ -1,5 +1,8 @@
 package org.rmit.controller.Host;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
@@ -8,9 +11,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import org.rmit.database.*;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
+import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 
 import java.net.URL;
@@ -44,9 +51,30 @@ public class Host_ManagePropertyController implements Initializable {
     public Button search_btn;
     public Host currentUser = (Host) Session.getInstance().getCurrentUser();
     public Set<Property> managedProperties = currentUser.getPropertiesManaged();
+    public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+//
+//        selectedProperty.get().addressPropertyProperty().addListener((observable, oldValue, newValue) -> {
+//            propertyID_input.setText(newValue);
+//        });
+//        selectedProperty.get().pricePropertyProperty().addListener((observable, oldValue, newValue) -> {
+//            price_input.setText(newValue +"");
+//        });
+//        selectedProperty.get().ownerPropertyProperty().get().namePropertyProperty().addListener((observable, oldValue, newValue) -> {
+//            ownerName_input.setText(newValue);
+//        });
+//        selectedProperty.get().statusPropertyProperty().addListener((observable, oldValue, newValue) -> {
+//            statusProperty_input.setText(newValue.toString());
+//        });
+
+
+
+        selectedProperty.addListener((observable, oldValue, newValue) -> {
+            showPropertyDetail(newValue);
+        });
+
         property_listView.setItems(getPropertyList());
 
         // Create clickable rows with a custom cell factory
@@ -61,6 +89,7 @@ public class Host_ManagePropertyController implements Initializable {
                     setText(property.getAddress()); // Display the address or another property field
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 1) { // Single click
+//                            selectedProperty.setValue(property);
                             showPropertyDetail(property);
                         }
                     });
@@ -104,6 +133,41 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void showPropertyDetail(Property property){
-        System.out.println("showPropertyDetail");
+        DAOInterface dao = null;
+        int id = Integer.parseInt(property.getId()+"");
+        clearDataProperty();
+
+        if(property.getType().toString().equals("COMMERCIAL")){
+            dao = new CommercialPropertyDAO();
+            property = (CommercialProperty)dao.get(id);
+        }
+        else{
+            dao = new ResidentialPropertyDAO();
+            property = (ResidentialProperty)dao.get(id);
+        }
+
+        System.out.println("showPropertyDetail: "+property);
+
+        propertyID_input.setText(property.getId()+"");
+        address_input.setText(property.getAddress());
+        price_input.setText(property.getPrice()+"");
+        ownerName_input.setText(property.getOwner().getName());
+        statusProperty_input.setText(property.getStatus().toString());
+        propertyType_input.setText(property.getType().toString());
+        totalAgremeent_input.setText(property.getAgreementList().size()+"");
+        if(property.getType().toString().equals("COMMERCIAL")){
+            CommercialProperty commercialProperty = (CommercialProperty) property;
+            bussinessType_input.setText(commercialProperty.getBusinessType());
+            parkingSlot_input.setText(commercialProperty.getTotalParkingSpace()+"");
+            squareArea_input.setText(commercialProperty.getSquareMeters()+"");
+        }
+        else if(property.getType().toString().equals("RESIDENTIAL")){
+            ResidentialProperty residentialProperty = (ResidentialProperty) property;
+            totalRoom_input.setText(residentialProperty.getTotalRoom()+"");
+            totalBedroom_input.setText(residentialProperty.getTotalBedroom()+"");
+            petAllow_input.setText(residentialProperty.isPetAllowed()+"");
+            gadern_input.setText(residentialProperty.isHasGarden()+"");
+        }
+
     }
 }

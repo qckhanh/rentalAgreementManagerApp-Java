@@ -1,5 +1,7 @@
 package org.rmit.view.Start;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -9,6 +11,7 @@ import org.rmit.controller.Start.InitController;
 
 public class StartViewFactory {
     private String FXML_PATH;
+    private BooleanProperty isLogin = new SimpleBooleanProperty();
     private ACCOUNT_TYPE accountLoginType;
     private InitController initController;
     private AnchorPane loginView;
@@ -93,5 +96,17 @@ public class StartViewFactory {
 
     public void setAccountLoginType(ACCOUNT_TYPE accountLoginType) {
         this.accountLoginType = accountLoginType;
+    }
+
+    public boolean isIsLogin() {
+        return isLogin.get();
+    }
+
+    public BooleanProperty isLoginProperty() {
+        return isLogin;
+    }
+
+    public void setIsLogin(boolean isLogin) {
+        this.isLogin.set(isLogin);
     }
 }

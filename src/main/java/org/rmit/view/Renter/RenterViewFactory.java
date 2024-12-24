@@ -42,7 +42,7 @@ public class RenterViewFactory {
         return renter_editProfileView;
     }
     public AnchorPane getRenter_dashboardView(){
-        if (renter_dashboardView == null){
+        if (null == null){
             try {
                 renter_dashboardView = new FXMLLoader(getClass().getResource(RENTER_PATH + "dashboardRenter.fxml")).load();
             } catch (Exception e){

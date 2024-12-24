@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Host.Host_ManagePropertyController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Host.Host_ManagePropertyController">
     <children>
         <Label fx:id="welcomeLabel" layoutX="47.0" layoutY="31.0" prefHeight="59.0" prefWidth="306.0" text="Property Manager">
             <font>
@@ -25,11 +25,11 @@
                 <Font name="System Bold" size="28.0" />
             </font>
         </Label>
-        <VBox alignment="TOP_CENTER" disable="true" layoutX="445.0" layoutY="86.0" prefHeight="644.0" prefWidth="316.0" spacing="10.0">
+        <VBox alignment="TOP_CENTER" layoutX="445.0" layoutY="86.0" prefHeight="644.0" prefWidth="316.0" spacing="10.0">
          <children>
             <ImageView fitHeight="146.0" fitWidth="219.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../../../../../../hq720.jpg" />
+                  <Image url="@../../Image/buddha.jpg" />
                </image>
             </ImageView>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -39,7 +39,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="propertyID_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="propertyID_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -49,7 +49,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="address_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="address_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -59,7 +59,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="price_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="price_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -69,7 +69,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="ownerName_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="ownerName_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -79,7 +79,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="statusProperty_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="statusProperty_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -89,7 +89,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="propertyType_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="propertyType_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -99,7 +99,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="totalAgremeent_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="totalAgremeent_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -109,7 +109,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="bussinessType_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="bussinessType_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -119,7 +119,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="parkingSlot_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="parkingSlot_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -129,7 +129,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="squareArea_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="squareArea_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -139,7 +139,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="totalRoom_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="totalRoom_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -149,7 +149,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="totalBedroom_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="totalBedroom_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -159,7 +159,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="petAllow_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="petAllow_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -169,7 +169,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="gadern_input" prefHeight="27.0" prefWidth="160.0" />
+                  <TextField fx:id="gadern_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
          </children></VBox>

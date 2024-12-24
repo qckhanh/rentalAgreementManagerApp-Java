@@ -75,10 +75,10 @@ public class Renter_AgreementManagerController implements Initializable {
                         agreement -> agreement.getMainTenant().namePropertyProperty().get(),
                         agreement -> showPerson(agreement.getMainTenant())
                 ),
-                createColumn("Sub-renter", "subTenants",
-                        agreement -> agreement.getSubTenants().size(),
-                        agreement -> showSubRenter(agreement.getSubTenants())
-                ),
+//                createColumn("Sub-renter", "subTenants",
+//                        agreement -> agreement.getSubTenants().size(),
+//                        agreement -> showSubRenter(agreement.getSubTenants())
+//                ),
                 createColumn("Property's Address", "property",
                         agreement -> agreement.getProperty().getAddress(),
                         agreement -> showProperty(agreement.getProperty())
@@ -90,11 +90,11 @@ public class Renter_AgreementManagerController implements Initializable {
                 createColumn("Period", "period"),
                 createColumn("Contract Date", "contractDate"),
                 createColumn("Fee", "rentingFee"),
-                createColumn("Status", "status"),
-                createColumn("Payment", "payments",
-                        agreement -> agreement.getPayments().size(),
-                        agreement -> showPayment(agreement.getPayments())
-                )
+                createColumn("Status", "status")
+//                createColumn("Payment", "payments",
+//                        agreement -> agreement.getPayments().size(),
+//                        agreement -> showPayment(agreement.getPayments())
+//                )
         );
         loadData(((Renter) currentUser.get()).getAgreementList());
 
