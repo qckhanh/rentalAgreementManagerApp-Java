@@ -1,10 +1,12 @@
 package org.rmit.model.Property;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 import javafx.beans.property.*;
 
-@Entity(name = "CommercialProperty")
+@Entity
+@DiscriminatorValue("COMMERCIAL")
 public class CommercialProperty extends Property {
     private String businessType;
     private int totalParkingSpace;
