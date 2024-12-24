@@ -1,8 +1,11 @@
 package org.rmit.database;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Renter;
+import org.rmit.view.Host.HostViewFactory;
 
 import java.util.List;
 
@@ -81,7 +84,21 @@ public class HostDAO implements DAOInterface<Host> {
 
     @Override
     public Host validateLogin(String usernameOrContact, String password) {
-        return null;
+        try {
+            Session session = DatabaseUtil.getSession();
+            String hql = "from Host where (username = :input or contact = :input) and password = :password";
+            Host user = session.createQuery(hql, Host.class)
+                    .setParameter("input", usernameOrContact)
+                    .setParameter("password", password)
+                    .uniqueResult();
+//            Hibernate.initialize(user.getPayments()); // Initialize the payments
+//            Hibernate.initialize(user.getAgreementList()); // Initialize the rental agreements
+            DatabaseUtil.shutdown(session);
+            return user;
+        } catch (Exception e) {
+            System.out.println("Error: not found user");
+            return null;
+        }
     }
 
 }

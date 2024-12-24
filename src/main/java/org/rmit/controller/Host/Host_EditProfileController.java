@@ -1,12 +1,14 @@
-package org.rmit.controller.Renter;
+package org.rmit.controller.Host;
 
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
@@ -15,7 +17,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class Renter_EditProfileController implements Initializable {
+public class Host_EditProfileController implements Initializable {
     public TextField newName_input;
     public TextField newContact_input;
     public DatePicker newDOB_input;
@@ -63,8 +65,8 @@ public class Renter_EditProfileController implements Initializable {
         currentUser.setDateOfBirth(newDOB_input.getValue());
         currentUser.setPassword(newPassword_input.getText());
 
-        RenterDAO renterDAO = new RenterDAO();
-        renterDAO.update((Renter)currentUser);
+        HostDAO dao = new HostDAO();
+        dao.update((Host)currentUser);
 
         // Reset fields and button
         setDisableAll(true);

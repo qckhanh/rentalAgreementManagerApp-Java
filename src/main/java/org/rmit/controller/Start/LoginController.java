@@ -14,7 +14,7 @@ import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 import org.rmit.view.Start.ACCOUNT_TYPE;
-import org.rmit.view.Start.ViewFactory;
+import org.rmit.view.Start.StartViewFactory;
 
 import java.net.URL;
 import java.util.List;
@@ -29,7 +29,7 @@ public class LoginController implements Initializable {
     public Button signIn_btn;
     public Button register_btn;
     public ChoiceBox<ACCOUNT_TYPE> userLOGINType_ChoiceBox;
-    public ViewFactory viewFactory;
+    public StartViewFactory viewFactory;
     public List<Renter> allRenters;
     public List<Host> allHosts;
     public List<Owner> allOwners;
@@ -42,7 +42,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         status_label.setText("");
-        viewFactory = ModelCentral.getInstance().getViewFactory();
+        viewFactory = ModelCentral.getInstance().getStartViewFactory();
         userLOGINType_ChoiceBox.setItems(FXCollections.observableArrayList(
                 ACCOUNT_TYPE.ADMIN,
                 ACCOUNT_TYPE.GUEST,
@@ -81,10 +81,9 @@ public class LoginController implements Initializable {
             else {
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
                 ModelCentral.getInstance().getRenterViewFactory().startRenterView();
             }
-
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.OWNER) {
             dao = new OwnerDAO();
@@ -93,25 +92,25 @@ public class LoginController implements Initializable {
             else {
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
                 ModelCentral.getInstance().getOwnerViewFactory().startOwnerView();
             }
 
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.HOST) {
-//            dao = new HostDAO();
-//            Host loginUser = (Host) dao.validateLogin(username, password);
-//            if(loginUser == null) System.out.println("Incorrect username or password");
-//            else {
-//                Session.getInstance().setCurrentUser(loginUser);
-//                Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-//                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
-//                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
-//            }
+            dao = new HostDAO();
+            Host loginUser = (Host) dao.validateLogin(username, password);
+            if(loginUser == null) System.out.println("Incorrect username or password");
+            else {
+                Session.getInstance().setCurrentUser(loginUser);
+                Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getHostViewFactory().startHostView();
+            }
 
         }
 
-        System.out.println("Current user: ");
+        System.out.println("Current user: " + viewFactory.getAccountLoginType());
         System.out.println(Session.getInstance().getCurrentUser());
     }
 

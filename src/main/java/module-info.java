@@ -11,15 +11,6 @@ module org.rmit.demo {
     requires org.postgresql.jdbc;
     requires java.desktop;  // Add this
 
-    // Open all packages that contain entities to Hibernate
-//    opens org.rmit.demo to javafx.fxml, org.hibernate.orm.core;
-//    opens org.rmit.demo.FXMLs to javafx.fxml;
-//
-//    opens org.rmit.model to org.hibernate.orm.core;
-//    exports org.rmit to javafx.graphics;
-//    opens org.rmit.model.Persons to org.hibernate.orm.core;
-//    opens org.rmit.model.Property to org.hibernate.orm.core;
-//    opens org.rmit.model.Agreement to org.hibernate.orm.core;
 
     //model
     opens org.rmit to org.hibernate.orm.core, javafx.fxml;
@@ -31,7 +22,7 @@ module org.rmit.demo {
     opens org.rmit.controller.Renter to javafx.fxml;
     opens org.rmit.controller.Start to javafx.fxml;
     opens org.rmit.controller.Owner to javafx.fxml;
-
+    opens org.rmit.controller.Host to javafx.fxml;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports org.rmit;
@@ -49,11 +40,15 @@ module org.rmit.demo {
     exports org.rmit.controller.Renter;
     exports org.rmit.controller.Start;
     exports org.rmit.controller.Owner;
+    exports org.rmit.controller.Host;
+
 
     //view
     exports org.rmit.view.Start;
     exports org.rmit.view.Renter;
     exports org.rmit.view.Owner;
+    exports org.rmit.view.Host;
+
 
 
 }

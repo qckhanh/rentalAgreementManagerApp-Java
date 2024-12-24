@@ -7,7 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.Start.InitController;
 
-public class ViewFactory {
+public class StartViewFactory {
     private String FXML_PATH;
     private ACCOUNT_TYPE accountLoginType;
     private InitController initController;
@@ -15,7 +15,7 @@ public class ViewFactory {
     private AnchorPane registerView;
 
     //Constructor
-    public ViewFactory() {
+    public StartViewFactory() {
         FXML_PATH = "/org/rmit/demo/FXMLs/Start/";
         accountLoginType = ACCOUNT_TYPE.RENTER;
     }
