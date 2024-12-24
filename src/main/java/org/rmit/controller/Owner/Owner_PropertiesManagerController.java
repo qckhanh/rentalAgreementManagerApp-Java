@@ -3,28 +3,26 @@ package org.rmit.controller.Owner;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
-import org.rmit.model.Property.CommercialProperty;
-import org.rmit.model.Property.PropertyStatus;
-import org.rmit.model.Property.PropertyType;
+import org.rmit.model.Property.*;
 import org.rmit.model.Session;
-import org.rmit.model.Property.Property;
 
 import java.net.URL;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Owner_PropertiesManagerController implements Initializable {
 
@@ -68,9 +66,54 @@ public class Owner_PropertiesManagerController implements Initializable {
         );
 
         properties_tableView.getColumns().addAll(
-                createColumn("ID", "id"),
+                createColumn("Property ID", "id"),
                 createColumn("Status", "status"),
-                createColumn("Type", "type")
+                createColumn("Type", "type"),
+                createColumn("Price", "price"),
+                createColumn("Address", "address"),
+                createColumn("Total Rooms", property -> {
+                    if (property instanceof ResidentialProperty) {
+                        return ((ResidentialProperty) property).getTotalRoom();
+                    }
+                    return null;
+                }),
+                createColumn("Total Bedrooms", property -> {
+                    if (property instanceof ResidentialProperty) {
+                        return ((ResidentialProperty) property).getTotalBedroom();
+                    }
+                    return null;
+                }),
+                createColumn("Pet Allowed", property -> {
+                    if (property instanceof ResidentialProperty) {
+                        return ((ResidentialProperty) property).isPetAllowed();
+                    }
+                    return null;
+                }),
+                createColumn("Has Garden", property -> {
+                    if (property instanceof ResidentialProperty) {
+                        return ((ResidentialProperty) property).isHasGarden();
+                    }
+                    return null;
+                }),
+                createColumn("Total Parking Space", property -> {
+                    if (property instanceof CommercialProperty) {
+                        return ((CommercialProperty) property).getTotalParkingSpace();
+                    }
+                    return null;
+                }),
+                createColumn("Square Meters", property -> {
+                    if (property instanceof CommercialProperty) {
+                        return ((CommercialProperty) property).getSquareMeters();
+                    }
+                    return null;
+                }),
+                createColumn("Business Type", property -> {
+                    if (property instanceof CommercialProperty) {
+                        return ((CommercialProperty) property).getBusinessTypeProperty();
+                    }
+                    return null;
+                })
+
         );
         loadData(((Owner)currentUser.get()).getPropertiesOwned());
 
@@ -102,6 +145,16 @@ public class Owner_PropertiesManagerController implements Initializable {
         ObservableList<Property> propertiesTableView = FXCollections.observableArrayList();
         propertiesTableView.addAll(propertySet);
         properties_tableView.setItems(propertiesTableView);
+    }
+
+
+    private <T> TableColumn<Property, String> createColumn(String columnName, Function<Property, T> propertyExtractor) {
+        TableColumn<Property, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(cellData -> {
+            T value = propertyExtractor.apply(cellData.getValue());
+            return new SimpleStringProperty(value != null ? value.toString() : "N/A");
+        });
+        return column;
     }
 
     private TableColumn<Property, ?> createColumn(String columnName, String propertyName) {
