@@ -1,14 +1,17 @@
 package org.rmit.database;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 
 import java.util.List;
 
-public class OwnerDAO implements DAOInterface<Owner>{
+public class OwnerDAO extends DAOInterface<Owner>{
     @Override
     public boolean add(Owner owner) {
         try{
@@ -67,12 +70,16 @@ public class OwnerDAO implements DAOInterface<Owner>{
     public Owner get(int id) {
         try{
             Session session = DatabaseUtil.getSession();
-            Owner owner = session.get(Owner.class, id);
+            String hql = String.format(GET_BY_ID_HQL, "Owner");
+            Owner obj = session.createQuery(hql, Owner.class)
+                    .setParameter("id", id)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .uniqueResult();
             DatabaseUtil.shutdown(session);
-            return owner;
+            return obj;
         }
         catch (Exception e){
-            System.out.println("Error in getting owner: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
             return null;
         }
     }
@@ -81,13 +88,15 @@ public class OwnerDAO implements DAOInterface<Owner>{
     public List<Owner> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
-            List<Owner> owners = session.createQuery("from Owner").list();
-            DatabaseUtil.shutdown(session);
-            return owners;
+            String hql = String.format(GET_ALL_HQL, "Owner");
+            List<Owner> list = session.createQuery(hql, Owner.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
+            return list;
         }
         catch (Exception e){
-            System.out.println("Error in getting all owners: " + e.getMessage());
-            return List.of();
+            System.out.println("Error: " + e.getMessage());
+            return null;
         }
     }
 
@@ -95,20 +104,26 @@ public class OwnerDAO implements DAOInterface<Owner>{
     public Owner validateLogin(String usernameOrContact, String password) {
         try {
             Session session = DatabaseUtil.getSession();
-            // Query to search for a Renter based on username or contact and password
-            String hql = "from Owner where (username = :input or contact = :input) and password = :password";
+            String hql = String.format(VALIDATE_LOGIN_HQL, "Owner");
             Owner user = session.createQuery(hql, Owner.class)
                     .setParameter("input", usernameOrContact)
                     .setParameter("password", password)
+                    .setHint("javax.persistence.fetchgraph", createEntityGraph(session))
                     .uniqueResult();
-            Hibernate.initialize(user.getHosts()); // Initialize the payments
-            Hibernate.initialize(user.getPropertiesOwned()); // Initialize the rental agreements
-            DatabaseUtil.shutdown(session);
             return user;
         } catch (Exception e) {
             System.out.println("Error: not found user");
             return null;
         }
     }
+
+    @Override
+    public EntityGraph<Owner> createEntityGraph(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
+
+        return entityGraph;
+    }
+
 
 }

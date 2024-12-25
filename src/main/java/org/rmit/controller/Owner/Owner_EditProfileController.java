@@ -44,7 +44,7 @@ public class Owner_EditProfileController implements Initializable {
     private void editProfile() {
         System.out.println("hallo");
         if (edit_btn.getText().equals("Save")) {
-            boolean confirmed = ModelCentral.getInstance().getViewFactory().confirmMessage("Save changes?");
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
             if (confirmed) {
                 saveChanges();
             }

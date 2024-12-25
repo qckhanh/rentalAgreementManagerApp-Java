@@ -1,16 +1,21 @@
 package org.rmit.database;
 
+import jakarta.persistence.*;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.Property;
 
 import java.util.List;
 import java.util.Set;
 
-public class RenterDAO implements DAOInterface<Renter> {
+public class RenterDAO extends DAOInterface<Renter> {
 
     @Override
     public boolean add(Renter renter) {
@@ -66,10 +71,13 @@ public class RenterDAO implements DAOInterface<Renter> {
     public Renter get(int id) {
         try{
             Session session = DatabaseUtil.getSession();
-            Renter renter = session.get(Renter.class, id);
-            Hibernate.initialize(renter.getPayments()); // Initialize the payments
+            String hql = String.format(GET_BY_ID_HQL, "Renter");
+            Renter obj = session.createQuery(hql, Renter.class)
+                    .setParameter("id", id)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .uniqueResult();
             DatabaseUtil.shutdown(session);
-            return renter;
+            return obj;
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -81,9 +89,11 @@ public class RenterDAO implements DAOInterface<Renter> {
     public List<Renter> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
-            List<Renter> renters = session.createQuery("from Renter").list();
-            DatabaseUtil.shutdown(session);
-            return renters;
+            String hql = String.format(GET_ALL_HQL, "Renter");
+            List<Renter> list = session.createQuery(hql, Renter.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
+            return list;
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -96,13 +106,12 @@ public class RenterDAO implements DAOInterface<Renter> {
         try {
             Session session = DatabaseUtil.getSession();
             // Query to search for a Renter based on username or contact and password
-            String hql = "from Renter where (username = :input or contact = :input) and password = :password";
+            String hql = String.format(VALIDATE_LOGIN_HQL, "Renter");
             Renter user = session.createQuery(hql, Renter.class)
                     .setParameter("input", usernameOrContact)
                     .setParameter("password", password)
+                    .setHint("javax.persistence.fetchgraph", createEntityGraph(session))
                     .uniqueResult();
-            Hibernate.initialize(user.getPayments()); // Initialize the payments
-            Hibernate.initialize(user.getAgreementList()); // Initialize the rental agreements
             DatabaseUtil.shutdown(session);
             return user;
         } catch (Exception e) {
@@ -110,5 +119,20 @@ public class RenterDAO implements DAOInterface<Renter> {
             return null;
         }
     }
+
+    @Override
+    public EntityGraph<Renter> createEntityGraph(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
+        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+
+        rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
+        paymentGraph(entityGraph.addSubgraph("payments"));
+
+        return entityGraph;
+    }
+
+
+
 
 }

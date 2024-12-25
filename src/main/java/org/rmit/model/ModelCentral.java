@@ -1,21 +1,24 @@
 package org.rmit.model;
 
+import org.rmit.view.Host.HostViewFactory;
 import org.rmit.view.Owner.OwnerViewFactory;
 import org.rmit.view.Renter.RenterViewFactory;
-import org.rmit.view.Start.ViewFactory;
+import org.rmit.view.Start.StartViewFactory;
 
 public class ModelCentral {
     private static ModelCentral modelCentral;
 
-    private ViewFactory viewFactory;
+    private StartViewFactory startViewFactory;
     private RenterViewFactory renterViewFactory;
     private OwnerViewFactory ownerViewFactory;
+    private HostViewFactory hostViewFactory;
 
 
     private ModelCentral() {
-        viewFactory = new ViewFactory();
+        startViewFactory = new StartViewFactory();
         renterViewFactory = new RenterViewFactory();
         ownerViewFactory = new OwnerViewFactory();
+        hostViewFactory = new HostViewFactory();
         //declare more view factories here
     }
 
@@ -26,8 +29,8 @@ public class ModelCentral {
         return modelCentral;
     }
 
-    public ViewFactory getViewFactory() {
-        return viewFactory;
+    public StartViewFactory getStartViewFactory() {
+        return startViewFactory;
     }
 
     public RenterViewFactory getRenterViewFactory() {
@@ -36,5 +39,9 @@ public class ModelCentral {
 
     public OwnerViewFactory getOwnerViewFactory() {
         return ownerViewFactory;
+    }
+
+    public HostViewFactory getHostViewFactory() {
+        return hostViewFactory;
     }
 }

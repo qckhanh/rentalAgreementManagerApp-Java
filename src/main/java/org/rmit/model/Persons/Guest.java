@@ -17,7 +17,15 @@ public class Guest extends Person {
 
     @Override
     protected void synWithSimpleProperty() {
+        this.idPropertyProperty().setValue(this.id);
+        this.nameProperty.setValue(this.name);
+        this.dateOfBirthProperty.setValue(this.dateOfBirth);
+        this.contactProperty.setValue(this.contact);
+        this.usernameProperty.setValue(this.username);
+        this.passwordProperty.setValue(this.password);
 
+        this.guestUsernameProperty.setValue(this.guestUsername);
+        this.guestPasswordProperty.setValue(this.guestPassword);
     }
 
     public Guest() {
@@ -29,7 +37,8 @@ public class Guest extends Person {
     }
 
     public void setGuestUsername(String guestUsername) {
-        this.guestUsername = guestUsername;
+        guestPasswordProperty.setValue(guestUsername);
+        this.guestUsername = guestPasswordProperty.get();
     }
 
     public String getGuestPassword() {
@@ -37,6 +46,7 @@ public class Guest extends Person {
     }
 
     public void setGuestPassword(String guestPassword) {
-        this.guestPassword = guestPassword;
+        guestPasswordProperty.setValue(guestPassword);
+        this.guestPassword = guestPasswordProperty.get();
     }
 }

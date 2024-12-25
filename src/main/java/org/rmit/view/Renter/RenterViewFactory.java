@@ -7,12 +7,10 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.Renter.RenterController;
-import org.rmit.controller.Renter.Renter_PaymentManagerController;
 
 public class RenterViewFactory {
     String RENTER_PATH = "/org/rmit/demo/FXMLs/Renter/";
     private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;        // for tracking which menu option is selected
-    private ObjectProperty<PAYMENT_FILTER> paymentFilter;
 
     private AnchorPane renter_editProfileView;
     private AnchorPane renter_dashboardView;
@@ -44,7 +42,7 @@ public class RenterViewFactory {
         return renter_editProfileView;
     }
     public AnchorPane getRenter_dashboardView(){
-        if (renter_dashboardView == null){
+        if (null == null){
             try {
                 renter_dashboardView = new FXMLLoader(getClass().getResource(RENTER_PATH + "dashboardRenter.fxml")).load();
             } catch (Exception e){

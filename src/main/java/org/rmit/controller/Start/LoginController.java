@@ -14,7 +14,7 @@ import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 import org.rmit.view.Start.ACCOUNT_TYPE;
-import org.rmit.view.Start.ViewFactory;
+import org.rmit.view.Start.StartViewFactory;
 
 import java.net.URL;
 import java.util.List;
@@ -29,7 +29,7 @@ public class LoginController implements Initializable {
     public Button signIn_btn;
     public Button register_btn;
     public ChoiceBox<ACCOUNT_TYPE> userLOGINType_ChoiceBox;
-    public ViewFactory viewFactory;
+    public StartViewFactory viewFactory;
     public List<Renter> allRenters;
     public List<Host> allHosts;
     public List<Owner> allOwners;
@@ -41,8 +41,20 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ModelCentral.getInstance().getStartViewFactory().setIsLogin(true);
         status_label.setText("");
-        viewFactory = ModelCentral.getInstance().getViewFactory();
+        ModelCentral.getInstance().getStartViewFactory().isLoginProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == false) {
+                status_label.setTextFill(Color.RED);
+                status_label.setText("Incorrect username or password");
+            }
+            else{
+                status_label.setTextFill(Color.GREEN);
+                status_label.setText("Login successful");
+            }
+        });
+
+        viewFactory = ModelCentral.getInstance().getStartViewFactory();
         userLOGINType_ChoiceBox.setItems(FXCollections.observableArrayList(
                 ACCOUNT_TYPE.ADMIN,
                 ACCOUNT_TYPE.GUEST,
@@ -67,6 +79,7 @@ public class LoginController implements Initializable {
     private void signInValidate(){
         String username = username_input.getText();
         String password = password_input.getText();
+        Person loginUser = null;
 
         if(viewFactory.getAccountLoginType() == ACCOUNT_TYPE.ADMIN) {
             System.out.println("not implemented");
@@ -76,42 +89,44 @@ public class LoginController implements Initializable {
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.RENTER) {
             dao = new RenterDAO();
-            Renter loginUser = (Renter) dao.validateLogin(username, password);
+            loginUser = (Renter) dao.validateLogin(username, password);
             if(loginUser == null) System.out.println("Incorrect username or password");
             else {
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
                 ModelCentral.getInstance().getRenterViewFactory().startRenterView();
             }
-
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.OWNER) {
             dao = new OwnerDAO();
-            Owner loginUser = (Owner) dao.validateLogin(username, password);
+            loginUser = (Owner) dao.validateLogin(username, password);
             if(loginUser == null) System.out.println("Incorrect username or password");
             else {
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
                 ModelCentral.getInstance().getOwnerViewFactory().startOwnerView();
             }
 
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.HOST) {
-//            dao = new HostDAO();
-//            Host loginUser = (Host) dao.validateLogin(username, password);
-//            if(loginUser == null) System.out.println("Incorrect username or password");
-//            else {
-//                Session.getInstance().setCurrentUser(loginUser);
-//                Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-//                ModelCentral.getInstance().getViewFactory().closeStage(currentStage);
-//                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
-//            }
+            dao = new HostDAO();
+            loginUser = (Host) dao.validateLogin(username, password);
+            if(loginUser == null) System.out.println("Incorrect username or password");
+            else {
+                Session.getInstance().setCurrentUser(loginUser);
+                Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
+                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ModelCentral.getInstance().getHostViewFactory().startHostView();
+            }
 
         }
 
-        System.out.println("Current user: ");
+        ModelCentral.getInstance().getStartViewFactory().setIsLogin(loginUser != null);
+        System.out.println("Login status: " + ModelCentral.getInstance().getStartViewFactory().isIsLogin());
+
+        System.out.println("Current user: " + viewFactory.getAccountLoginType());
         System.out.println(Session.getInstance().getCurrentUser());
     }
 

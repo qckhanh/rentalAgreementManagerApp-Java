@@ -1,8 +1,5 @@
 package org.rmit.controller.Renter;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -14,7 +11,6 @@ import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 
-import javax.swing.event.ChangeListener;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -51,7 +47,7 @@ public class Renter_EditProfileController implements Initializable {
     private void editProfile(){
         if (edit_btn.getText().equals("Save")) {
             // Invoke confirm message
-            boolean confirmed = ModelCentral.getInstance().getViewFactory().confirmMessage("Are you sure you want to save changes?");
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
             if (confirmed) {
                 saveChanges();
             }
