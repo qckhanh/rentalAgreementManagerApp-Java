@@ -132,7 +132,10 @@ public class RenterDAO extends DAOInterface<Renter> {
         return entityGraph;
     }
 
-
+    @Override
+    public Renter search(String keyword) {
+        return null;
+    }
 
 
 }

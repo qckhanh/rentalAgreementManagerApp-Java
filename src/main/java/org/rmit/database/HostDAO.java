@@ -120,4 +120,9 @@ public class HostDAO extends DAOInterface<Host> {
         return entityGraph;
     }
 
+    @Override
+    public Host search(String keyword) {
+        return null;
+    }
+
 }

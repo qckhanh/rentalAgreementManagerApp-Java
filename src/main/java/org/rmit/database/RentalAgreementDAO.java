@@ -106,4 +106,9 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
         return entityGraph;
     }
 
+    @Override
+    public RentalAgreement search(String keyword) {
+        return null;
+    }
+
 }

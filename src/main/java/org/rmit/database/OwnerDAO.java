@@ -125,5 +125,10 @@ public class OwnerDAO extends DAOInterface<Owner>{
         return entityGraph;
     }
 
+    @Override
+    public Owner search(String keyword) {
+        return null;
+    }
+
 
 }

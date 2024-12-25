@@ -114,4 +114,9 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         return entityGraph;
     }
 
+    @Override
+    public ResidentialProperty search(String keyword) {
+        return null;
+    }
+
 }

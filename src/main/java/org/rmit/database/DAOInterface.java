@@ -16,7 +16,7 @@ public abstract class DAOInterface<T>{
     protected final String GET_ALL_HQL = "SELECT t FROM %s t";
     protected final String GET_BY_ID_HQL = "SELECT t FROM %s t WHERE t.id = :id";
     protected final String VALIDATE_LOGIN_HQL = "from %s where (username = :input or contact = :input) and password = :password";
-
+    protected final String SEARCH_PROPERTY = "SELECT t FROM %s t WHERE CAST(t.id as String) LIKE :keyword";
 
     public abstract boolean add(T t);
     public abstract boolean update(T t);
@@ -25,6 +25,7 @@ public abstract class DAOInterface<T>{
     public abstract List<T> getAll();
     public abstract T validateLogin(String usernameOrContact, String password);
     public abstract EntityGraph<T> createEntityGraph(Session session);
+    public abstract T search(String keyword);
 
 
     // Subgraph methods

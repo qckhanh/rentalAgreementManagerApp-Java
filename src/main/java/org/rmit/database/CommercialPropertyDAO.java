@@ -114,5 +114,27 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         return entityGraph;
     }
 
+    @Override
+    public CommercialProperty search(String keyword) {
+        Session session = DatabaseUtil.getSession();
+
+        List<CommercialProperty> result = null;
+
+        try {
+            // Use JPQL to find a CommercialProperty with a matching address
+            String jpql = "SELECT c FROM CommercialProperty c WHERE LOWER(c.address) LIKE :keyword";
+            result = session.createQuery(jpql, CommercialProperty.class)
+                    .setParameter("keyword", "%" + keyword.toLowerCase() + "%")
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+//                    .findFirst()
+//                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        DatabaseUtil.shutdown(session);
+        return result;
+    }
+
 
 }

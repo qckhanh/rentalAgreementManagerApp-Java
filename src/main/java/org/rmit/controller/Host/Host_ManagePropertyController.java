@@ -21,6 +21,7 @@ import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -51,6 +52,7 @@ public class Host_ManagePropertyController implements Initializable {
     public Button search_btn;
     public Host currentUser = (Host) Session.getInstance().getCurrentUser();
     public Set<Property> managedProperties = currentUser.getPropertiesManaged();
+    public Set<Property> searchResult = new HashSet<>();
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
 
     @Override
@@ -69,7 +71,7 @@ public class Host_ManagePropertyController implements Initializable {
 //            statusProperty_input.setText(newValue.toString());
 //        });
 
-
+        search_btn.setOnAction(event -> searchProperty());
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             showPropertyDetail(newValue);
@@ -98,6 +100,12 @@ public class Host_ManagePropertyController implements Initializable {
         });
 
         System.out.println("Host_ManagePropertyController initialized");
+    }
+
+    private void searchProperty() {
+        DAOInterface dao = new CommercialPropertyDAO();
+        Property property = (CommercialProperty)dao.search(search_input.getText());
+        System.out.println("searchProperty: "+property.getAddress() + " "+property.getId());
     }
 
     public ObservableList<Property> getPropertyList(){
