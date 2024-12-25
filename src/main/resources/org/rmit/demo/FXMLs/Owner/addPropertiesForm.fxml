@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Owner.Owner_AddPropertiesController">
+    <children>
+        <VBox alignment="CENTER" layoutX="194.0" layoutY="30.0" prefHeight="708.0" prefWidth="636.0" spacing="5.0">
+            <children>
+            <Button fx:id="returnTableView_btn" mnemonicParsing="false" text="Back" />
+                <Label fx:id="addProperty_label" alignment="CENTER" prefHeight="40.0" prefWidth="245.0" stylesheets="@../../Style/Start/register.css" text="Add a property">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
+                <VBox alignment="CENTER" prefHeight="67.0" prefWidth="407.0">
+                    <children>
+                        <Label fx:id="selectProperty_label" alignment="CENTER" prefHeight="25.0" prefWidth="226.0" text="Select type of property">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <ChoiceBox fx:id="typeOfProperty_choiceBox" prefHeight="42.0" prefWidth="150.0" />
+                    </children>
+                </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Address" />
+                        <TextField fx:id="propertyAddress_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Price" />
+                        <TextField fx:id="propertyPrice_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Status" />
+                        <ComboBox fx:id="propertyStatus_cbox" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="BusinessType" />
+                        <TextField fx:id="propertyBtype_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Square meters" />
+                        <TextField fx:id="propertySquareMeters_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Parking spaces" />
+                        <TextField fx:id="propertyPSpaces_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Garden?" />
+                        <CheckBox fx:id="propertyGarden_chbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Pet?" />
+                        <CheckBox fx:id="propertyPet_chBox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Bedrooms" />
+                        <TextField fx:id="propertyBedrooms_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Rooms" />
+                        <TextField fx:id="propertyRooms_txtf" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+                <Button fx:id="addProperty_btn" mnemonicParsing="false" prefHeight="61.0" prefWidth="427.0" text="Add property">
+                    <font>
+                        <Font name="System Bold" size="25.0" />
+                    </font>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

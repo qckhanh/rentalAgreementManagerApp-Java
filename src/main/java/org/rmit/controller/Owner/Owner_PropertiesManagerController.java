@@ -6,16 +6,21 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import org.rmit.database.CommercialPropertyDAO;
+import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
+import org.rmit.view.Owner.OWNER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -35,6 +40,9 @@ public class Owner_PropertiesManagerController implements Initializable {
     public ObjectProperty<PropertyStatus> selectedPropertyStatus = new SimpleObjectProperty<>();
     public ObjectProperty<PropertyType> selectedPropertyType = new SimpleObjectProperty<>();
     public Label welcomeLabel;
+    public Button addPropertyButton;
+    public Button updatePropertyButton;
+    public Button deletePropertyButton;
 
 
     @Override
@@ -133,9 +141,44 @@ public class Owner_PropertiesManagerController implements Initializable {
             System.out.println("filtered by pstatus");
         });
 
+        properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            deletePropertyButton.setDisable(newValue == null);
+        });
 
+        deletePropertyButton.setOnAction(e-> {
+            Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
+            if (selectedProperty != null) {
+                if (selectedProperty instanceof ResidentialProperty) {
+                    ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+                    rpDAO.delete((ResidentialProperty) selectedProperty);
+                }
+                else if (selectedProperty instanceof CommercialProperty) {
+                    CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+                    cpDAO.delete((CommercialProperty) selectedProperty);
+                }
+            }
+        });
+
+        addPropertyButton.setOnAction(e -> addProperty());
+
+        properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            updatePropertyButton.setDisable(newValue == null);
+        });
+
+        updatePropertyButton.setOnAction(e-> updateProperty());
 
     }
+
+    private void addProperty() {
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.ADD_PROPERTY);
+    }
+
+    private void updateProperty() {
+        Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+    }
+
+
 
     private Set<Property> noFilter() {
         return ((Owner) currentUser.get()).getPropertiesOwned();

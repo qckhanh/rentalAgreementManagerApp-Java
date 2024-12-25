@@ -35,7 +35,7 @@ public abstract class Property {
     @ManyToMany(mappedBy = "propertiesManaged")
     private Set<Host> hosts = new HashSet<>();
 
-    @OneToMany(mappedBy = "property")
+    @OneToMany(mappedBy = "property"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
     private Set<RentalAgreement> agreementList = new HashSet<>();
 
     // JavaFX Properties (for binding)

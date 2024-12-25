@@ -1,6 +1,7 @@
 package org.rmit.model;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import org.rmit.model.Persons.Person;
 
