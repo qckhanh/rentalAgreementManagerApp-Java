@@ -76,6 +76,27 @@ public class Host extends Person {
         this.cooperatingOwnersProperty.setValue(cooperatingOwners);
         this.cooperatingOwners = cooperatingOwnersProperty.get();
     }
+
+    public void addProperty(Property property){
+        this.propertiesManaged.add(property);
+        this.propertiesManagedProperty.setValue(this.propertiesManaged);
+        if(property.getOwner() != null){
+            this.cooperatingOwners.add(property.getOwner());
+            this.cooperatingOwnersProperty.setValue(this.cooperatingOwners);
+        }
+    }
+
+    public void removeProperty(Property property){
+        this.propertiesManaged.remove(property);
+        this.propertiesManagedProperty.setValue(this.propertiesManaged);
+        for(Property p : this.propertiesManaged){
+            if(p.getOwner() == property.getOwner()) return;
+        }
+        if(property.getOwner() != null){
+            this.cooperatingOwners.remove(property.getOwner());
+            this.cooperatingOwnersProperty.setValue(this.cooperatingOwners);
+        }
+    }
     /////////////
 
 

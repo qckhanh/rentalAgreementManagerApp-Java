@@ -40,11 +40,9 @@ public class Host_MenuController implements Initializable {
 
 
     private void logOut() {
-        Session.getInstance().setCurrentUser(null);
-        Stage stage = (Stage) logOut_btn.getScene().getWindow();
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getHostViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard() {

@@ -25,7 +25,7 @@ public abstract class DAOInterface<T>{
     public abstract List<T> getAll();
     public abstract T validateLogin(String usernameOrContact, String password);
     public abstract EntityGraph<T> createEntityGraph(Session session);
-    public abstract T search(String keyword);
+    public abstract List<T> search(String keyword);
 
 
     // Subgraph methods
@@ -54,6 +54,14 @@ public abstract class DAOInterface<T>{
 
     protected <T extends Person> void personSubgraph(Subgraph<T> graph){
         graph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+    }
+
+    protected Long parseId(String keyword) {
+        try {
+            return Long.parseLong(keyword); // Try converting to Long for ID comparison
+        } catch (NumberFormatException e) {
+            return -1L; // Return an invalid ID if parsing fails
+        }
     }
 
 }

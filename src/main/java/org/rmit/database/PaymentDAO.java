@@ -116,7 +116,7 @@ public class PaymentDAO extends DAOInterface<Payment> {
     }
 
     @Override
-    public Payment search(String keyword) {
+    public List<Payment> search(String keyword) {
         return null;
     }
 

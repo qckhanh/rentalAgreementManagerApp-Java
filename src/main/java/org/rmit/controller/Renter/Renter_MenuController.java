@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
+import org.rmit.view.Host.HOST_MENU_OPTION;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
@@ -41,11 +42,9 @@ public class Renter_MenuController implements Initializable {
     }
 
     private void logOut(){
-        Session.getInstance().setCurrentUser(null);
-        Stage stage = (Stage) logOut_btn.getScene().getWindow();
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getRenterViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard(){

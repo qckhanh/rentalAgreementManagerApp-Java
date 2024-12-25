@@ -104,6 +104,7 @@ public class HostViewFactory {
     public void resetView(){
         dashboardView = null;
         editProfileView = null;
+        managePropertyView = null;
     }
     //getter and setter
 

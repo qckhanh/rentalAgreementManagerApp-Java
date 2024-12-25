@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
@@ -21,10 +22,7 @@ import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Host_ManagePropertyController implements Initializable {
     //preview
@@ -51,33 +49,25 @@ public class Host_ManagePropertyController implements Initializable {
     public TextField search_input;
     public Button search_btn;
     public Host currentUser = (Host) Session.getInstance().getCurrentUser();
-    public Set<Property> managedProperties = currentUser.getPropertiesManaged();
+//    public Set<Property> managedProperties = currentUser.getPropertiesManaged();
     public Set<Property> searchResult = new HashSet<>();
+    public ObjectProperty<Set<Property>> managedProperties = new SimpleObjectProperty<>(currentUser.getPropertiesManaged());
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//
-//        selectedProperty.get().addressPropertyProperty().addListener((observable, oldValue, newValue) -> {
-//            propertyID_input.setText(newValue);
-//        });
-//        selectedProperty.get().pricePropertyProperty().addListener((observable, oldValue, newValue) -> {
-//            price_input.setText(newValue +"");
-//        });
-//        selectedProperty.get().ownerPropertyProperty().get().namePropertyProperty().addListener((observable, oldValue, newValue) -> {
-//            ownerName_input.setText(newValue);
-//        });
-//        selectedProperty.get().statusPropertyProperty().addListener((observable, oldValue, newValue) -> {
-//            statusProperty_input.setText(newValue.toString());
-//        });
+
 
         search_btn.setOnAction(event -> searchProperty());
+        search_input.textProperty().addListener((o, old, neww) ->{
+            if(neww.isBlank()) property_listView.setItems(getPropertyList(managedProperties.get()));
+        });
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             showPropertyDetail(newValue);
         });
 
-        property_listView.setItems(getPropertyList());
+        property_listView.setItems(getPropertyList(managedProperties.get()));
 
         // Create clickable rows with a custom cell factory
         property_listView.setCellFactory(listView -> new ListCell<>() {
@@ -85,13 +75,14 @@ public class Host_ManagePropertyController implements Initializable {
             protected void updateItem(Property property, boolean empty) {
                 super.updateItem(property, empty);
                 if (empty || property == null) {
+                    manageProperty_btn.setText("Select a property");
                     setText(null);
                     setOnMouseClicked(null); // Remove click handler for empty cells
                 } else {
                     setText(property.getAddress()); // Display the address or another property field
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 1) { // Single click
-//                            selectedProperty.setValue(property);
+                            isManagingThisProperty(property);
                             showPropertyDetail(property);
                         }
                     });
@@ -103,16 +94,42 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void searchProperty() {
+        if(search_input.getText().isBlank()) return;
+        Set<Property> res = new HashSet<>();
         DAOInterface dao = new CommercialPropertyDAO();
-        Property property = (CommercialProperty)dao.search(search_input.getText());
-        System.out.println("searchProperty: "+property.getAddress() + " "+property.getId());
+        List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText());
+        res.addAll(ans);
+        dao = new ResidentialPropertyDAO();
+        List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao.search(search_input.getText());
+        res.addAll(ans2);
+        property_listView.setItems(getPropertyList(res));
     }
 
-    public ObservableList<Property> getPropertyList(){
+    public ObservableList<Property> getPropertyList(Set<Property> pList){
         ObservableList<Property> list = FXCollections.observableArrayList();
-        list.addAll(managedProperties);
+        list.addAll(pList);
         return list;
 
+    }
+
+    private void unmanageProperty(Property property){
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
+        ((Host)Session.getInstance().getCurrentUser()).removeProperty(property);
+        DAOInterface dao = new HostDAO();
+        dao.update(Session.getInstance().getCurrentUser());
+        managedProperties.get().remove(property);
+        property_listView.setItems(getPropertyList(managedProperties.get()));
+
+        System.out.println("Successfully unmanaged property");
+
+    }
+
+    private void requestManageProperty(Property property){
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
+        ((Host)Session.getInstance().getCurrentUser()).addProperty(property);
+        DAOInterface dao = new HostDAO();
+        dao.update(Session.getInstance().getCurrentUser());
+        System.out.println("Successfully requested manage property");
     }
 
     private void clearDataCommercial(){
@@ -138,6 +155,18 @@ public class Host_ManagePropertyController implements Initializable {
         totalAgremeent_input.setText("");
         clearDataCommercial();
         clearDataResidential();
+    }
+
+    private void isManagingThisProperty(Property property){
+        for(Property p: managedProperties.get()){
+            if(p.getId() == property.getId()){
+                manageProperty_btn.setText("Unmanage");
+                manageProperty_btn.setOnAction(event -> unmanageProperty(property));
+                return;
+            }
+        }
+        manageProperty_btn.setText("Request Manage");
+        manageProperty_btn.setOnAction(event -> requestManageProperty(property));
     }
 
     private void showPropertyDetail(Property property){

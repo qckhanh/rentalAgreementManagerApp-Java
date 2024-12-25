@@ -133,7 +133,7 @@ public class RenterDAO extends DAOInterface<Renter> {
     }
 
     @Override
-    public Renter search(String keyword) {
+    public List<Renter> search(String keyword) {
         return null;
     }
 

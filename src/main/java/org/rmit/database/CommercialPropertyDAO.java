@@ -10,6 +10,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
@@ -115,26 +116,31 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
     }
 
     @Override
-    public CommercialProperty search(String keyword) {
+    public List<CommercialProperty> search(String keyword) {
         Session session = DatabaseUtil.getSession();
-
-        List<CommercialProperty> result = null;
+        List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
 
         try {
-            // Use JPQL to find a CommercialProperty with a matching address
-            String jpql = "SELECT c FROM CommercialProperty c WHERE LOWER(c.address) LIKE :keyword";
+            // JPQL to search by address (partial match) or ID (exact match)
+            String jpql = "SELECT c FROM CommercialProperty c " +
+                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
+                    "OR c.id = :idKeyword";
+
             result = session.createQuery(jpql, CommercialProperty.class)
-                    .setParameter("keyword", "%" + keyword.toLowerCase() + "%")
+                    .setMaxResults(10) // Limit results
+                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
                     .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
                     .list();
-//                    .findFirst()
-//                    .orElse(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Replace with proper logging
+        } finally {
+            DatabaseUtil.shutdown(session); // Ensure session is closed
         }
-        DatabaseUtil.shutdown(session);
         return result;
     }
+
+    // Helper method to parse the ID from the keyword
 
 
 }

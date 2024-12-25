@@ -126,7 +126,7 @@ public class OwnerDAO extends DAOInterface<Owner>{
     }
 
     @Override
-    public Owner search(String keyword) {
+    public List<Owner> search(String keyword) {
         return null;
     }
 

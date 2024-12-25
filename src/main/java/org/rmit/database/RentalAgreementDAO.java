@@ -107,7 +107,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
     @Override
-    public RentalAgreement search(String keyword) {
+    public List<RentalAgreement> search(String keyword) {
         return null;
     }
 

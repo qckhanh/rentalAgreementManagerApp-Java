@@ -116,12 +116,13 @@ public class HostDAO extends DAOInterface<Host> {
         EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
 
         propertySubgraph(entityGraph.addSubgraph("propertiesManaged"));
+        personSubgraph(entityGraph.addSubgraph("cooperatingOwners"));
 
         return entityGraph;
     }
 
     @Override
-    public Host search(String keyword) {
+    public List<Host> search(String keyword) {
         return null;
     }
 
