@@ -19,7 +19,7 @@ public class InitController implements Initializable {
 
     public void openRegister(){
         try{
-            parent_BorderPane.setCenter(ModelCentral.getInstance().getViewFactory().getRegisterView());
+            parent_BorderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getRegisterView());
         }
         catch (Exception e){
             e.printStackTrace();
@@ -28,7 +28,7 @@ public class InitController implements Initializable {
 
     public void openLogin(){
         try{
-            parent_BorderPane.setCenter(ModelCentral.getInstance().getViewFactory().getLoginView());
+            parent_BorderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getLoginView());
         }
         catch (Exception e){
             System.out.println("Error loading login.fxml");

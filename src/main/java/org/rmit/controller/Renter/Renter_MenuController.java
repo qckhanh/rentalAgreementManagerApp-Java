@@ -38,16 +38,14 @@ public class Renter_MenuController implements Initializable {
         paymentManager_btn.setOnAction(e -> paymentManager());
         rentalManager_btn.setOnAction(e -> rentalManager());
         makePayment_btn.setOnAction(e -> makePayment());
-
-
     }
 
     private void logOut(){
         Session.getInstance().setCurrentUser(null);
         Stage stage = (Stage) logOut_btn.getScene().getWindow();
         ModelCentral.getInstance().getRenterViewFactory().resetView();
-        ModelCentral.getInstance().getViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().closeStage(stage);
+        ModelCentral.getInstance().getStartViewFactory().startApplication();
     }
 
     private void openDashboard(){

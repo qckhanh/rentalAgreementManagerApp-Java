@@ -41,7 +41,7 @@ public class RegisterController implements Initializable {
     }
 
     void openLogin() {
-        ModelCentral.getInstance().getViewFactory().showLoginView();
+        ModelCentral.getInstance().getStartViewFactory().showLoginView();
     }
 
     void register(){

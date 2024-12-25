@@ -1,13 +1,17 @@
 package org.rmit.database;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.CommercialProperty;
 
 import java.util.List;
 
-public class RentalAgreementDAO implements DAOInterface<RentalAgreement>{
+public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     @Override
     public boolean add(RentalAgreement rentalAgreement) {
         try{
@@ -60,9 +64,13 @@ public class RentalAgreementDAO implements DAOInterface<RentalAgreement>{
     public RentalAgreement get(int id) {
         try{
             Session session = DatabaseUtil.getSession();
-            RentalAgreement rentalAgreement = session.get(RentalAgreement.class, id);
+            String hql = String.format(GET_BY_ID_HQL, "RentalAgreement");
+            RentalAgreement obj = session.createQuery(hql, RentalAgreement.class)
+                    .setParameter("id", id)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .uniqueResult();
             DatabaseUtil.shutdown(session);
-            return rentalAgreement;
+            return obj;
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -74,19 +82,28 @@ public class RentalAgreementDAO implements DAOInterface<RentalAgreement>{
     public List<RentalAgreement> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
-            List<RentalAgreement> rentalAgreements = session.createQuery("from RentalAgreement").list();
-            DatabaseUtil.shutdown(session);
-            return rentalAgreements;
+            String hql = String.format(GET_ALL_HQL, "RentalAgreement");
+            List<RentalAgreement> list = session.createQuery(hql, RentalAgreement.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
+            return list;
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
-            return List.of();
+            return null;
         }
     }
 
     @Override
     public RentalAgreement validateLogin(String usernameOrContact, String password) {
         return null;
+    }
+
+    @Override
+    public EntityGraph<RentalAgreement> createEntityGraph(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
+        return entityGraph;
     }
 
 }

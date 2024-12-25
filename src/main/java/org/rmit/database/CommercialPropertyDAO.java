@@ -1,12 +1,18 @@
 package org.rmit.database;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 
 import java.util.List;
 
-public class CommercialPropertyDAO implements DAOInterface<CommercialProperty> {
+public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
 
     @Override
     public boolean add(CommercialProperty commercialProperty) {
@@ -60,12 +66,16 @@ public class CommercialPropertyDAO implements DAOInterface<CommercialProperty> {
     public CommercialProperty get(int id) {
         try{
             Session session = DatabaseUtil.getSession();
-            CommercialProperty commercialProperty = session.get(CommercialProperty.class, id);
+            String hql = String.format(GET_BY_ID_HQL, "CommercialProperty");
+            CommercialProperty obj = session.createQuery(hql, CommercialProperty.class)
+                    .setParameter("id", id)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .uniqueResult();
             DatabaseUtil.shutdown(session);
-            return commercialProperty;
+            return obj;
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("Error: " + e.getMessage());
             return null;
         }
     }
@@ -74,13 +84,15 @@ public class CommercialPropertyDAO implements DAOInterface<CommercialProperty> {
     public List<CommercialProperty> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
-            List<CommercialProperty> commercialProperties = session.createQuery("from CommercialProperty").list();
-            DatabaseUtil.shutdown(session);
-            return commercialProperties;
+            String hql = String.format(GET_ALL_HQL, "CommercialProperty");
+            List<CommercialProperty> list = session.createQuery(hql, CommercialProperty.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
+            return list;
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
-            return List.of();
+            System.out.println("Error: " + e.getMessage());
+            return null;
         }
     }
 
@@ -88,5 +100,19 @@ public class CommercialPropertyDAO implements DAOInterface<CommercialProperty> {
     public CommercialProperty validateLogin(String username, String password) {
         return null;
     }
+
+    @Override
+    public EntityGraph<CommercialProperty> createEntityGraph(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
+        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
+
+        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
+        ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
+
+        rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
+        return entityGraph;
+    }
+
 
 }

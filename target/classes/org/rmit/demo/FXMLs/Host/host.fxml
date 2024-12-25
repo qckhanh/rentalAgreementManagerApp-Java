@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+<!--      <Label text="Label" BorderPane.alignment="CENTER" />-->
+       <fx:include source="menuHost.fxml"></fx:include>
+   </left>
+   <center>
+<!--      <Label text="Label" BorderPane.alignment="CENTER" />-->
+         <fx:include source="dashboardHost.fxml"></fx:include>
+   </center>
+</BorderPane>

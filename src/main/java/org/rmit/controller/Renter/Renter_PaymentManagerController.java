@@ -137,8 +137,8 @@ public class Renter_PaymentManagerController implements Initializable {
     ObservableList<Property> createPropertyList() {
         Set<Property> properties = new HashSet<>();
         properties.add(null);
-        for (RentalAgreement ra : ((Renter) Session.getInstance().getCurrentUser()).getAgreementList()) {
-            properties.add(ra.getProperty());
+        for (Payment p : ((Renter) Session.getInstance().getCurrentUser()).getPayments()) {
+            properties.add(p.getProperty());
         }
         return FXCollections.observableArrayList(properties);
     }
@@ -146,9 +146,9 @@ public class Renter_PaymentManagerController implements Initializable {
     ObservableList<RentalAgreement> createRentalAgreementList() {
         Set<RentalAgreement> rentalAgreements = new HashSet<>();
         rentalAgreements.add(null);
-        for (RentalAgreement ra : ((Renter) Session.getInstance().getCurrentUser()).getAgreementList()) {
-            if(!ra.getMainTenant().equals(Session.getInstance().getCurrentUser())) continue;
-            rentalAgreements.add(ra);
+        for (Payment p : ((Renter) Session.getInstance().getCurrentUser()).getPayments()) {
+//            if(!ra.getMainTenant().equals(Session.getInstance().getCurrentUser())) continue;
+            rentalAgreements.add(p.getRentalAgreement());
         }
         return FXCollections.observableArrayList(rentalAgreements);
     }

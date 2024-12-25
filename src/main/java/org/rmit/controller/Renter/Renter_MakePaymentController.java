@@ -4,7 +4,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -96,7 +95,7 @@ public class Renter_MakePaymentController implements Initializable {
     }
 
     private void submitPayment() {
-        if(!ModelCentral.getInstance().getViewFactory().confirmMessage("Do you want to make this payment?")) return;
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
         Payment newPayment = new Payment();
         newPayment.setRentalAgreement(selectedRentalAgreement.get());
         newPayment.setProperty(selectedProperty.get());

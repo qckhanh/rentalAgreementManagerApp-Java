@@ -23,7 +23,7 @@ public class Payment {
     @ManyToOne(cascade = CascadeType.ALL)
     private Renter mainRenter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Property property;
 
     private double amount;

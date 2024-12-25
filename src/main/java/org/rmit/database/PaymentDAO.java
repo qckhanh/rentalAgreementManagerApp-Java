@@ -1,15 +1,18 @@
 package org.rmit.database;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 
 import java.util.List;
 
-public class PaymentDAO implements DAOInterface<Payment> {
+public class PaymentDAO extends DAOInterface<Payment> {
     @Override
     public boolean add(Payment payment) {
         Session session = DatabaseUtil.getSession();
@@ -70,12 +73,16 @@ public class PaymentDAO implements DAOInterface<Payment> {
     public Payment get(int id) {
         try{
             Session session = DatabaseUtil.getSession();
-            Payment payment = session.get(Payment.class, id);
+            String hql = String.format(GET_BY_ID_HQL, "Payment");
+            Payment obj = session.createQuery(hql, Payment.class)
+                    .setParameter("id", id)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .uniqueResult();
             DatabaseUtil.shutdown(session);
-            return payment;
+            return obj;
         }
         catch (Exception e){
-            System.out.println("Error: " + e);
+            System.out.println("Error: " + e.getMessage());
             return null;
         }
     }
@@ -84,13 +91,15 @@ public class PaymentDAO implements DAOInterface<Payment> {
     public List<Payment> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
-            List<Payment> payments = session.createQuery("from Payment").list();
-            DatabaseUtil.shutdown(session);
-            return payments;
+            String hql = String.format(GET_ALL_HQL, "Payment");
+            List<Payment> list = session.createQuery(hql, Payment.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
+            return list;
         }
         catch (Exception e){
-            System.out.println("Error: " + e);
-            return List.of();
+            System.out.println("Error: " + e.getMessage());
+            return null;
         }
     }
 
@@ -98,5 +107,13 @@ public class PaymentDAO implements DAOInterface<Payment> {
     public Payment validateLogin(String usernameOrContact, String password) {
         return null;
     }
+
+    @Override
+    public EntityGraph<Payment> createEntityGraph(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Payment> entityGraph = emf.createEntityGraph(Payment.class);
+        return entityGraph;
+    }
+
 
 }
