@@ -9,8 +9,10 @@ import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OwnerDAO extends DAOInterface<Owner>{
@@ -135,7 +137,29 @@ public class OwnerDAO extends DAOInterface<Owner>{
 
     @Override
     public List<Owner> search(String keyword) {
-        return null;
+        Session session = DatabaseUtil.getSession();
+        List<Owner> result = Collections.emptyList(); // Properly initialized
+
+        try {
+            // JPQL to search by address (partial match) or ID (exact match)
+            String jpql = "SELECT c FROM Owner c " +
+                    "WHERE LOWER(c.name) LIKE :nameKeyword " +
+                    "OR c.id = :idKeyword " +
+                    "OR LOWER(c.username) LIKE :usernameKeyword";
+
+            result = session.createQuery(jpql, Owner.class)
+                    .setMaxResults(10) // Limit results
+                    .setParameter("nameKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setParameter("idKeyword", parseId(keyword))
+                    .setParameter("usernameKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseUtil.shutdown(session);
+        }
+        return result;
     }
 
 

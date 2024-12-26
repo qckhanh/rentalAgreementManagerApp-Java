@@ -13,10 +13,7 @@ import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Host_ManageOwnerController implements Initializable {
     public TextField D_input;
@@ -35,11 +32,18 @@ public class Host_ManageOwnerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        ((Host)currentPerson.get()).propertiesManagedPropertyProperty().addListener((observable, oldValue, newValue) -> {
-//            System.out.println(" >> update owner");
-//            owners.set(((Host)newValue).cooperatingOwnersPropertyProperty().get());
-//            loadOwner(owners.get());
-//        });
+
+        search_btn.setOnAction(e -> searchOwner());
+        search_input.setOnAction(e -> searchOwner());
+        search_input.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.isBlank()) loadOwner(owners.get());
+        });
+        host_tableView.setOnMouseClicked(e -> showDetails(host_tableView.getSelectionModel().getSelectedItem()));
+        host_tableView.getColumns().addAll(
+                newColumn("ID", "id"),
+                newColumn("Full Name", "name")
+        );
+        loadOwner(owners.get());
         managingProperty_listView.setCellFactory(param -> new ListCell<Property>(){
             @Override
             protected void updateItem(Property item, boolean empty) {
@@ -52,12 +56,13 @@ public class Host_ManageOwnerController implements Initializable {
                 }
             }
         });
-        host_tableView.setOnMouseClicked(e -> showDetails(host_tableView.getSelectionModel().getSelectedItem()));
-        host_tableView.getColumns().addAll(
-                newColumn("ID", "id"),
-                newColumn("Full Name", "name")
-        );
-        loadOwner(owners.get());
+    }
+
+    private void searchOwner() {
+        if(search_input.getText().isBlank()) return;
+        OwnerDAO ownerDAO = new OwnerDAO();
+        List<Owner> lists = ownerDAO.search(search_input.getText());
+        loadOwner(new HashSet<>(lists));
     }
 
     private void loadOwner(Set<Owner> set){
@@ -72,6 +77,7 @@ public class Host_ManageOwnerController implements Initializable {
     }
 
     private void showDetails(Owner owner){
+        if(owner == null) return;
         int id = Integer.parseInt(owner.getId()+"");
         if(ownerMap.containsKey(id)) owner = ownerMap.get(id);
         else{

@@ -133,9 +133,9 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
                     .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
                     .list();
         } catch (Exception e) {
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
         } finally {
-            DatabaseUtil.shutdown(session); // Ensure session is closed
+            DatabaseUtil.shutdown(session);
         }
         return result;
     }

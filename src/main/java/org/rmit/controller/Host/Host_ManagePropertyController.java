@@ -60,6 +60,7 @@ public class Host_ManagePropertyController implements Initializable {
 
 
         search_btn.setOnAction(event -> searchProperty());
+        search_input.setOnAction(event -> searchProperty());
         search_input.textProperty().addListener((o, old, neww) ->{
             if(neww.isBlank()) property_listView.setItems(getPropertyList(managedProperties.get()));
         });
