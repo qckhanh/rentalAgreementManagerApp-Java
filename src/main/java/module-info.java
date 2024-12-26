@@ -10,8 +10,6 @@ module org.rmit.demo {
     requires java.transaction.xa;
     requires org.postgresql.jdbc;
     requires java.desktop;
-    requires com.google.api.client.auth;
-    requires com.google.api.client.extensions.jetty.auth;  // Add this
 
 
     //model

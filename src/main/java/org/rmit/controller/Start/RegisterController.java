@@ -81,7 +81,7 @@ public class RegisterController implements Initializable {
         if(!InputValidator.NoCondition(fullName_input.getText(), name_err)) isValid = false;
         if(!InputValidator.isValidUsername(username_input.getText(), username_err)) isValid = false;
         if(!InputValidator.isValidContact(contact_input.getText(), contact_err)) isValid = false;
-//        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)) isValid = false;
+        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)) isValid = false;
         if(!InputValidator.isValidPassword(password_input.getText(), password_err)) isValid = false;
         if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)) isValid = false;
         if(!password_input.getText().equals(rePassword_input.getText())){
