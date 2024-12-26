@@ -118,9 +118,11 @@
 }
 
 /* Status label (error message) */
-#status_label {
+#status_label, #username_err, #password_err {
     -fx-text-fill: #e74c3c;
     -fx-font-size: 14px;
+    /*-fx-font-weight: bold;*/
+    -fx-font-style: italic;
 }
 
 /* Input field labels */

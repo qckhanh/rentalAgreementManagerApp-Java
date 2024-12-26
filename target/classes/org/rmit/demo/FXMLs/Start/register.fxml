@@ -33,7 +33,7 @@
             </VBox>
             <VBox prefHeight="67.0" prefWidth="407.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Full Name">
+                  <Label fx:id="fullname_label" prefHeight="25.0" prefWidth="241.0" text="Full Name">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -43,7 +43,7 @@
             </VBox>
             <VBox prefHeight="67.0" prefWidth="407.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Username">
+                  <Label fx:id="username_label" prefHeight="25.0" prefWidth="241.0" text="Username">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -53,7 +53,7 @@
             </VBox>
             <VBox prefHeight="67.0" prefWidth="407.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Contact">
+                  <Label fx:id="contact_label" prefHeight="25.0" prefWidth="241.0" text="Contact">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -63,7 +63,7 @@
             </VBox>
             <VBox prefHeight="67.0" prefWidth="407.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Date of birth">
+                  <Label fx:id="dob_label" prefHeight="25.0" prefWidth="241.0" text="Date of birth">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -73,7 +73,7 @@
             </VBox>
             <VBox prefHeight="78.0" prefWidth="411.0" spacing="3.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Password">
+                  <Label fx:id="pass_label" prefHeight="25.0" prefWidth="241.0" text="Password">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -87,7 +87,7 @@
             </VBox>
             <VBox prefHeight="68.0" prefWidth="427.0" spacing="3.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="241.0" text="Re-enter your password">
+                  <Label fx:id="rePass_label" prefHeight="25.0" prefWidth="241.0" text="Re-enter your password">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -111,5 +111,11 @@
             </Button>
          </children>
       </VBox>
+      <Label fx:id="name_err" layoutX="774.0" layoutY="203.0" prefHeight="25.0" prefWidth="241.0" text="Name must not be empty" />
+      <Label fx:id="username_err" layoutX="774.0" layoutY="272.0" prefHeight="25.0" prefWidth="241.0" text="Username existed" />
+      <Label fx:id="contact_err" layoutX="774.0" layoutY="355.0" prefHeight="25.0" prefWidth="241.0" text="Invalid contact" />
+      <Label fx:id="dob_err" layoutX="774.0" layoutY="428.0" prefHeight="25.0" prefWidth="241.0" text="Invalid date of birth" />
+      <Label fx:id="password_err" layoutX="774.0" layoutY="502.0" prefHeight="25.0" prefWidth="241.0" text="Invalid password" />
+      <Label fx:id="repass_err" layoutX="774.0" layoutY="598.0" prefHeight="25.0" prefWidth="241.0" text="Password not matched" />
    </children>
 </AnchorPane>

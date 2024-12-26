@@ -30,19 +30,27 @@ public class LoginController implements Initializable {
     public Button register_btn;
     public ChoiceBox<ACCOUNT_TYPE> userLOGINType_ChoiceBox;
     public StartViewFactory viewFactory;
-    public List<Renter> allRenters;
-    public List<Host> allHosts;
-    public List<Owner> allOwners;
-    public List<Admin> allAdmins;
-    public List<Guest> allGuests;
     public DAOInterface dao;
     public Label status_label;
+    public Label password_err;
+    public Label username_err;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ModelCentral.getInstance().getStartViewFactory().setIsLogin(true);
+        username_err.setText("");
+        password_err.setText("");
+
+        password_input.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue.equals(oldValue)) status_label.setText("");
+        });
+        username_input.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue.equals(oldValue)) status_label.setText("");
+        });
+
+
         status_label.setText("");
+        ModelCentral.getInstance().getStartViewFactory().setIsLogin(true);
         ModelCentral.getInstance().getStartViewFactory().isLoginProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue == false) {
                 status_label.setTextFill(Color.RED);
@@ -76,11 +84,17 @@ public class LoginController implements Initializable {
         viewFactory.showRegisterView();
     }
 
+
     private void signInValidate(){
         String username = username_input.getText();
         String password = password_input.getText();
-        Person loginUser = null;
+        if(username.isBlank() || password.isBlank()) {
+            status_label.setTextFill(Color.RED);
+            status_label.setText("Please fill in all fields");
+            return;
+        }
 
+        Person loginUser = null;
         if(viewFactory.getAccountLoginType() == ACCOUNT_TYPE.ADMIN) {
             System.out.println("not implemented");
         }

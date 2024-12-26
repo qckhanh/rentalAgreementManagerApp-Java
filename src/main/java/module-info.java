@@ -9,7 +9,9 @@ module org.rmit.demo {
     requires com.fasterxml.classmate;
     requires java.transaction.xa;
     requires org.postgresql.jdbc;
-    requires java.desktop;  // Add this
+    requires java.desktop;
+    requires com.google.api.client.auth;
+    requires com.google.api.client.extensions.jetty.auth;  // Add this
 
 
     //model
