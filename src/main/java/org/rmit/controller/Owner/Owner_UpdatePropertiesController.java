@@ -39,7 +39,18 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Owner_UpdatePropertiesController() {
     }
 
+    //Illegal attempt to associate a collection with two open sessions: FIXED
     public static void setSelectedProperty(Property property) {
+        int id = Integer.parseInt(property.getId() + "");
+        if(property instanceof CommercialProperty) {
+            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+            property = cpDAO.get(id);
+        }
+        else if(property instanceof ResidentialProperty) {
+            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+            property = rpDAO.get(id);
+
+        }
         selectedProperty.set(property);
     }
 
@@ -99,12 +110,11 @@ public class Owner_UpdatePropertiesController implements Initializable {
             ((ResidentialProperty) selectedProperty.get()).setTotalBedroom(Integer.parseInt(propertyBedrooms_txtf.getText()));
             ((ResidentialProperty) selectedProperty.get()).setTotalRoom(Integer.parseInt(propertyRooms_txtf.getText()));
         }
-
+        System.out.println("Error here");
         if (selectedProperty.get() instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
             cpDAO.update((CommercialProperty) selectedProperty.get());
         }
-
         else if (selectedProperty.get() instanceof ResidentialProperty) {
             ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
             rpDAO.update((ResidentialProperty) selectedProperty.get());

@@ -41,7 +41,7 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
             return true;
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
