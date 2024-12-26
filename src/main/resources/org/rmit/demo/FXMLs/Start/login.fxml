@@ -79,12 +79,22 @@
                   </Button>
                </children>
             </VBox>
-            <Label fx:id="status_label" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="330.0" text="Incorrect username or password">
+            <Label fx:id="status_label" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="241.0" text="Incorrect username or password">
                <font>
-                  <Font name="System Bold" size="19.0" />
+                  <Font name="System Bold" size="20.0" />
                </font>
             </Label>
          </children>
       </VBox>
+      <Label fx:id="password_err" alignment="CENTER" contentDisplay="CENTER" layoutX="712.0" layoutY="417.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="username_err" alignment="CENTER" contentDisplay="CENTER" layoutX="712.0" layoutY="300.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

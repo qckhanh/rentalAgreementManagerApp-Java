@@ -9,6 +9,12 @@ VBox {
     -fx-spacing: 5;
 }
 
+#name_err, #username_err, #contact_err, #dob_err, #password_err, #repass_err {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+}
+
 /* Create account label */
 #createAccount_label {
     -fx-font-size: 28px;
@@ -17,11 +23,11 @@ VBox {
 }
 
 /* Labels styling */
-Label {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2d3436;
-}
+/*#fullname_label {*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-font-weight: bold;*/
+/*    -fx-text-fill: #2d3436;*/
+/*}*/
 
 /* Text fields styling */
 TextField, PasswordField {
@@ -91,6 +97,7 @@ TextField:focused, PasswordField:focused {
     -fx-background-radius: 5 0 0 5;
 }
 
+
 /* Register button */
 #submitRegister_btn {
     -fx-background-color: #4834d4;
@@ -149,6 +156,12 @@ TextField:focused, PasswordField:focused {
     -fx-background-color: #4834d4;
     -fx-text-fill: white;
 }
+
+/*#name_err, #username_err, #contact_err, #dob_err, #password_err, #repass_err {*/
+/*    -fx-text-fill: #e74c3c;*/
+/*    -fx-font-size: 14px;*/
+/*    -fx-font-style: italic;*/
+/*}*/
 
 /* Error states */
 .error {
