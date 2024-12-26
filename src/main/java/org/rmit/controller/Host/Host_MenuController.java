@@ -19,6 +19,9 @@ public class Host_MenuController implements Initializable {
     public Button dashboard_btn;
     public Button logOut_btn;
     public Button propertyManager_btn;
+    public Button agreement_btn;
+    public Button ownerManager_btn;
+
 //    public Button rentalManager_btn;
 //    public Button makePayment_btn;
 
@@ -35,16 +38,16 @@ public class Host_MenuController implements Initializable {
         dashboard_btn.setOnAction(e -> openDashboard());
         logOut_btn.setOnAction(e -> logOut());
         propertyManager_btn.setOnAction(e -> manageProperty());
+        agreement_btn.setOnAction(e -> manageAgreement());
+        ownerManager_btn.setOnAction(e -> manageOwner());
     }
 
 
 
     private void logOut() {
-        Session.getInstance().setCurrentUser(null);
-        Stage stage = (Stage) logOut_btn.getScene().getWindow();
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getHostViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard() {
@@ -57,5 +60,13 @@ public class Host_MenuController implements Initializable {
 
     private void manageProperty() {
         ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_PROPERTY);
+    }
+
+    private void manageAgreement() {
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_AGREEMENT);
+    }
+
+    private void manageOwner(){
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
     }
 }

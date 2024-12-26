@@ -14,13 +14,7 @@ public class ModelCentral {
     private HostViewFactory hostViewFactory;
 
 
-    private ModelCentral() {
-        startViewFactory = new StartViewFactory();
-        renterViewFactory = new RenterViewFactory();
-        ownerViewFactory = new OwnerViewFactory();
-        hostViewFactory = new HostViewFactory();
-        //declare more view factories here
-    }
+    private ModelCentral() {}
 
     public static ModelCentral getInstance() {
         if (modelCentral == null) {
@@ -30,18 +24,30 @@ public class ModelCentral {
     }
 
     public StartViewFactory getStartViewFactory() {
+        if (startViewFactory == null) {
+            startViewFactory = new StartViewFactory();
+        }
         return startViewFactory;
     }
 
     public RenterViewFactory getRenterViewFactory() {
+        if(renterViewFactory == null){
+            renterViewFactory = new RenterViewFactory();
+        }
         return renterViewFactory;
     }
 
     public OwnerViewFactory getOwnerViewFactory() {
+        if (ownerViewFactory == null) {
+            ownerViewFactory = new OwnerViewFactory();
+        }
         return ownerViewFactory;
     }
 
     public HostViewFactory getHostViewFactory() {
+        if (hostViewFactory == null) {
+            hostViewFactory = new HostViewFactory();
+        }
         return hostViewFactory;
     }
 }

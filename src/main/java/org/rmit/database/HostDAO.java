@@ -116,8 +116,15 @@ public class HostDAO extends DAOInterface<Host> {
         EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
 
         propertySubgraph(entityGraph.addSubgraph("propertiesManaged"));
+        personSubgraph(entityGraph.addSubgraph("cooperatingOwners"));
+        rentalAgreementSubgraph(entityGraph.addSubgraph("rentalAgreements"));
 
         return entityGraph;
+    }
+
+    @Override
+    public List<Host> search(String keyword) {
+        return null;
     }
 
 }

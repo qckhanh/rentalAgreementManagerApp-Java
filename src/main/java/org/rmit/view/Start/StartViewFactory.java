@@ -5,9 +5,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.Start.InitController;
+import org.rmit.model.ModelCentral;
+import org.rmit.model.Session;
 
 public class StartViewFactory {
     private String FXML_PATH;
@@ -87,6 +90,13 @@ public class StartViewFactory {
         alert.setResizable(false);
         alert.showAndWait();
         return alert.getResult().getText().equals("OK");
+    }
+
+    public void logOut(Button btn){
+        Stage stage = (Stage) btn.getScene().getWindow();
+        closeStage(stage);
+        Session.getInstance().setCurrentUser(null);
+        startApplication();
     }
 
     //Getters and Setters

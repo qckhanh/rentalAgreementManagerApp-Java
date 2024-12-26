@@ -1,4 +1,4 @@
-package org.rmit.controller.Renter;
+package org.rmit.controller.Host;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
@@ -23,11 +24,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class Renter_AgreementManagerController implements Initializable {
+public class Host_AgreementManagerController implements Initializable {
     public ComboBox propertyFilter_comboBox;
     public ComboBox rentalPeriodFilter_comboBox;
     public TableView rentalAgreement_tableView;
     public ComboBox statusFilter_comboBox;
+
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
@@ -96,7 +98,7 @@ public class Renter_AgreementManagerController implements Initializable {
 //                        agreement -> showPayment(agreement.getPayments())
 //                )
         );
-        loadData(((Renter) currentUser.get()).getAgreementList());
+        loadData(((Host) currentUser.get()).getRentalAgreements());
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             Set<RentalAgreement> filteredList = noFilter();
@@ -129,7 +131,7 @@ public class Renter_AgreementManagerController implements Initializable {
     private ObservableList<Property> createPropertyComboBox() {
         Set<Property> properties = new HashSet<>();
         properties.add(null);
-        for(RentalAgreement ra : ((Renter) currentUser.get()).getAgreementList()) {
+        for(RentalAgreement ra : ((Host) currentUser.get()).getRentalAgreements()) {
             properties.add(ra.getProperty());
         }
         return FXCollections.observableArrayList(properties);
@@ -218,7 +220,7 @@ public class Renter_AgreementManagerController implements Initializable {
     }
 
     private Set<RentalAgreement> noFilter() {
-        return ((Renter) currentUser.get()).getAgreementList();
+        return ((Host) currentUser.get()).getRentalAgreements();
     }
 
     private Set<RentalAgreement> filterByProperty(Set<RentalAgreement> list, Property property) {
@@ -254,5 +256,4 @@ public class Renter_AgreementManagerController implements Initializable {
         }
         return filteredList;
     }
-
 }

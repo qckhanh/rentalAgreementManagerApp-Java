@@ -115,5 +115,10 @@ public class PaymentDAO extends DAOInterface<Payment> {
         return entityGraph;
     }
 
+    @Override
+    public List<Payment> search(String keyword) {
+        return null;
+    }
+
 
 }

@@ -18,6 +18,8 @@ public class HostViewFactory {
     private AnchorPane editProfileView;
     private AnchorPane dashboardView;
     private AnchorPane managePropertyView;
+    private AnchorPane agreementManagerView;
+    private AnchorPane ownerManagerView;
 
     public HostViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(HOST_MENU_OPTION.DASHBOARD);      // default view
@@ -51,40 +53,38 @@ public class HostViewFactory {
         }
         return dashboardView;
     }
-    public AnchorPane getRenter_paymentManagerView(){
-//        if (1 == 1){
-//            try {
-//                renter_paymentManagerView = new FXMLLoader(getClass().getResource(HOST_PATH + "paymentManagerRenter.fxml")).load();
-//            } catch (Exception e){
-//                System.out.println("Error loading paymentManagerRenter.fxml");
-//            }
-//        }
-//        return renter_paymentManagerView;
-        return new AnchorPane();
 
+    public AnchorPane getHost_ManagePropertyView() {
+        if(managePropertyView == null){
+            try{
+                managePropertyView = new FXMLLoader(getClass().getResource(HOST_PATH + "manageProperty.fxml")).load();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return managePropertyView;
     }
-    public AnchorPane getRenter_agreementManagerView(){
-//        if (renter_agreementManagerView == null){
-//            try {
-//                renter_agreementManagerView = new FXMLLoader(getClass().getResource(HOST_PATH + "agreementManagerRenter.fxml")).load();
-//            } catch (Exception e){
-//                System.out.println("Error loading paymentManagerRenter.fxml");
-//            }
-//        }
-//        return renter_agreementManagerView;
-        return new AnchorPane();
-    }
-    public AnchorPane getRenter_makePaymentView(){
-//        if(renter_makePaymentView == null){
-//            try {
-//                renter_makePaymentView = new FXMLLoader(getClass().getResource(HOST_PATH + "makePaymentRenter.fxml")).load();
-//            } catch (Exception e){
-//                System.out.println("Error loading makePaymentRenter.fxml");
-//            }
-//        }
-//        return renter_makePaymentView;
-        return new AnchorPane();
 
+    public AnchorPane getHost_agreementManagerView(){
+        if (agreementManagerView == null){
+            try {
+                agreementManagerView = new FXMLLoader(getClass().getResource(HOST_PATH + "agreementManagerHost.fxml")).load();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return agreementManagerView;
+    }
+
+    public AnchorPane getHost_OwnerManagerView(){
+        if (1 == 1){
+            try {
+                ownerManagerView = new FXMLLoader(getClass().getResource(HOST_PATH + "manageOwner.fxml")).load();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return ownerManagerView;
     }
 
     //helper method
@@ -104,6 +104,9 @@ public class HostViewFactory {
     public void resetView(){
         dashboardView = null;
         editProfileView = null;
+        managePropertyView = null;
+        agreementManagerView = null;
+        ownerManagerView = null;
     }
     //getter and setter
 
@@ -119,14 +122,5 @@ public class HostViewFactory {
         this.selectedMenuItem.set(selectedMenuItem);
     }
 
-    public AnchorPane getHost_ManagePropertyView() {
-        if(managePropertyView == null){
-            try{
-                managePropertyView = new FXMLLoader(getClass().getResource(HOST_PATH + "manageProperty.fxml")).load();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        return managePropertyView;
-    }
+
 }

@@ -10,6 +10,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
@@ -113,6 +114,33 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         return entityGraph;
     }
+
+    @Override
+    public List<CommercialProperty> search(String keyword) {
+        Session session = DatabaseUtil.getSession();
+        List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
+
+        try {
+            // JPQL to search by address (partial match) or ID (exact match)
+            String jpql = "SELECT c FROM CommercialProperty c " +
+                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
+                    "OR c.id = :idKeyword";
+
+            result = session.createQuery(jpql, CommercialProperty.class)
+                    .setMaxResults(10) // Limit results
+                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseUtil.shutdown(session);
+        }
+        return result;
+    }
+
+    // Helper method to parse the ID from the keyword
 
 
 }

@@ -1,8 +1,4 @@
 package org.rmit.model.Persons;
-
-//import UIHelper.UserInterfaceManager;
-//import UIHelper.DateCreator;
-
 import jakarta.persistence.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -75,6 +71,25 @@ public class Host extends Person {
     public void setCooperatingOwners(Set<Owner> cooperatingOwners) {
         this.cooperatingOwnersProperty.setValue(cooperatingOwners);
         this.cooperatingOwners = cooperatingOwnersProperty.get();
+    }
+
+    public void addProperty(Property property){
+        this.propertiesManaged.add(property);
+        this.propertiesManagedProperty.setValue(this.propertiesManaged);
+        this.cooperatingOwners.add(property.getOwner());
+        this.cooperatingOwnersProperty.setValue(this.cooperatingOwners);
+    }
+
+    public void removeProperty(Property property){
+        this.propertiesManaged.remove(property);
+        this.propertiesManagedProperty.setValue(this.propertiesManaged);
+        for(Property p : this.propertiesManaged){
+            if(p.getOwner() == property.getOwner()) return;
+        }
+        if(property.getOwner() != null){
+            this.cooperatingOwners.remove(property.getOwner());
+            this.cooperatingOwnersProperty.setValue(this.cooperatingOwners);
+        }
     }
     /////////////
 
