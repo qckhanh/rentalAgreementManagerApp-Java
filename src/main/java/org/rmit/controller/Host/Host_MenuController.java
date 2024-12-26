@@ -19,6 +19,9 @@ public class Host_MenuController implements Initializable {
     public Button dashboard_btn;
     public Button logOut_btn;
     public Button propertyManager_btn;
+    public Button agreement_btn;
+    public Button ownerManager_btn;
+
 //    public Button rentalManager_btn;
 //    public Button makePayment_btn;
 
@@ -35,6 +38,8 @@ public class Host_MenuController implements Initializable {
         dashboard_btn.setOnAction(e -> openDashboard());
         logOut_btn.setOnAction(e -> logOut());
         propertyManager_btn.setOnAction(e -> manageProperty());
+        agreement_btn.setOnAction(e -> manageAgreement());
+        ownerManager_btn.setOnAction(e -> manageOwner());
     }
 
 
@@ -55,5 +60,13 @@ public class Host_MenuController implements Initializable {
 
     private void manageProperty() {
         ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_PROPERTY);
+    }
+
+    private void manageAgreement() {
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_AGREEMENT);
+    }
+
+    private void manageOwner(){
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
     }
 }

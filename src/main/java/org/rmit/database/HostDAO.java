@@ -117,6 +117,7 @@ public class HostDAO extends DAOInterface<Host> {
 
         propertySubgraph(entityGraph.addSubgraph("propertiesManaged"));
         personSubgraph(entityGraph.addSubgraph("cooperatingOwners"));
+        rentalAgreementSubgraph(entityGraph.addSubgraph("rentalAgreements"));
 
         return entityGraph;
     }

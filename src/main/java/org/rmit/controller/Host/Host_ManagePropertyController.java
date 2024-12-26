@@ -53,6 +53,7 @@ public class Host_ManagePropertyController implements Initializable {
     public Set<Property> searchResult = new HashSet<>();
     public ObjectProperty<Set<Property>> managedProperties = new SimpleObjectProperty<>(currentUser.getPropertiesManaged());
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
+    public Map<Integer, Property> propertyMap = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -109,16 +110,17 @@ public class Host_ManagePropertyController implements Initializable {
         ObservableList<Property> list = FXCollections.observableArrayList();
         list.addAll(pList);
         return list;
-
     }
 
     private void unmanageProperty(Property property){
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
         ((Host)Session.getInstance().getCurrentUser()).removeProperty(property);
-        DAOInterface dao = new HostDAO();
-        dao.update(Session.getInstance().getCurrentUser());
         managedProperties.get().remove(property);
         property_listView.setItems(getPropertyList(managedProperties.get()));
+        DAOInterface dao = new HostDAO();
+        dao.update(Session.getInstance().getCurrentUser());
+//        int id = Integer.parseInt(Session.getInstance().getCurrentUser().getId()+"");
+//        Session.getInstance().setCurrentUser((Host)dao.get(id));
 
         System.out.println("Successfully unmanaged property");
 
@@ -129,6 +131,8 @@ public class Host_ManagePropertyController implements Initializable {
         ((Host)Session.getInstance().getCurrentUser()).addProperty(property);
         DAOInterface dao = new HostDAO();
         dao.update(Session.getInstance().getCurrentUser());
+//        int id = Integer.parseInt(Session.getInstance().getCurrentUser().getId()+"");
+//        Session.getInstance().setCurrentUser((Host)dao.get(id));
         System.out.println("Successfully requested manage property");
     }
 
@@ -170,21 +174,26 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void showPropertyDetail(Property property){
-        DAOInterface dao = null;
-        int id = Integer.parseInt(property.getId()+"");
         clearDataProperty();
+        int id = Integer.parseInt(property.getId()+"");
 
-        if(property.getType().toString().equals("COMMERCIAL")){
-            dao = new CommercialPropertyDAO();
-            property = (CommercialProperty)dao.get(id);
-        }
-        else{
-            dao = new ResidentialPropertyDAO();
-            property = (ResidentialProperty)dao.get(id);
+        if(propertyMap.containsKey(id)){
+            property = propertyMap.get(id);
+
+        }else{
+            DAOInterface dao = null;
+            if(property.getType().toString().equals("COMMERCIAL")){
+                dao = new CommercialPropertyDAO();
+                property = (CommercialProperty)dao.get(id);
+            }
+            else{
+                dao = new ResidentialPropertyDAO();
+                property = (ResidentialProperty)dao.get(id);
+            }
         }
 
         System.out.println("showPropertyDetail: "+property);
-
+        propertyMap.put(id, property);
         propertyID_input.setText(property.getId()+"");
         address_input.setText(property.getAddress());
         price_input.setText(property.getPrice()+"");

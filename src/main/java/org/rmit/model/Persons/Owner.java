@@ -57,6 +57,17 @@ public class Owner extends Person {
         this.propertiesOwned = propertiesOwnedProperty.get();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Owner owner)) return false;
+        return  Objects.equals(id, owner.id) && Objects.equals(username, owner.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username);
+    }
 
     //////////////
 

@@ -2,12 +2,14 @@ package org.rmit.database;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Subgraph;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.Property;
 
 import java.util.List;
 
@@ -121,8 +123,14 @@ public class OwnerDAO extends DAOInterface<Owner>{
     public EntityGraph<Owner> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
+        propertySubgraph(entityGraph.addSubgraph("propertiesOwned"));
 
         return entityGraph;
+    }
+
+    @Override
+    protected void propertySubgraph(Subgraph<Property> graph ){
+        graph.addAttributeNodes("address", "price", "type", "id");
     }
 
     @Override
