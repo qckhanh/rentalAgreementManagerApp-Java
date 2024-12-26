@@ -19,7 +19,6 @@ public class RentalAgreementApplication extends Application {
     public void init() throws Exception {
         if(DatabaseUtil.getSession() == null) System.out.println("Database not connected");
         else System.out.println("Database  connected");
-
     }
 
     @Override
@@ -27,18 +26,5 @@ public class RentalAgreementApplication extends Application {
 ////        Session.getInstance().setCurrentUser(new Host());
 ////        ModelCentral.getInstance().getHostViewFactory().startHostView();
         ModelCentral.getInstance().getStartViewFactory().startApplication();
-//
-////        DAOInterface dao = new HostDAO();
-////        Host p = (Host) dao.get(1);
-////        System.out.println(p);
-//
-//        CommercialPropertyDAO dao = new CommercialPropertyDAO();
-//        CommercialProperty p = dao.get(2);
-//        p.setAddress("NEW ADDRESS");
-//        dao.update(p);
-//        System.out.println("Updated");
-//        System.out.println(dao.get(2));
-        //output: .... address='NEW ADDRESS', price=500000.0, status=RENTED, id=2}CommercialProperty{businessType='Retail', totalParkingSpace=2, squareMeters=150.0, businessType=Retail, totalParkingSpace=2, squareMeters=150.0}
-
     }
 }
