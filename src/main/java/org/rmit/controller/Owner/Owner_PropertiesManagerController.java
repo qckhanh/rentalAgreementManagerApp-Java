@@ -8,7 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -22,6 +24,7 @@ import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.ResourceBundle;
@@ -175,7 +178,10 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     private void updateProperty() {
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+        if (selectedProperty != null) {
+            Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
+            ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+        }
     }
 
 

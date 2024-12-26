@@ -2,10 +2,89 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Owner.Owner_UpdatePropertiesController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Owner.Owner_UpdatePropertiesController">
    <children>
-      <Button fx:id="btn" layoutX="280.0" layoutY="200.0" mnemonicParsing="false" text="Button" />
+      <VBox alignment="CENTER" layoutX="194.0" layoutY="30.0" prefHeight="708.0" prefWidth="636.0" spacing="5.0">
+         <children>
+            <Button fx:id="returnTableView_btn" mnemonicParsing="false" text="Back" />
+            <Button fx:id="btn" mnemonicParsing="false" text="Button" />
+            <Label fx:id="updateProperty_label" alignment="CENTER" prefHeight="40.0" prefWidth="245.0" stylesheets="@../../Style/Start/register.css" text="Update a property">
+               <font>
+                  <Font name="System Bold" size="28.0" />
+               </font>
+            </Label>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Address" />
+                        <TextField fx:id="propertyAddress_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Price" />
+                        <TextField fx:id="propertyPrice_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Status" />
+                        <ComboBox fx:id="propertyStatus_cbox" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="BusinessType" />
+                        <TextField fx:id="propertyBtype_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Square meters" />
+                        <TextField fx:id="propertySquareMeters_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Parking spaces" />
+                        <TextField fx:id="propertyPSpaces_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Garden?" />
+                        <CheckBox fx:id="propertyGarden_chbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Pet?" />
+                        <CheckBox fx:id="propertyPet_chBox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Bedrooms" />
+                        <TextField fx:id="propertyBedrooms_txtf" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="22.0" prefWidth="636.0">
+                     <children>
+                        <Label text="Rooms" />
+                        <TextField fx:id="propertyRooms_txtf" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Button fx:id="updateProperty_btn" mnemonicParsing="false" prefHeight="61.0" prefWidth="427.0" text="Update property">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
