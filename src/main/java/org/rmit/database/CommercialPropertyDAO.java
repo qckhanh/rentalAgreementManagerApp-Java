@@ -97,10 +97,6 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         }
     }
 
-    @Override
-    public CommercialProperty validateLogin(String username, String password) {
-        return null;
-    }
 
     @Override
     public EntityGraph<CommercialProperty> createEntityGraph(Session session) {

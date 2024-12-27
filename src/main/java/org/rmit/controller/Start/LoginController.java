@@ -5,10 +5,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.rmit.database.DAOInterface;
-import org.rmit.database.HostDAO;
-import org.rmit.database.OwnerDAO;
-import org.rmit.database.RenterDAO;
+import org.rmit.Helper.UIDecorator;
+import org.rmit.database.*;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
@@ -30,7 +28,7 @@ public class LoginController implements Initializable {
     public Button register_btn;
     public ChoiceBox<ACCOUNT_TYPE> userLOGINType_ChoiceBox;
     public StartViewFactory viewFactory;
-    public DAOInterface dao;
+    public ValidateLoginDAO dao;
     public Label status_label;
     public Label password_err;
     public Label username_err;
@@ -38,14 +36,23 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        UIDecorator.setNormalButton(signIn_btn, UIDecorator.LOG_IN, "Sign In");
+
         username_err.setText("");
         password_err.setText("");
 
         password_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(!newValue.equals(oldValue)) status_label.setText("");
+            if(!newValue.equals(oldValue)){
+                status_label.setText("");
+//                UIDecorator.tfOK(password_input);
+            }
         });
         username_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(!newValue.equals(oldValue)) status_label.setText("");
+            if(!newValue.equals(oldValue)){
+                status_label.setText("");
+//                UIDecorator.tfOK(username_input);
+            }
         });
 
 
@@ -89,6 +96,8 @@ public class LoginController implements Initializable {
         String username = username_input.getText();
         String password = password_input.getText();
         if(username.isBlank() || password.isBlank()) {
+            if(username.isBlank()) UIDecorator.tfError(username_input);
+            if(password.isBlank()) UIDecorator.tfError(password_input);
             status_label.setTextFill(Color.RED);
             status_label.setText("Please fill in all fields");
             return;

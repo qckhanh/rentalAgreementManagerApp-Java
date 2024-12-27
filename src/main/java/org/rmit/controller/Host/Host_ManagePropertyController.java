@@ -11,6 +11,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2MZ;
+import org.kordamp.ikonli.material2.Material2RoundAL;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
@@ -48,6 +52,7 @@ public class Host_ManagePropertyController implements Initializable {
     //search
     public TextField search_input;
     public Button search_btn;
+
     public Host currentUser = (Host) Session.getInstance().getCurrentUser();
 //    public Set<Property> managedProperties = currentUser.getPropertiesManaged();
     public Set<Property> searchResult = new HashSet<>();
@@ -57,7 +62,8 @@ public class Host_ManagePropertyController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        UIDecorator.buttonIcon(search_btn, new FontIcon(Material2MZ.SEARCH));
+        UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
 
         search_btn.setOnAction(event -> searchProperty());
         search_input.setOnAction(event -> searchProperty());
@@ -77,7 +83,8 @@ public class Host_ManagePropertyController implements Initializable {
             protected void updateItem(Property property, boolean empty) {
                 super.updateItem(property, empty);
                 if (empty || property == null) {
-                    manageProperty_btn.setText("Select a property");
+//                    manageProperty_btn.setText("Select a property");
+                    UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
                     setText(null);
                     setOnMouseClicked(null); // Remove click handler for empty cells
                 } else {
@@ -93,6 +100,10 @@ public class Host_ManagePropertyController implements Initializable {
         });
 
         System.out.println("Host_ManagePropertyController initialized");
+    }
+
+    private void decor(){
+
     }
 
     private void searchProperty() {
@@ -165,12 +176,13 @@ public class Host_ManagePropertyController implements Initializable {
     private void isManagingThisProperty(Property property){
         for(Property p: managedProperties.get()){
             if(p.getId() == property.getId()){
-                manageProperty_btn.setText("Unmanage");
+//                manageProperty_btn.setText("Unmanage");
+                UIDecorator.setDangerButton(manageProperty_btn, UIDecorator.DELETE, "Unmanaged");
                 manageProperty_btn.setOnAction(event -> unmanageProperty(property));
                 return;
             }
         }
-        manageProperty_btn.setText("Request Manage");
+        UIDecorator.setSuccessButton(manageProperty_btn, UIDecorator.ADD, "Request Manage");
         manageProperty_btn.setOnAction(event -> requestManageProperty(property));
     }
 

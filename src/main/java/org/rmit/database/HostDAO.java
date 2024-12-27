@@ -2,18 +2,19 @@ package org.rmit.database;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
+
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 import org.rmit.view.Host.HostViewFactory;
 
+
 import java.util.Collections;
 import java.util.List;
 
-public class HostDAO extends DAOInterface<Host> {
+public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host> {
 
     @Override
     public boolean add(Host host) {

@@ -19,6 +19,8 @@ public class InitController implements Initializable {
 
     public void openRegister(){
         try{
+//            parent_BorderPane.getStylesheets().add(FXSkins.getStylesheetURL());
+
             parent_BorderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getRegisterView());
         }
         catch (Exception e){

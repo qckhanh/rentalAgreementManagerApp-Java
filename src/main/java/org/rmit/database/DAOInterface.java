@@ -23,7 +23,7 @@ public abstract class DAOInterface<T>{
     public abstract boolean delete(T t);
     public abstract T get(int id);
     public abstract List<T> getAll();
-    public abstract T validateLogin(String usernameOrContact, String password);
+//    public abstract T validateLogin(String usernameOrContact, String password);
     public abstract EntityGraph<T> createEntityGraph(Session session);
     public abstract List<T> search(String keyword);
 
