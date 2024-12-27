@@ -6,6 +6,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
 
+import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Renter;
+import org.rmit.view.Host.HostViewFactory;
+
+
+import java.util.Collections;
 import java.util.List;
 
 public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host> {
@@ -121,7 +127,29 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
 
     @Override
     public List<Host> search(String keyword) {
-        return null;
+        Session session = DatabaseUtil.getSession();
+        List<Host> result = Collections.emptyList(); // Properly initialized
+
+        try {
+            // JPQL to search by address (partial match) or ID (exact match)
+            String jpql = "SELECT c FROM Host c " +
+                    "WHERE LOWER(c.name) LIKE :nameKeyword " +
+                    "OR c.id = :idKeyword " +
+                    "OR LOWER(c.username) LIKE :usernameKeyword";
+
+            result = session.createQuery(jpql, Host.class)
+                    .setMaxResults(10) // Limit results
+                    .setParameter("nameKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setParameter("idKeyword", parseId(keyword))
+                    .setParameter("usernameKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseUtil.shutdown(session);
+        }
+        return result;
     }
 
 }

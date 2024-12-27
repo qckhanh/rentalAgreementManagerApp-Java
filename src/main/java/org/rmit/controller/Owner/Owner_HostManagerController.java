@@ -12,10 +12,7 @@ import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Owner_HostManagerController implements Initializable {
     public Label welcomeLabel;
@@ -63,6 +60,11 @@ public class Owner_HostManagerController implements Initializable {
     }
 
     private void searchHost() {
+        if (search_input.getText().isBlank()) return;
+        HostDAO hostDAO = new HostDAO();
+        List<Host> lists = hostDAO.search(search_input.getText());
+        Set<Host> hostSet = new HashSet<>(lists);
+        loadHost(hostSet);
     }
 
     private void loadHost(Set<Host> h) {
