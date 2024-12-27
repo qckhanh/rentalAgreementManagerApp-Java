@@ -22,7 +22,7 @@
             stylesheets="@../../Style/Renter/dashboard.css"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.rmit.controller.Owner.Owner_HostManager">
+            fx:controller="org.rmit.controller.Owner.Owner_HostManagerController">
     <children>
         <Label fx:id="welcomeLabel" layoutX="47.0" layoutY="23.0" prefHeight="59.0" prefWidth="281.0" text="Cooperating Host">
             <font>
