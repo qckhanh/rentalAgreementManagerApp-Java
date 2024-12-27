@@ -1,9 +1,8 @@
 package org.rmit;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.rmit.database.*;
+import org.rmit.database.DatabaseUtil;
 import org.rmit.model.ModelCentral;
-
 
 public class RentalAgreementApplication extends Application {
 

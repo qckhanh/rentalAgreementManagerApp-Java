@@ -3,7 +3,9 @@ package org.rmit.controller.Renter;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Host.HOST_MENU_OPTION;
@@ -23,15 +25,24 @@ public class Renter_MenuController implements Initializable {
     public Button paymentManager_btn;
     public Button rentalManager_btn;
     public Button makePayment_btn;
+    public ImageView avatar_ImageView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userType_label.setText(Session.getInstance().getCurrentUser().getClass().getSimpleName());
 
+        avatar_ImageView.setImage(ImageUtils.byteToImage(Session.getInstance().getCurrentUser().getProfileAvatar()));
+        Session.getInstance().getCurrentUser().profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+        });
+
         name_label.setText(Session.getInstance().getCurrentUser().getName());
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 name_label.setText(newValue)
         );
+        Session.getInstance().getCurrentUser().profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+        });
 
         editProfile_btn.setOnAction(e -> editProfile());
         dashboard_btn.setOnAction(e -> openDashboard());

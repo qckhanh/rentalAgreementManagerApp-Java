@@ -48,6 +48,7 @@ public class StartViewFactory {
         return loginView;
     }
     public AnchorPane getRegisterView(){
+
         if (registerView == null){
             try {
                 registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
@@ -72,6 +73,7 @@ public class StartViewFactory {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);

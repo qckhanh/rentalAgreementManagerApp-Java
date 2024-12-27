@@ -1,21 +1,15 @@
 package org.rmit.database;
 
 import jakarta.persistence.*;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.Agreement.Payment;
-import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.Persons.Host;
-import org.rmit.model.Persons.Owner;
-import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.Property;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-public class RenterDAO extends DAOInterface<Renter> {
+public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<Renter>, ImagesDAO<Renter> {
 
     @Override
     public boolean add(Renter renter) {
@@ -39,7 +33,7 @@ public class RenterDAO extends DAOInterface<Renter> {
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.update(renter);
+            session.merge(renter);
 
             transaction.commit();
             DatabaseUtil.shutdown(session);
@@ -124,7 +118,7 @@ public class RenterDAO extends DAOInterface<Renter> {
     public EntityGraph<Renter> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
-        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password", "profileAvatar");
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         paymentGraph(entityGraph.addSubgraph("payments"));
@@ -138,4 +132,20 @@ public class RenterDAO extends DAOInterface<Renter> {
     }
 
 
+    @Override
+    public List<byte[]> getImageByID(int id) {
+        List<byte[]> list = Collections.emptyList();
+        Session session = DatabaseUtil.getSession();
+        try{
+            String hql = "SELECT r.profileAvatar FROM Renter r WHERE id = :id";
+            list = session.createQuery(hql, byte[].class)
+                    .setParameter("id", id)
+                    .list();
+        }
+        catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
+        DatabaseUtil.shutdown(session);
+        return list;
+    }
 }

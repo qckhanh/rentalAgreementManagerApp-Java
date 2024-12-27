@@ -103,10 +103,6 @@ public class PaymentDAO extends DAOInterface<Payment> {
         }
     }
 
-    @Override
-    public Payment validateLogin(String usernameOrContact, String password) {
-        return null;
-    }
 
     @Override
     public EntityGraph<Payment> createEntityGraph(Session session) {

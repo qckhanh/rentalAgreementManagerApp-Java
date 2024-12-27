@@ -94,10 +94,6 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
         }
     }
 
-    @Override
-    public RentalAgreement validateLogin(String usernameOrContact, String password) {
-        return null;
-    }
 
     @Override
     public EntityGraph<RentalAgreement> createEntityGraph(Session session) {

@@ -1,5 +1,4 @@
 module org.rmit.demo {
-    requires javafx.controls;
     requires javafx.fxml;
     requires jakarta.persistence;
     requires org.hibernate.orm.core;
@@ -9,7 +8,9 @@ module org.rmit.demo {
     requires com.fasterxml.classmate;
     requires java.transaction.xa;
     requires org.postgresql.jdbc;
-    requires java.desktop;
+    requires javafx.controls;
+//    requires com.pixelduke.fxskins;
+//    requires atlantafx.base;
 
 
     //model
