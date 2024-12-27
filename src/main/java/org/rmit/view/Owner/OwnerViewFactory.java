@@ -3,18 +3,11 @@ package org.rmit.view.Owner;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.controller.Owner.OwnerController;
-import org.rmit.controller.Owner.Owner_UpdatePropertiesController;
-import org.rmit.controller.Renter.RenterController;
-import org.rmit.view.Renter.PAYMENT_FILTER;
-import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class OwnerViewFactory {
     String OWNER_PATH = "/org/rmit/demo/FXMLs/Owner/";
@@ -26,6 +19,7 @@ public class OwnerViewFactory {
     private AnchorPane owner_propertyManagerView;
     private AnchorPane owner_addPropertyView;
     private AnchorPane owner_updatePropertyView;
+    private AnchorPane owner_hostManagerView;
 
     public OwnerViewFactory() {
         ownerSelectedMenuItem = new SimpleObjectProperty<>(OWNER_MENU_OPTION.DASHBOARD);
@@ -73,6 +67,18 @@ public class OwnerViewFactory {
             }
         }
         return  owner_propertyManagerView;
+    }
+
+    public AnchorPane getOwner_hostManagerView() {
+        if (owner_hostManagerView == null) {
+            try {
+                owner_hostManagerView = new FXMLLoader(getClass().getResource(OWNER_PATH + "hostManager.fxml")).load();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return owner_hostManagerView;
     }
 
     //helper method

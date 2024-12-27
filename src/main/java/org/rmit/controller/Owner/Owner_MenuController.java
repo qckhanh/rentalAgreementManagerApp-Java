@@ -18,6 +18,7 @@ public class Owner_MenuController implements Initializable {
     public Button dashboard_btn;
     public Button logOut_btn;
     public Button propertiesManager_btn;
+    public Button hostManager_btn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -29,6 +30,7 @@ public class Owner_MenuController implements Initializable {
         dashboard_btn.setOnAction(e->openDashboard());
         propertiesManager_btn.setOnAction(e->propertiesManager());
         logOut_btn.setOnAction(e->logOut());
+        hostManager_btn.setOnAction(e->hostManager());
     }
 
     private void logOut() {
@@ -51,6 +53,10 @@ public class Owner_MenuController implements Initializable {
 
     private void editProfile() {
         ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.EDIT_PROFILE);
+    }
+
+    private void hostManager() {
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.HOST_MANAGER);
     }
 
 
