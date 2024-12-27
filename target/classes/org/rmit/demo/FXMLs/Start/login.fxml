@@ -13,24 +13,10 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../../Style/Start/login.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Start.LoginController">
    <children>
-      <VBox alignment="CENTER" layoutX="342.0" layoutY="122.0" prefHeight="498.0" prefWidth="341.0">
+      <VBox alignment="CENTER" layoutX="342.0" layoutY="229.0" prefHeight="421.0" prefWidth="341.0" spacing="20.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="107.0" prefWidth="376.0" spacing="10.0">
-               <children>
-                  <Label text="Welcome back">
-                     <font>
-                        <Font name="System Bold" size="40.0" />
-                     </font>
-                  </Label>
-                  <Label text="We're excited to see you again">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-            <ChoiceBox fx:id="userLOGINType_ChoiceBox" prefHeight="40.0" prefWidth="150.0" />
-            <VBox prefHeight="93.0" prefWidth="318.0">
+            <ChoiceBox fx:id="userLOGINType_ChoiceBox" prefHeight="43.0" prefWidth="150.0" />
+            <VBox prefHeight="90.0" prefWidth="341.0">
                <children>
                   <Label fx:id="username_lbl" prefHeight="25.0" prefWidth="241.0" text="USERNAME, EMAIL OR PHONE">
                      <font>
@@ -44,7 +30,7 @@
                <children>
                   <Label fx:id="password" prefHeight="25.0" prefWidth="241.0" text="PASSWORD">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="17.0" />
                      </font>
                   </Label>
                   <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="375.0" spacing="3.0">
@@ -86,15 +72,29 @@
             </Label>
          </children>
       </VBox>
-      <Label fx:id="password_err" alignment="CENTER" contentDisplay="CENTER" layoutX="712.0" layoutY="417.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
+      <Label fx:id="password_err" alignment="CENTER" contentDisplay="CENTER" layoutX="700.0" layoutY="430.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="username_err" alignment="CENTER" contentDisplay="CENTER" layoutX="712.0" layoutY="300.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
+      <Label fx:id="username_err" alignment="CENTER" contentDisplay="CENTER" layoutX="700.0" layoutY="332.0" prefHeight="43.0" prefWidth="207.0" text="Incorrect username or password">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
+      <VBox alignment="CENTER" layoutX="325.0" layoutY="27.0" prefHeight="107.0" prefWidth="376.0" spacing="10.0">
+         <children>
+            <Label prefHeight="58.0" prefWidth="379.0" text="4Knights of Houses">
+               <font>
+                  <Font name="System Bold" size="40.0" />
+               </font>
+            </Label>
+            <Label text="Protecting Your Quest for the Right Lease">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

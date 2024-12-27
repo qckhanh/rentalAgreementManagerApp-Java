@@ -1,13 +1,18 @@
 package org.rmit.view.Start;
 
+import atlantafx.base.controls.Notification;
+import atlantafx.base.theme.Styles;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.rmit.controller.Start.InitController;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
@@ -48,6 +53,7 @@ public class StartViewFactory {
         return loginView;
     }
     public AnchorPane getRegisterView(){
+
         if (registerView == null){
             try {
                 registerView = new FXMLLoader(getClass().getResource(FXML_PATH + "register.fxml")).load();
@@ -72,6 +78,7 @@ public class StartViewFactory {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);
@@ -83,13 +90,47 @@ public class StartViewFactory {
     }
 
     public boolean confirmMessage(String message){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Rental Agreement Application");
-        alert.setHeaderText(message);
-        alert.setContentText("ALL CHANGES CANNOT BE REVERTED");
-        alert.setResizable(false);
-        alert.showAndWait();
-        return alert.getResult().getText().equals("OK");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText(message);
+            alert.setContentText("ALL CHANGES CANNOT BE REVERTED");
+
+            ButtonType yesBtn = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType cancelBtn = new ButtonType(
+                    "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE
+            );
+
+            alert.getButtonTypes().setAll(yesBtn, cancelBtn);
+            alert.showAndWait();
+            return alert.getResult().equals(yesBtn);
+    }
+
+    public void showNotification(String message){
+//        var success = new Notification(
+//                message,
+//                new FontIcon(Material2OutlinedAL.HELP_OUTLINE)
+//        );
+
+        var basicTtp = new Tooltip("FAKER.harryPotter().spell()");
+        basicTtp.setHideDelay(Duration.seconds(3));
+
+        var basicLbl = new Label("Basic");
+        basicLbl.setTooltip(basicTtp);
+
+        var longTtp = new Tooltip("ABC");
+        longTtp.setHideDelay(Duration.seconds(3));
+        longTtp.setPrefWidth(200);
+        longTtp.setWrapText(true);
+
+        var longLbl = new Label("Long Text");
+        longLbl.setTooltip(longTtp);
+
+
+
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(new VBox(longLbl)));
+        stage.show();
     }
 
     public void logOut(Button btn){

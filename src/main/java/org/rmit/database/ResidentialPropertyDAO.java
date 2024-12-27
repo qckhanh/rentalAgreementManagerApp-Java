@@ -97,10 +97,6 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         }
     }
 
-    @Override
-    public ResidentialProperty validateLogin(String usernameOrContact, String password) {
-        return null;
-    }
 
     @Override
     public EntityGraph<ResidentialProperty> createEntityGraph(Session session) {

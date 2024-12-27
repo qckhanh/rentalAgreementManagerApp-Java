@@ -20,6 +20,9 @@ public abstract class Person {
     @Column(unique = true)
     protected String contact;
 
+    @Lob
+    protected byte[] profileAvatar;
+
     @Column(unique = true)
     protected String username;
     protected String password;
@@ -37,6 +40,8 @@ public abstract class Person {
      protected StringProperty usernameProperty = new SimpleStringProperty();
     @Transient
      protected StringProperty passwordProperty = new SimpleStringProperty();
+    @Transient
+    protected ObjectProperty<byte[]> profileAvatarProperty = new SimpleObjectProperty<>();
 
     @PostLoad
     protected abstract void synWithSimpleProperty();
@@ -149,6 +154,21 @@ public abstract class Person {
     public StringProperty passwordPropertyProperty() {
         return passwordProperty;
     }
+
+    public byte[] getProfileAvatar() {
+        return profileAvatar;
+    }
+
+    public void setProfileAvatar(byte[] profileAvatar) {
+        this.profileAvatarProperty.set(profileAvatar);
+        this.profileAvatar = profileAvatarProperty.get();
+    }
+
+
+    public ObjectProperty<byte[]> profileAvatarPropertyProperty() {
+        return profileAvatarProperty;
+    }
+
 
     @Override
     public String toString() {

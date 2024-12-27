@@ -4,6 +4,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Host.HOST_MENU_OPTION;
@@ -40,6 +41,17 @@ public class Host_MenuController implements Initializable {
         propertyManager_btn.setOnAction(e -> manageProperty());
         agreement_btn.setOnAction(e -> manageAgreement());
         ownerManager_btn.setOnAction(e -> manageOwner());
+
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
+        UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY, "Payment Manager");
+        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON, "Cooperating Owner");
+        UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL, "Agreement Manager");
     }
 
 

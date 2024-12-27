@@ -37,6 +37,7 @@ public class Renter extends Person {
         this.contactProperty.setValue(this.contact);
         this.usernameProperty.setValue(this.username);
         this.passwordProperty.setValue(this.password);
+        this.profileAvatarProperty.setValue(this.profileAvatar); // new for avatar
 
         this.agreementListProperty.setValue(this.agreementList);
         this.paymentsProperty.setValue(this.payments);
