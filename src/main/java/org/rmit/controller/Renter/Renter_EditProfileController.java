@@ -6,7 +6,10 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Person;
@@ -16,6 +19,8 @@ import org.rmit.model.Session;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static org.rmit.Helper.UIDecorator.EDIT;
 
 public class Renter_EditProfileController implements Initializable {
     public TextField newName_input;
@@ -32,6 +37,7 @@ public class Renter_EditProfileController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        decorElement();
         // Set default values from current user
         newName_input.setText(currentUser.getName());
         newContact_input.setText(currentUser.getContact());
@@ -56,6 +62,12 @@ public class Renter_EditProfileController implements Initializable {
         edit_btn.setDisable(false);
         edit_btn.setOnAction(event -> editProfile());
         avatarUpdate_btn.setOnAction(event -> updateAvatar());
+    }
+
+    private void decorElement(){
+        UIDecorator.setDangerButton(edit_btn, new FontIcon(Feather.EDIT), "Edit");
+        UIDecorator.buttonIcon(avatarUpdate_btn, EDIT);
+//        UIDecorator.decorPasswordFields((CustomTextField)newPassword_input);
     }
 
     private void editProfile(){

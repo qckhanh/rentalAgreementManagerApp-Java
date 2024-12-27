@@ -8,7 +8,12 @@ module org.rmit.demo {
     requires com.fasterxml.classmate;
     requires java.transaction.xa;
     requires org.postgresql.jdbc;
-    requires javafx.controls;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.feather;
+    requires atlantafx.base;
+    requires org.kordamp.ikonli.material2;
+    requires java.management;
+    requires java.desktop;
 //    requires com.pixelduke.fxskins;
 //    requires atlantafx.base;
 

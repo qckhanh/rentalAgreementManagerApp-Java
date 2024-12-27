@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Host.HOST_MENU_OPTION;
@@ -50,6 +51,17 @@ public class Renter_MenuController implements Initializable {
         paymentManager_btn.setOnAction(e -> paymentManager());
         rentalManager_btn.setOnAction(e -> rentalManager());
         makePayment_btn.setOnAction(e -> makePayment());
+
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
+        UIDecorator.setNormalButton(paymentManager_btn, UIDecorator.PAYMENT, "Payment Manager");
+        UIDecorator.setNormalButton(makePayment_btn, UIDecorator.NEW_PAYMENT, "New Payment");
+        UIDecorator.setNormalButton(rentalManager_btn, UIDecorator.RENTAL, "Rental Manager");
     }
 
     private void logOut(){

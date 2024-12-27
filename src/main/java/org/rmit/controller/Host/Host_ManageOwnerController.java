@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
@@ -56,6 +57,11 @@ public class Host_ManageOwnerController implements Initializable {
                 }
             }
         });
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH);
     }
 
     private void searchOwner() {

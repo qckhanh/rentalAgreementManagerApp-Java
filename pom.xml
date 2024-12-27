@@ -110,27 +110,32 @@
             <version>4.7.0-9.1.2</version>
         </dependency>
 
-<!--        &lt;!&ndash;FXSkin&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.pixelduke</groupId>-->
-<!--            <artifactId>FXSkins</artifactId>-->
-<!--            <version>1.1.0</version>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/io.github.mkpaz/atlantafx-base -->
+        <dependency>
+            <groupId>io.github.mkpaz</groupId>
+            <artifactId>atlantafx-base</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
-<!--        &lt;!&ndash;FXThemes&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.pixelduke</groupId>-->
-<!--            <artifactId>fxthemes</artifactId>-->
-<!--            <version>1.5.1</version>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-javafx -->
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-javafx</artifactId>
+            <version>12.3.1</version>
+        </dependency>
 
-<!--        &lt;!&ndash;Atlantafx&ndash;&gt;-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.github.mkpaz/atlantafx-base &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>io.github.mkpaz</groupId>-->
-<!--            <artifactId>atlantafx-base</artifactId>-->
-<!--            <version>2.0.1</version>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-material2-pack -->
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-material2-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-feather-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
 
 
     </dependencies>
