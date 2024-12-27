@@ -22,6 +22,7 @@ public class OwnerController implements Initializable {
                 case PROPERTIES_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getOwnerViewFactory().getOwner_propertyManagerView());
                 case ADD_PROPERTY -> borderPane.setCenter(ModelCentral.getInstance().getOwnerViewFactory().getOwner_addPropertyView());
                 case UPDATE_PROPERTY -> borderPane.setCenter(ModelCentral.getInstance().getOwnerViewFactory().getOwner_updatePropertyView());
+                case HOST_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getOwnerViewFactory().getOwner_hostManagerView());
             }
         }));
         ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
