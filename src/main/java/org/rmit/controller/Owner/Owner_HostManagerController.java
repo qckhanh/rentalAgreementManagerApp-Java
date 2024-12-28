@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
@@ -35,6 +36,7 @@ public class Owner_HostManagerController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH);
         search_btn.setOnAction(e->searchHost());
         search_input.setOnAction(e->searchHost());
         search_input.textProperty().addListener((observableValue, s, t1) -> {
@@ -78,21 +80,17 @@ public class Owner_HostManagerController implements Initializable {
 
 
     private void showDetails(Host h) {
-        if (h == null) {
-            return;
-        }
+        if (h == null)  return;
         int id = Integer.parseInt(h.getId()+"");
         if (hostMap.containsKey(id)) {
             h = hostMap.get(id);
-        }
-        else {
-            HostDAO hostDAO = new HostDAO();
-            h = hostDAO.get(id);
-            hostMap.put(id, h);
-        }
-        if (h == null) {
             return;
         }
+        HostDAO hostDAO = new HostDAO();
+        h = hostDAO.get(id);
+        hostMap.put(id, h);
+
+
         D_input.setText(h.getId()+"");
         username_input.setText(h.getUsername());
         fullName_input.setText(h.getName());
