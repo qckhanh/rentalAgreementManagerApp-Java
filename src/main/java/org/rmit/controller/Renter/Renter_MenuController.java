@@ -30,29 +30,32 @@ public class Renter_MenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //usertype
         userType_label.setText(Session.getInstance().getCurrentUser().getClass().getSimpleName());
 
+        //avatar
         avatar_ImageView.setImage(ImageUtils.byteToImage(Session.getInstance().getCurrentUser().getProfileAvatar()));
         Session.getInstance().getCurrentUser().profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
             avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
         });
 
+        //name
         name_label.setText(Session.getInstance().getCurrentUser().getName());
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 name_label.setText(newValue)
         );
-        Session.getInstance().getCurrentUser().profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
-            avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
-        });
 
+        setActionButton();
+        decor();
+    }
+
+    private void setActionButton(){
         editProfile_btn.setOnAction(e -> editProfile());
         dashboard_btn.setOnAction(e -> openDashboard());
         logOut_btn.setOnAction(e -> logOut());
         paymentManager_btn.setOnAction(e -> paymentManager());
         rentalManager_btn.setOnAction(e -> rentalManager());
         makePayment_btn.setOnAction(e -> makePayment());
-
-        decor();
     }
 
     private void decor(){

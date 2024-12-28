@@ -83,8 +83,9 @@ public class Host extends Person {
     public void removeProperty(Property property){
         this.propertiesManaged.remove(property);
         this.propertiesManagedProperty.setValue(this.propertiesManaged);
+
         for(Property p : this.propertiesManaged){
-            if(p.getOwner() == property.getOwner()) return;
+            if(p.getOwner().getId() == property.getOwner().getId()) return;
         }
         if(property.getOwner() != null){
             this.cooperatingOwners.remove(property.getOwner());

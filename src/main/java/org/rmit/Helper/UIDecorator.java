@@ -88,7 +88,8 @@ public class UIDecorator {
         button.setGraphic(icon);
         button.getStyleClass().addAll(
                 Styles.BUTTON_CIRCLE,
-                Styles.WARNING
+                Styles.WARNING,
+                Styles.ACCENT
         );
         button.setContentDisplay(ContentDisplay.CENTER);
         button.setMnemonicParsing(true);

@@ -14,6 +14,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -36,7 +39,7 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
-    public TableView properties_tableView;
+    public TableView<Property> properties_tableView;
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
 //    public ObjectProperty<Property> property = new SimpleObjectProperty<>();
@@ -50,6 +53,7 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        decor();
         propertyTypeFilter_comboBox.setPromptText("Property type");
         propertyStatusFilter_comboBox.setPromptText("Property status");
 
@@ -147,29 +151,34 @@ public class Owner_PropertiesManagerController implements Initializable {
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             deletePropertyButton.setDisable(newValue == null);
         });
-
-        deletePropertyButton.setOnAction(e-> {
-            Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
-            if (selectedProperty != null) {
-                if (selectedProperty instanceof ResidentialProperty) {
-                    ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-                    rpDAO.delete((ResidentialProperty) selectedProperty);
-                }
-                else if (selectedProperty instanceof CommercialProperty) {
-                    CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-                    cpDAO.delete((CommercialProperty) selectedProperty);
-                }
-            }
-        });
-
-        addPropertyButton.setOnAction(e -> addProperty());
-
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             updatePropertyButton.setDisable(newValue == null);
         });
 
+        deletePropertyButton.setOnAction(e-> deleteProperty());
+        addPropertyButton.setOnAction(e -> addProperty());
         updatePropertyButton.setOnAction(e-> updateProperty());
 
+    }
+
+    private void decor(){
+        UIDecorator.setSuccessButton(addPropertyButton, UIDecorator.ADD, null);
+        UIDecorator.setNormalButton(updatePropertyButton, new FontIcon(Feather.EDIT), null);
+        UIDecorator.setDangerButton(deletePropertyButton, UIDecorator.DELETE, null);
+    }
+
+    private void deleteProperty(){
+        Property selectedProperty = properties_tableView.getSelectionModel().getSelectedItem();
+        if (selectedProperty != null) {
+            if (selectedProperty instanceof ResidentialProperty) {
+                ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+                rpDAO.delete((ResidentialProperty) selectedProperty);
+            }
+            else if (selectedProperty instanceof CommercialProperty) {
+                CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+                cpDAO.delete((CommercialProperty) selectedProperty);
+            }
+        }
     }
 
     private void addProperty() {
@@ -184,8 +193,6 @@ public class Owner_PropertiesManagerController implements Initializable {
         }
     }
 
-
-
     private Set<Property> noFilter() {
         return ((Owner) currentUser.get()).getPropertiesOwned();
     }
@@ -195,7 +202,6 @@ public class Owner_PropertiesManagerController implements Initializable {
         propertiesTableView.addAll(propertySet);
         properties_tableView.setItems(propertiesTableView);
     }
-
 
     private <T> TableColumn<Property, String> createColumn(String columnName, Function<Property, T> propertyExtractor) {
         TableColumn<Property, String> column = new TableColumn<>(columnName);

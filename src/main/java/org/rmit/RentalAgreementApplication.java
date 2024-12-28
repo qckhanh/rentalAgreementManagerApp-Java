@@ -9,8 +9,10 @@ import javafx.stage.Stage;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.DatabaseUtil;
+import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 
 import javax.management.Notification;
@@ -33,6 +35,12 @@ public class RentalAgreementApplication extends Application {
         ModelCentral.getInstance().getStartViewFactory().startApplication();
 
 //        ModelCentral.getInstance().getStartViewFactory().showNotification("ABC");
+
+//        ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
+//        ResidentialProperty property = dao.get(11);
+//        System.out.println(property.getOwner().getName()); // OK
+//        dao.delete(property);
+//        System.out.println("Deleted");
 
 
 

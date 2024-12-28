@@ -126,6 +126,7 @@ public class Host_ManagePropertyController implements Initializable {
 
     private void unmanageProperty(Property property){
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
+
         ((Host)Session.getInstance().getCurrentUser()).removeProperty(property);
         managedProperties.get().remove(property);
         property_listView.setItems(getPropertyList(managedProperties.get()));

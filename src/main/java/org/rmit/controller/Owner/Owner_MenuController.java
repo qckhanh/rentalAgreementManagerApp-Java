@@ -3,10 +3,14 @@ package org.rmit.controller.Owner;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
+import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,13 +23,37 @@ public class Owner_MenuController implements Initializable {
     public Button logOut_btn;
     public Button propertiesManager_btn;
     public Button hostManager_btn;
+    public ImageView avatar_ImageView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         userType_label.setText(Session.getInstance().getCurrentUser().getClass().getSimpleName());
 
-        name_label.setText(Session.getInstance().getCurrentUser().getName());
+        //avatar
+        avatar_ImageView.setImage(ImageUtils.byteToImage(Session.getInstance().getCurrentUser().getProfileAvatar()));
+        Session.getInstance().getCurrentUser().profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+        });
 
+        //name
+        name_label.setText(Session.getInstance().getCurrentUser().getName());
+        Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
+                name_label.setText(newValue)
+        );
+
+        setActionButton();
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
+        UIDecorator.setNormalButton(propertiesManager_btn, UIDecorator.PROPERTY, "Properties Manager");
+        UIDecorator.setNormalButton(hostManager_btn, UIDecorator.OTHER_PERSON, "Host Manager");
+    }
+
+    private void setActionButton(){
         editProfile_btn.setOnAction(e->editProfile());
         dashboard_btn.setOnAction(e->openDashboard());
         propertiesManager_btn.setOnAction(e->propertiesManager());
@@ -33,12 +61,11 @@ public class Owner_MenuController implements Initializable {
         hostManager_btn.setOnAction(e->hostManager());
     }
 
+
     private void logOut() {
-        Session.getInstance().setCurrentUser(null);
-        Stage stage = (Stage) logOut_btn.getScene().getWindow();
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getOwnerViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(stage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard() {

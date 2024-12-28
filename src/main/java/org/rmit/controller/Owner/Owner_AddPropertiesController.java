@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.rmit.database.CommercialPropertyDAO;
+import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Owner;
@@ -36,13 +37,13 @@ public class Owner_AddPropertiesController implements Initializable {
         typeOfProperty_choiceBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == PropertyType.COMMERCIAL) {
                 clearData();
-                enableCommercialFields();
-                disableResidentialFields();
+                setDisableCommercialFields(false);
+                setDisableResidentialFields(true);
             }
             else if (newValue == PropertyType.RESIDENTIAL) {
                 clearData();
-                enableResidentialFields();
-                disableCommercialFields();
+                setDisableResidentialFields(false);
+                setDisableCommercialFields(true);
             }
             returnTableView_btn.setOnAction(e -> returnTableView());
             addProperty_btn.setOnAction(e -> addProperty());
@@ -59,33 +60,19 @@ public class Owner_AddPropertiesController implements Initializable {
                 PropertyStatus.UNDER_MAINTENANCE,
                 PropertyStatus.RENTED
         ));
-
     }
 
-    private void enableCommercialFields() {
-        propertyBtype_txtf.setDisable(false);
-        propertySquareMeters_txtf.setDisable(false);
-        propertyPSpaces_txtf.setDisable(false);
+    private void setDisableCommercialFields(boolean status) {
+        propertyBtype_txtf.setDisable(status);
+        propertySquareMeters_txtf.setDisable(status);
+        propertyPSpaces_txtf.setDisable(status);
     }
 
-    private void disableCommercialFields() {
-        propertyBtype_txtf.setDisable(true);
-        propertySquareMeters_txtf.setDisable(true);
-        propertyPSpaces_txtf.setDisable(true);
-    }
-
-    private void enableResidentialFields() {
-        propertyGarden_chbox.setDisable(false);
-        propertyPet_chBox.setDisable(false);
-        propertyBedrooms_txtf.setDisable(false);
-        propertyRooms_txtf.setDisable(false);
-    }
-
-    private void disableResidentialFields() {
-        propertyGarden_chbox.setDisable(true);
-        propertyPet_chBox.setDisable(true);
-        propertyBedrooms_txtf.setDisable(true);
-        propertyRooms_txtf.setDisable(true);
+    private void setDisableResidentialFields(boolean status) {
+        propertyGarden_chbox.setDisable(status);
+        propertyPet_chBox.setDisable(status);
+        propertyBedrooms_txtf.setDisable(status);
+        propertyRooms_txtf.setDisable(status);
     }
 
     private void clearData() {
@@ -105,20 +92,20 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void addProperty() {
+        DAOInterface dao = null;
         if (typeOfProperty_choiceBox.getValue() == PropertyType.COMMERCIAL) {
-            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+            dao = new CommercialPropertyDAO();
             CommercialProperty cp = new CommercialProperty();
-
             CommercialPropertyFactory(cp);
-            if (cpDAO.add(cp)) System.out.println("added");
+            if (dao.add(cp)) System.out.println("added");
             else System.out.println("Nope!");
         }
         else if (typeOfProperty_choiceBox.getValue() == PropertyType.RESIDENTIAL) {
-            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+            dao = new ResidentialPropertyDAO();
             ResidentialProperty rp = new ResidentialProperty();
 
             ResidentialPropertyFactory(rp);
-            if (rpDAO.add(rp)) System.out.println("added");
+            if (dao.add(rp)) System.out.println("added");
             else System.out.println("Nope!!");
         }
     }

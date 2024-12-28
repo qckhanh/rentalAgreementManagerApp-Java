@@ -10,6 +10,7 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.database.DAOInterface;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Person;
@@ -38,36 +39,38 @@ public class Renter_EditProfileController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         decorElement();
-        // Set default values from current user
+        innitText();
+        addListener();
+        setDisableAll(true);
+        edit_btn.setDisable(false);
+        edit_btn.setOnAction(event -> editProfile());
+        avatarUpdate_btn.setOnAction(event -> updateAvatar());
+    }
+
+    private void innitText(){
         newName_input.setText(currentUser.getName());
         newContact_input.setText(currentUser.getContact());
         newDOB_input.setValue(currentUser.getDateOfBirth());
         newPassword_input.setText(currentUser.getPassword());
         newUsername_input.setText(currentUser.getUsername());
         avatar_ImageView.setImage(ImageUtils.byteToImage(currentUser.getProfileAvatar()));
-        // Add listeners to monitor changes
+        edit_btn.setText("Edit");
+    }
+
+    private void addListener(){
         newName_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newContact_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
-//        avatar_ImageView.imageProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
-        //
         currentUser.profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
             avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
         });
-        // Initially disable all fields
-        setDisableAll(true);
-        edit_btn.setText("Edit");
-        edit_btn.setDisable(false);
-        edit_btn.setOnAction(event -> editProfile());
-        avatarUpdate_btn.setOnAction(event -> updateAvatar());
     }
 
     private void decorElement(){
         UIDecorator.setDangerButton(edit_btn, new FontIcon(Feather.EDIT), "Edit");
         UIDecorator.buttonIcon(avatarUpdate_btn, EDIT);
-//        UIDecorator.decorPasswordFields((CustomTextField)newPassword_input);
     }
 
     private void editProfile(){
@@ -89,7 +92,7 @@ public class Renter_EditProfileController implements Initializable {
 
     private void saveChanges() {
         // Save the changes to the currentUser object
-        RenterDAO renterDAO = new RenterDAO();
+        DAOInterface dao = new RenterDAO();
 
         currentUser.setName(newName_input.getText());
         currentUser.setUsername(newUsername_input.getText());
@@ -98,9 +101,7 @@ public class Renter_EditProfileController implements Initializable {
         currentUser.setPassword(newPassword_input.getText());
         if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
 
-        renterDAO.update((Renter)currentUser);
-
-
+        dao.update((Renter)currentUser);
 
         // Reset fields and button
         setDisableAll(true);
