@@ -36,13 +36,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Owner_PropertiesManagerController implements Initializable {
-
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
     public TableView<Property> properties_tableView;
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
-//    public ObjectProperty<Property> property = new SimpleObjectProperty<>();
+    //    public ObjectProperty<Property> property = new SimpleObjectProperty<>();
     public ObjectProperty<PropertyStatus> selectedPropertyStatus = new SimpleObjectProperty<>();
     public ObjectProperty<PropertyType> selectedPropertyType = new SimpleObjectProperty<>();
     public Label welcomeLabel;
@@ -152,12 +151,12 @@ public class Owner_PropertiesManagerController implements Initializable {
             deletePropertyButton.setDisable(newValue == null);
         });
 
-      
+
 
         deletePropertyButton.setOnAction(e-> deleteProperty());
 
         addPropertyButton.setOnAction(e -> addProperty());
-      
+
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             updatePropertyButton.setDisable(newValue == null);
         });
@@ -173,7 +172,7 @@ public class Owner_PropertiesManagerController implements Initializable {
         UIDecorator.setNormalButton(updatePropertyButton, new FontIcon(Feather.EDIT), null);
         UIDecorator.setDangerButton(deletePropertyButton, UIDecorator.DELETE, null);
     }
-  
+
     private void deleteProperty(){
         boolean success = false;
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
@@ -189,8 +188,7 @@ public class Owner_PropertiesManagerController implements Initializable {
         }
         if (success) {
             properties_tableView.getItems().remove(selectedProperty);
-            properties_tableView.refresh();  cpDAO.delete((CommercialProperty) selectedProperty);
-            }
+            properties_tableView.refresh();
         }
     }
 
@@ -256,3 +254,5 @@ public class Owner_PropertiesManagerController implements Initializable {
         return filteredSet;
     }
 }
+
+
