@@ -14,7 +14,7 @@ import java.util.Set;
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Property {
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(/*cascade = CascadeType.ALL, */fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = true)
     private Owner owner;
 
@@ -35,7 +35,7 @@ public abstract class Property {
     @ManyToMany(mappedBy = "propertiesManaged")
     private Set<Host> hosts = new HashSet<>();
 
-    @OneToMany(mappedBy = "property"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
+    @OneToMany(mappedBy = "property", orphanRemoval = true)
     private Set<RentalAgreement> agreementList = new HashSet<>();
 
     // JavaFX Properties (for binding)

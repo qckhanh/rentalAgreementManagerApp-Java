@@ -14,7 +14,7 @@ public class Owner extends Person {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Property> propertiesOwned = new HashSet<>();
 
-    @ManyToMany(mappedBy = "cooperatingOwners"/*, cascade = CascadeType.ALL*/)
+    @ManyToMany(mappedBy = "cooperatingOwners", cascade = CascadeType.PERSIST)
     private Set<Host> hosts = new HashSet<>();
 ///////////////////////////////
     @Transient

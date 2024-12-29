@@ -91,10 +91,10 @@ public class RegisterController implements Initializable {
         return isValid;
     }
     void register() {
-        if(!validateInput()){
-            System.out.println("Invalid Input");
-            return;
-        }
+//        if(!validateInput()){
+//            System.out.println("Invalid Input");
+//            return;
+//        }
 
         if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.RENTER){
             RenterDAO userDAO = new RenterDAO() ;

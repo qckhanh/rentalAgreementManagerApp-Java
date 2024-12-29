@@ -150,15 +150,23 @@ public class Owner_PropertiesManagerController implements Initializable {
 
         deletePropertyButton.setOnAction(e-> {
             Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
+            int id = Integer.parseInt(selectedProperty.getId() + "");
+            boolean success = false;
             if (selectedProperty != null) {
                 if (selectedProperty instanceof ResidentialProperty) {
                     ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-                    rpDAO.delete((ResidentialProperty) selectedProperty);
+                    ResidentialProperty rp = rpDAO.get(id);
+                    if (rpDAO.delete(rp)) success = true;
                 }
                 else if (selectedProperty instanceof CommercialProperty) {
                     CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-                    cpDAO.delete((CommercialProperty) selectedProperty);
+                    CommercialProperty cp = cpDAO.get(id);
+                    if (cpDAO.delete(cp)) success = true;
                 }
+            }
+            if (success) {
+                properties_tableView.getItems().remove(selectedProperty);
+                properties_tableView.refresh();
             }
         });
 
