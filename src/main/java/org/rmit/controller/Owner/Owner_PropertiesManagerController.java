@@ -148,27 +148,7 @@ public class Owner_PropertiesManagerController implements Initializable {
             deletePropertyButton.setDisable(newValue == null);
         });
 
-        deletePropertyButton.setOnAction(e-> {
-            Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
-            int id = Integer.parseInt(selectedProperty.getId() + "");
-            boolean success = false;
-            if (selectedProperty != null) {
-                if (selectedProperty instanceof ResidentialProperty) {
-                    ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-                    ResidentialProperty rp = rpDAO.get(id);
-                    if (rpDAO.delete(rp)) success = true;
-                }
-                else if (selectedProperty instanceof CommercialProperty) {
-                    CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-                    CommercialProperty cp = cpDAO.get(id);
-                    if (cpDAO.delete(cp)) success = true;
-                }
-            }
-            if (success) {
-                properties_tableView.getItems().remove(selectedProperty);
-                properties_tableView.refresh();
-            }
-        });
+        deletePropertyButton.setOnAction(e-> deleteProperty());
 
         addPropertyButton.setOnAction(e -> addProperty());
 
@@ -178,6 +158,25 @@ public class Owner_PropertiesManagerController implements Initializable {
 
         updatePropertyButton.setOnAction(e-> updateProperty());
 
+    }
+
+    private void deleteProperty(){
+        boolean success = false;
+        Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
+        int id = Integer.parseInt(selectedProperty.getId()+"");
+        if (selectedProperty instanceof ResidentialProperty) {
+            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+            ResidentialProperty rp = rpDAO.get(id);
+            if (rpDAO.delete(rp)) success = true;
+        } else if (selectedProperty instanceof CommercialProperty) {
+            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+            CommercialProperty cp = cpDAO.get(id);
+            if (cpDAO.delete(cp)) success = true;
+        }
+        if (success) {
+            properties_tableView.getItems().remove(selectedProperty);
+            properties_tableView.refresh();
+        }
     }
 
     private void addProperty() {
