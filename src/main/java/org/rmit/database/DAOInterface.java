@@ -3,6 +3,7 @@ package org.rmit.database;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Owner;
@@ -27,6 +28,25 @@ public abstract class DAOInterface<T>{
     public abstract EntityGraph<T> createEntityGraph(Session session);
     public abstract List<T> search(String keyword);
 
+    public static boolean isValidUsername(Class<? extends Person> clazz,  String username){
+        Session session = DatabaseUtil.getSession();
+        String hql = "SELECT 1 FROM " + clazz.getSimpleName()  + " u WHERE u.username = :username";
+        Query<Integer> query = session.createQuery(hql, Integer.class);
+        query.setParameter("username", username);
+        query.setMaxResults(1);
+        List<Integer> result = query.list();
+        return result.isEmpty();
+    }
+
+    public static boolean isValidContact(Class<? extends Person> clazz,  String contact){
+        Session session = DatabaseUtil.getSession();
+        String hql = "SELECT 1 FROM " + clazz.getSimpleName()  + " u WHERE u.contact = :contact";
+        Query<Integer> query = session.createQuery(hql, Integer.class);
+        query.setParameter("username", contact);
+        query.setMaxResults(1);
+        List<Integer> result = query.list();
+        return result.isEmpty();
+    }
 
     // Subgraph methods
     protected void paymentGraph(Subgraph<Payment> graph){

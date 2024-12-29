@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane prefHeight="543.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <!-- ScrollPane for vertical scrolling -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="543.0" prefWidth="661.0" vbarPolicy="AS_NEEDED">
+        <content>
+            <VBox alignment="TOP_CENTER" spacing="20">
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                </padding>
+
+                <!-- Title -->
+                <Label alignment="TOP_LEFT" prefWidth="643.0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2A72D9;" text="Welcome to 4Knight - Revolutionizing Rental Management!" textAlignment="CENTER" wrapText="true" />
+
+                <!-- Introduction Text -->
+                <TextFlow prefHeight="85.0" prefWidth="543.0">
+                    <Text style="-fx-font-size: 16px; -fx-fill: gray;" text="Step into a world where rental management becomes seamless, efficient, and hassle-free. " textAlignment="CENTER" wrappingWidth="619.4010009765625" />
+                    <Text style="-fx-font-size: 16px; -fx-fill: gray;" text="4Knight is your trusted partner for navigating the complexities of property rentals, empowering Renters, Hosts, and Owners to achieve their goals effortlessly.\n\n" textAlignment="CENTER" wrappingWidth="565.8671875" />
+                </TextFlow>
+
+                <!-- "Why Choose 4Knight?" Section -->
+                <VBox spacing="10">
+                    <Label style="-fx-font-size: 20px; -fx-text-fill: black;" text="Why Choose 4Knight?" />
+                    <TextFlow>
+                        <Text style="-fx-font-size: 16px; -fx-fill: darkgray;" text="- All-in-One Solution: From managing agreements and payments to tracking properties and partnerships, 4Knight simplifies it all.\n" />
+                        <Text style="-fx-font-size: 16px; -fx-fill: darkgray;" text="- User-Friendly Interface: Experience an intuitive and modern design that makes every action smooth and efficient.\n" />
+                        <Text style="-fx-font-size: 16px; -fx-fill: darkgray;" text="- Tailored to You: Whether you’re renting your dream home, hosting tenants, or owning properties, 4Knight is built with your needs in mind.\n\n" />
+                    </TextFlow>
+                </VBox>
+
+                <!-- Features for Each Role -->
+                <VBox spacing="20">
+                    <Label style="-fx-font-size: 20px; -fx-text-fill: black;" text="Explore Features for Every Role" />
+                    <VBox spacing="20">
+                        <!-- Renter Role -->
+                        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #F9F9F9; -fx-border-color: #DDD; -fx-border-radius: 10; -fx-padding: 15;">
+                            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@renter-icon.png" />
+                            </ImageView>
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="💼 For Renters" />
+                            <Label style="-fx-font-size: 14px; -fx-text-fill: darkgray;" text="Stay on top of your rental agreements with ease.\nMake payments securely and track them effortlessly.\nBrowse and rent properties tailored to your preferences." wrapText="true" />
+                        </VBox>
+
+                        <!-- Host Role -->
+                        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #F9F9F9; -fx-border-color: #DDD; -fx-border-radius: 10; -fx-padding: 15;">
+                            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@host-icon.png" />
+                            </ImageView>
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="🏠 For Hosts" />
+                            <Label style="-fx-font-size: 14px; -fx-text-fill: darkgray;" text="Manage multiple properties from a single dashboard.\nCollaborate with property Owners to grow your business.\nKeep track of listings, tenants, and maintenance tasks." wrapText="true" />
+                        </VBox>
+
+                        <!-- Owner Role -->
+                        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #F9F9F9; -fx-border-color: #DDD; -fx-border-radius: 10; -fx-padding: 15;">
+                            <ImageView fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@owner-icon.png" />
+                            </ImageView>
+                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="🔑 For Owners" />
+                            <Label style="-fx-font-size: 14px; -fx-text-fill: darkgray;" text="Gain full visibility into your properties’ performance.\nMonitor Host activities and ensure smooth operations.\nStay informed about rental agreements and revenue streams." wrapText="true" />
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </content>
+    </ScrollPane>
+</AnchorPane>

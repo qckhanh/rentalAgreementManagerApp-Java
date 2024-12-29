@@ -19,6 +19,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static org.rmit.database.DAOInterface.isValidUsername;
+
 public class RegisterController implements Initializable {
     public TextField fullName_input;
     public PasswordField password_input;
@@ -36,6 +38,9 @@ public class RegisterController implements Initializable {
     public Label dob_err;
     public Label password_err;
     public Label repass_err;
+
+    int registerAttempt = 0;
+    int MAX_ATTEMPT = 4;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -78,19 +83,44 @@ public class RegisterController implements Initializable {
 
     private boolean validateInput(){
         boolean isValid = true;
-        if(!InputValidator.NoCondition(fullName_input.getText(), name_err)) isValid = false;
-        if(!InputValidator.isValidUsername(username_input.getText(), username_err)) isValid = false;
-        if(!InputValidator.isValidContact(contact_input.getText(), contact_err)) isValid = false;
-        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)) isValid = false;
-        if(!InputValidator.isValidPassword(password_input.getText(), password_err)) isValid = false;
-        if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)) isValid = false;
+        if(!InputValidator.NoCondition(fullName_input.getText(), name_err)){
+            isValid = false;
+            System.out.println("Name is invalid");
+        }
+        if(!InputValidator.isValidUsername(username_input.getText(), username_err)){
+            isValid = false;
+            System.out.println("Username is invalid");
+        }
+        if(!InputValidator.isValidContact(contact_input.getText(), contact_err)){
+            isValid = false;
+            System.out.println("Contact is invalid");
+        }
+        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)){
+            isValid = false;
+            System.out.println("Date is invalid");
+        }
+        if(!InputValidator.isValidPassword(password_input.getText(), password_err)){
+            isValid = false;
+            System.out.println("Password is invalid");
+        }
+        if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)){
+            isValid = false;
+            System.out.println("RePassword is invalid");
+        }
         if(!password_input.getText().equals(rePassword_input.getText())){
+            System.out.println("Password does not match");
             InputValidator.setValue(repass_err, InputValidator.RED, "Password does not match");
             isValid = false;
         }
+        System.out.println(isValid);
         return isValid;
     }
     void register() {
+        if(registerAttempt == MAX_ATTEMPT){
+            System.out.println("Too many attempts");
+            return;
+        }
+        registerAttempt++;
         if(!validateInput()){
             System.out.println("Invalid Input");
             return;
@@ -101,23 +131,35 @@ public class RegisterController implements Initializable {
             Renter newUser = new Renter();
             UserFactory(newUser);
             if(userDAO.add(newUser)) System.out.println("Renter Registered");
-            else System.out.println("Renter Registration Failed");
+            else{
+                System.out.println("Renter Registration Failed. Trying again");
+                register();
+            }
         }
         else if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.HOST){
             HostDAO userDAO = new HostDAO();
             Host newUser = new Host();
             UserFactory(newUser);
             if(userDAO.add(newUser)) System.out.println("Host Registered");
-            else System.out.println("Renter Registration Failed");
+            else{
+                System.out.println("Renter Registration Failed. Trying again");
+                register();
+
+            }
         }
         else if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.OWNER){
             OwnerDAO userDAO = new OwnerDAO();
             Owner newUser = new Owner();
             UserFactory(newUser);
             if(userDAO.add(newUser)) System.out.println("Owner Registered");
-            else System.out.println("Renter Registration Failed");
+            else{
+                System.out.println("Renter Registration Failed. Trying again");
+                register();
+
+            }
         }
 
+        registerAttempt = 0;
         resetTextFields();
     }
 

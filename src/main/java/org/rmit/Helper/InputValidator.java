@@ -3,9 +3,13 @@ package org.rmit.Helper;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.rmit.database.DatabaseUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
@@ -22,8 +26,8 @@ public class InputValidator {
         label.setTextFill(color);
     }
     //checker
-    public static boolean isValidUsername(String s, Label username_err) {
-        boolean isValid = s.length() >= 6;
+    public static boolean isValidUsername(String username, Label username_err) {
+        boolean isValid = username.length() >= 6;
         if(!isValid) setValue(username_err, RED, "Username must be at least 6 characters");
         return isValid;
     }
@@ -49,20 +53,21 @@ public class InputValidator {
     }
     public static boolean isValidDateFormat(LocalDate date, Label label) {
         if(date == null){
-            setValue(label, RED, "Field must not be empty");
+            setValue(label, RED, "Date must not be empty");
             return false;
         }
-        String s = date.toString();
-//        boolean isValid = s.matches("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/([1-9]\\d{3})$");
-        boolean isValid =  DateUtils.formatDate(date).equals(DateUtils.DEFAULT_DATE) ? false : true;
-        if (!isValid) {
+        System.out.println(DateUtils.formatDate(date));
+
+        if(DateUtils.formatDate(date).equals(DateUtils.DEFAULT_DATE)){
             setValue(label, RED, "Invalid date format");
+            System.out.println("Invalid date format xxxxxxxxxx");
             return false;
         }
 
         LocalDate localDate = LocalDate.now();
-        boolean isBefore =  localDate.isBefore(date);
-        if(isBefore) setValue(label, RED, "Date must be before today");
+        boolean isBefore =  date.isBefore(localDate);
+        if(!isBefore) setValue(label, RED, "Date must be before today");
+        System.out.println(isBefore);
         return isBefore;
 
     }

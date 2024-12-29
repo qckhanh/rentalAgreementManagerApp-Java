@@ -96,5 +96,10 @@
             </Label>
          </children>
       </VBox>
+      <Button fx:id="guest_btn" layoutX="795.0" layoutY="671.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="193.0">
+         <font>
+            <Font name="System Bold" size="17.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>
