@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import javafx.beans.property.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Objects;
 //import Database.*;
 //import UIHelper.UserInterfaceManager;
 //import UIHelper.DateCreator;
@@ -103,6 +105,18 @@ public abstract class Person {
         this.idProperty.setValue(id);
         this.id = idProperty.get();
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Person person)) return false;
+//        return id == person.id;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, name, dateOfBirth, contact, Arrays.hashCode(profileAvatar), username, password, idProperty, nameProperty, dateOfBirthProperty, contactProperty, usernameProperty, passwordProperty, profileAvatarProperty);
+//    }
 
     //////////
 

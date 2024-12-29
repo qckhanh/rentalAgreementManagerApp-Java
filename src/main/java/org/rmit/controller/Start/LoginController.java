@@ -32,12 +32,14 @@ public class LoginController implements Initializable {
     public Label status_label;
     public Label password_err;
     public Label username_err;
+    public Button guest_btn;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         UIDecorator.setNormalButton(signIn_btn, UIDecorator.LOG_IN, "Sign In");
+        UIDecorator.setNormalButton(guest_btn, UIDecorator.GUEST, "Login as Guest");
 
         username_err.setText("");
         password_err.setText("");
@@ -84,6 +86,7 @@ public class LoginController implements Initializable {
         password_input.setOnAction(actionEvent -> signInValidate());
         register_btn.setOnAction(actionEvent -> openRegister());
         signIn_btn.setOnAction(actionEvent -> signInValidate());
+        guest_btn.setOnAction(actionEvent -> loginAsGuest());
 
     }
 
@@ -91,6 +94,11 @@ public class LoginController implements Initializable {
         viewFactory.showRegisterView();
     }
 
+    void loginAsGuest() {
+        Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
+        ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+        ModelCentral.getInstance().getGuestViewFactory().startGuestView();
+    }
 
     private void signInValidate(){
         String username = username_input.getText();

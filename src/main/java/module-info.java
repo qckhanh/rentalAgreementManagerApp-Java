@@ -14,6 +14,8 @@ module org.rmit.demo {
     requires org.kordamp.ikonli.material2;
     requires java.management;
     requires java.desktop;
+    requires jdk.jfr;
+    requires org.kordamp.ikonli.fontawesome5;
 //    requires com.pixelduke.fxskins;
 //    requires atlantafx.base;
 
@@ -29,6 +31,7 @@ module org.rmit.demo {
     opens org.rmit.controller.Start to javafx.fxml;
     opens org.rmit.controller.Owner to javafx.fxml;
     opens org.rmit.controller.Host to javafx.fxml;
+    opens org.rmit.controller.Guest to javafx.fxml;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports org.rmit;
@@ -47,6 +50,7 @@ module org.rmit.demo {
     exports org.rmit.controller.Start;
     exports org.rmit.controller.Owner;
     exports org.rmit.controller.Host;
+    exports org.rmit.controller.Guest;
 
 
     //view
@@ -54,6 +58,7 @@ module org.rmit.demo {
     exports org.rmit.view.Renter;
     exports org.rmit.view.Owner;
     exports org.rmit.view.Host;
+    exports org.rmit.view.Guest;
 
 
 
