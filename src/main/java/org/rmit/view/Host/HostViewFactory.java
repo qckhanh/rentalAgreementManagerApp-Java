@@ -12,7 +12,7 @@ import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 
 public class HostViewFactory {
-    String HOST_PATH = "/org/rmit/demo/FXMLs/Host/";
+    private String HOST_PATH = "/org/rmit/demo/FXMLs/Host/";
     private ObjectProperty<HOST_MENU_OPTION> selectedMenuItem;        // for tracking which menu option is selected
 
     private AnchorPane editProfileView;

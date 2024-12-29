@@ -1,5 +1,6 @@
 package org.rmit.model;
 
+import org.rmit.view.Guest.GuestViewFactory;
 import org.rmit.view.Host.HostViewFactory;
 import org.rmit.view.Owner.OwnerViewFactory;
 import org.rmit.view.Renter.RenterViewFactory;
@@ -12,6 +13,7 @@ public class ModelCentral {
     private RenterViewFactory renterViewFactory;
     private OwnerViewFactory ownerViewFactory;
     private HostViewFactory hostViewFactory;
+    private GuestViewFactory guestViewFactory;
 
 
     private ModelCentral() {}
@@ -49,5 +51,12 @@ public class ModelCentral {
             hostViewFactory = new HostViewFactory();
         }
         return hostViewFactory;
+    }
+
+    public GuestViewFactory getGuestViewFactory() {
+        if (guestViewFactory == null) {
+            guestViewFactory = new GuestViewFactory();
+        }
+        return guestViewFactory;
     }
 }

@@ -34,16 +34,16 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
     public boolean update(Owner owner) {
         try{
             Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
 
-            session.update(owner);
+            session.merge(owner);
 
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
         }
         catch (Exception e){
-            System.out.println("Error in updating owner: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -52,7 +52,7 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
     public boolean delete(Owner owner) {
         try{
             Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
 
             session.delete(owner);
 
@@ -122,6 +122,7 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
         propertySubgraph(entityGraph.addSubgraph("propertiesOwned"));
+        personSubgraph(entityGraph.addSubgraph("hosts"));
 
         return entityGraph;
     }

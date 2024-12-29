@@ -3,15 +3,25 @@ package org.rmit.controller.Owner;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
+import org.rmit.database.DAOInterface;
 import org.rmit.database.OwnerDAO;
+import org.rmit.database.RenterDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
+import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static org.rmit.Helper.UIDecorator.EDIT;
 
 public class Owner_EditProfileController implements Initializable {
     public TextField newName_input;
@@ -19,50 +29,81 @@ public class Owner_EditProfileController implements Initializable {
     public DatePicker newDOB_input;
     public PasswordField newPassword_input;
     public Button edit_btn;
+    public TextField newUsername_input;
+    public ImageView avatar_ImageView;
+    public Button avatarUpdate_btn;
+    public String SELECTED_PATH = ImageUtils.DEFAULT_IMAGE;
 
     Person currentUser = Session.getInstance().getCurrentUser();
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        decorElement();
+        innitText();
+        addListener();
+        setDisableAll(true);
+        edit_btn.setDisable(false);
+        edit_btn.setOnAction(event -> editProfile());
+        avatarUpdate_btn.setOnAction(event -> updateAvatar());
+    }
+
+    private void innitText(){
         newName_input.setText(currentUser.getName());
         newContact_input.setText(currentUser.getContact());
         newDOB_input.setValue(currentUser.getDateOfBirth());
         newPassword_input.setText(currentUser.getPassword());
+        newUsername_input.setText(currentUser.getUsername());
+        avatar_ImageView.setImage(ImageUtils.byteToImage(currentUser.getProfileAvatar()));
+        edit_btn.setText("Edit");
+    }
 
+    private void addListener(){
         newName_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newContact_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
         newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
-
-        // Initially disable all fields
-        setDisableAll(true);
-        edit_btn.setText("Edit");
-        edit_btn.setDisable(false);
-        edit_btn.setOnAction(event -> editProfile());
+        newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        currentUser.profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+        });
     }
 
-    private void editProfile() {
-        System.out.println("hallo");
+    private void decorElement(){
+        UIDecorator.setDangerButton(edit_btn, new FontIcon(Feather.EDIT), "Edit");
+        UIDecorator.buttonIcon(avatarUpdate_btn, EDIT);
+    }
+
+    private void editProfile(){
         if (edit_btn.getText().equals("Save")) {
-            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
+            // Invoke confirm message
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
             if (confirmed) {
                 saveChanges();
             }
-        }
-        else {
+        } else {
             setDisableAll(false);
         }
     }
 
+    private void updateAvatar() {
+        SELECTED_PATH = ImageUtils.openFileChooseDialog();
+        avatar_ImageView.setImage(ImageUtils.imageFromPath(SELECTED_PATH));
+    }
+
     private void saveChanges() {
+        // Save the changes to the currentUser object
+        DAOInterface dao = new OwnerDAO();
+
         currentUser.setName(newName_input.getText());
+        currentUser.setUsername(newUsername_input.getText());
         currentUser.setContact(newContact_input.getText());
         currentUser.setDateOfBirth(newDOB_input.getValue());
         currentUser.setPassword(newPassword_input.getText());
+        if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
 
-        OwnerDAO ownerDAO = new OwnerDAO();
-        ownerDAO.update((Owner) currentUser);
+        dao.update((Owner)currentUser);
 
+        // Reset fields and button
         setDisableAll(true);
         edit_btn.setText("Edit");
         edit_btn.setDisable(false);
@@ -73,7 +114,9 @@ public class Owner_EditProfileController implements Initializable {
                 !newName_input.getText().equals(currentUser.getName()) ||
                         !newContact_input.getText().equals(currentUser.getContact()) ||
                         !Objects.equals(newDOB_input.getValue(), currentUser.getDateOfBirth()) || // Null-safe comparison
-                        !newPassword_input.getText().equals(currentUser.getPassword());
+                        !newPassword_input.getText().equals(currentUser.getPassword()) ||
+                        !newUsername_input.getText().equals(currentUser.getUsername());
+//                        !avatar_ImageView.getImage().equals(currentUser.getProfileAvatar());
 
         if (isChanged) {
             edit_btn.setText("Save");
@@ -90,6 +133,8 @@ public class Owner_EditProfileController implements Initializable {
         newContact_input.setDisable(status);
         newDOB_input.setDisable(status);
         newPassword_input.setDisable(status);
+        newUsername_input.setDisable(status);
+        avatarUpdate_btn.setDisable(status);
         edit_btn.setDisable(status);
     }
 

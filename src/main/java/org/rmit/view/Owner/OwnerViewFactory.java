@@ -99,6 +99,8 @@ public class OwnerViewFactory {
         //set all view to null
         owner_editProfileView = null;
         owner_dashboardView = null;
+        owner_propertyManagerView = null;
+        owner_hostManagerView = null;
     }
 
     public OWNER_MENU_OPTION getOwnerSelectedMenuItem() {

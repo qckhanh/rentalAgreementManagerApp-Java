@@ -49,17 +49,19 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
 
     @Override
     public boolean delete(CommercialProperty commercialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
+        try(Session session = DatabaseUtil.getSession()){
             Transaction transaction = session.beginTransaction();
-            session.delete(commercialProperty);
+            CommercialProperty obj = session.merge(commercialProperty);
+            session.delete(obj);
             transaction.commit();
-            DatabaseUtil.shutdown(session);
             return true;
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return false;
+        }
+        finally {
+            DatabaseUtil.shutdown(DatabaseUtil.getSession());
         }
     }
 

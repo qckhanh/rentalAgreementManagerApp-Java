@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class DateUtils {
     public static String DATE_PATTERN = "dd/MM/yyyy";
-    public static String DEFAULT_DATE = "1/1/1990";
+    public static String DEFAULT_DATE = "01/01/1990";
     public static LocalDate newDate(String s) throws ParseException {
         try {
             return LocalDate.parse(s, DateTimeFormatter.ofPattern(DATE_PATTERN));

@@ -52,14 +52,17 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.delete(residentialProperty);
+            ResidentialProperty obj = session.merge(residentialProperty);
+            session.delete(obj);
             transaction.commit();
-            DatabaseUtil.shutdown(session);
             return true;
         }
         catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
             return false;
+        }
+        finally {
+            DatabaseUtil.shutdown(DatabaseUtil.getSession());
         }
     }
 
