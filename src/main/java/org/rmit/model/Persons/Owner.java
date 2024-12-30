@@ -11,7 +11,9 @@ import java.util.*;
 
 @Entity
 public class Owner extends Person {
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    //if the owner still owns property, the property must be removed first or change ownership
+    //i.e. to make an owner "delete-able", he/she must have no property
+    @OneToMany(mappedBy = "owner"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
     private Set<Property> propertiesOwned = new HashSet<>();
 
     @ManyToMany(mappedBy = "cooperatingOwners", cascade = CascadeType.PERSIST)
