@@ -45,7 +45,9 @@ public class RentalAgreement {
     private double rentingFee;
     private AgreementStatus status;
 
-    @OneToMany(mappedBy = "rentalAgreement", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "rentalAgreement",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.LAZY)
     private final Set<Payment> payments = new HashSet<>();
 
     //////////////////////////
