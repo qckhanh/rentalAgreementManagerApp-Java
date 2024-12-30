@@ -21,6 +21,9 @@ public abstract class Notification {
     @JoinColumn(name = "sender_id")
     private Person sender;
 
+    @Transient
+    int totalReceivers = 0;
+
     @ManyToMany
     @JoinTable(
             name = "notification_receivers",
@@ -37,6 +40,11 @@ public abstract class Notification {
     }
 
     public Notification() {
+    }
+
+    @PostLoad
+    protected void synWithSimpleProperty() {
+        totalReceivers = receivers.size();
     }
 
 
@@ -82,6 +90,7 @@ public abstract class Notification {
 
     public void addReceiver(Person person) {
         receivers.add(person);
+//        totalReceivers++;
     }
 
     // Getters and setters...

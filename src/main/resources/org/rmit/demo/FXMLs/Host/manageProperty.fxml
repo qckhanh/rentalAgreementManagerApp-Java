@@ -25,9 +25,9 @@
                 <Font name="System Bold" size="28.0" />
             </font>
         </Label>
-        <VBox alignment="TOP_CENTER" layoutX="445.0" layoutY="86.0" prefHeight="644.0" prefWidth="316.0" spacing="10.0">
+        <VBox alignment="TOP_CENTER" layoutX="445.0" layoutY="86.0" prefHeight="537.0" prefWidth="316.0" spacing="5.0">
          <children>
-            <ImageView fitHeight="146.0" fitWidth="219.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="147.0" fitWidth="213.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../Image/rmit.jpeg" />
                </image>

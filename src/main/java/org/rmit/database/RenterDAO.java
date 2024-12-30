@@ -123,9 +123,6 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         paymentGraph(entityGraph.addSubgraph("payments"));
         notificationGraph(entityGraph.addSubgraph("sentNotifications"));
         notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
-
-
-
         return entityGraph;
     }
 

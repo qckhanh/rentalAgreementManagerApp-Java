@@ -25,6 +25,7 @@ public class Host_MenuController implements Initializable {
     public Button agreement_btn;
     public Button ownerManager_btn;
     public ImageView avatar_ImageView;
+    public Button notifications_btn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -53,6 +54,7 @@ public class Host_MenuController implements Initializable {
         propertyManager_btn.setOnAction(e -> manageProperty());
         agreement_btn.setOnAction(e -> manageAgreement());
         ownerManager_btn.setOnAction(e -> manageOwner());
+        notifications_btn.setOnAction(e -> openNotification());
     }
 
     private void decor(){
@@ -62,6 +64,7 @@ public class Host_MenuController implements Initializable {
         UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY, "Payment Manager");
         UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON, "Cooperating Owner");
         UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL, "Agreement Manager");
+        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION, "Notification");
     }
 
 
@@ -90,5 +93,9 @@ public class Host_MenuController implements Initializable {
 
     private void manageOwner(){
         ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
+    }
+
+    private void openNotification(){
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.NOTIFICATION);
     }
 }

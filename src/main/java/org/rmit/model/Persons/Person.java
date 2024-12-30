@@ -64,8 +64,12 @@ public abstract class Person {
     public void sentNotification(Notification notification) {
         sentNotifications.add(notification);
         for(Person receiver : notification.getReceivers()) {
-            receiver.getReceivedNotifications().add(notification);
+            receiver.addReceivedNotification(notification);
         }
+    }
+
+    private void addReceivedNotification(Notification notification) {
+        receivedNotifications.add(notification);
     }
 
     public boolean acceptRequest(Request request) {

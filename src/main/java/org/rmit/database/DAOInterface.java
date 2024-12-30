@@ -5,7 +5,9 @@ import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
+import org.rmit.Notification.Request;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Owner;
@@ -82,6 +84,16 @@ public abstract class DAOInterface<T>{
 
     protected void notificationGraph(Subgraph<Notification> graph){
         graph.addAttributeNodes("id", "message", "timestamp");
+        minPersonSubgraph(graph.addSubgraph("sender"));
+        minPersonSubgraph(graph.addSubgraph("receivers"));
+    }
+
+    protected void requestGraph(Subgraph<Request> graph){
+        graph.addAttributeNodes("draftObject", "approvalStatus");
+    }
+
+    protected void minPersonSubgraph(Subgraph<Person> graph){
+        graph.addAttributeNodes("id", "name", "contact");
     }
 
     protected <T extends Person> void personSubgraph(Subgraph<T> graph){

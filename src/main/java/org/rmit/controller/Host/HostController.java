@@ -24,6 +24,7 @@ public class HostController implements Initializable {
                 case MANAGE_AGREEMENT -> borderPane.setCenter(ModelCentral.getInstance().getHostViewFactory().getHost_agreementManagerView());
                 case MANAGE_OWNER -> borderPane.setCenter(ModelCentral.getInstance().getHostViewFactory().getHost_OwnerManagerView());
                 case SEARCH -> System.out.println("Search");
+                case NOTIFICATION -> borderPane.setCenter(ModelCentral.getInstance().getHostViewFactory().getHost_NotificationView());
             }
         });
     }

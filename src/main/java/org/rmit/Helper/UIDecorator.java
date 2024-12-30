@@ -24,6 +24,7 @@ public class UIDecorator {
     public static FontIcon DELETE = new FontIcon(Material2RoundAL.DELETE_FOREVER);
     public static FontIcon ADD = new FontIcon(Feather.PLUS_CIRCLE);
     public static FontIcon MANAGE = new FontIcon(Feather.TOOL);
+    public static FontIcon NOTIFICATION = new FontIcon(Feather.BELL);
 
     //Menu
     public static FontIcon USER = new FontIcon(Material2AL.ACCOUNT_CIRCLE);

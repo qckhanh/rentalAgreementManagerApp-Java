@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 
@@ -106,11 +107,16 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
         entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
 
-        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
-        ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
+        personSubgraph(entityGraph.addSubgraph("owner"));
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         return entityGraph;
+    }
+
+    @Override
+    protected <T extends Person> void personSubgraph(Subgraph<T> graph){
+        super.personSubgraph(graph);
+        notificationGraph(graph.addSubgraph("receivedNotifications"));
     }
 
     @Override
