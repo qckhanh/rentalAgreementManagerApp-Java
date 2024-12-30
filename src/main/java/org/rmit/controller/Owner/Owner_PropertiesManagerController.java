@@ -177,14 +177,17 @@ public class Owner_PropertiesManagerController implements Initializable {
         boolean success = false;
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
         int id = Integer.parseInt(selectedProperty.getId()+"");
-        if (selectedProperty instanceof ResidentialProperty) {
-            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            ResidentialProperty rp = rpDAO.get(id);
-            if (rpDAO.delete(rp)) success = true;
-        } else if (selectedProperty instanceof CommercialProperty) {
-            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            CommercialProperty cp = cpDAO.get(id);
-            if (cpDAO.delete(cp)) success = true;
+        boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
+        if (confirmed) {
+            if (selectedProperty instanceof ResidentialProperty) {
+                ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+                ResidentialProperty rp = rpDAO.get(id);
+                if (rpDAO.delete(rp)) success = true;
+            } else if (selectedProperty instanceof CommercialProperty) {
+                CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+                CommercialProperty cp = cpDAO.get(id);
+                if (cpDAO.delete(cp)) success = true;
+            }
         }
         if (success) {
             properties_tableView.getItems().remove(selectedProperty);
