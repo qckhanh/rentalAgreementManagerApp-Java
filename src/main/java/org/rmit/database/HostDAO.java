@@ -121,6 +121,8 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
         propertySubgraph(entityGraph.addSubgraph("propertiesManaged"));
         personSubgraph(entityGraph.addSubgraph("cooperatingOwners"));
         rentalAgreementSubgraph(entityGraph.addSubgraph("rentalAgreements"));
+        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
+        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
 
         return entityGraph;
     }

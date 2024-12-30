@@ -6,12 +6,30 @@
     <session-factory>
         <!-- Database connection settings -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+
+        <!--        <property name="hibernate.connection.url">-->
+        <!--            jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres-->
+        <!--        </property>-->
+        <!--        <property name="hibernate.connection.username">-->
+        <!--            postgres.qzrobawhuhlydmxxhcjo-->
+        <!--        </property>-->
+        <!--        <property name="hibernate.connection.password">-->
+        <!--            11022005-->
+        <!--        </property>-->
+
+        <!--  TEST  -->
         <property name="hibernate.connection.url">
-            jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+            jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres
         </property>
-        <property name="hibernate.connection.username">postgres.qzrobawhuhlydmxxhcjo</property>
-        <property name="hibernate.connection.password">11022005</property>
-<!--        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>-->
+        <property name="hibernate.connection.username">
+            postgres.aiokillxlvyccqihaifm
+        </property>
+        <property name="hibernate.connection.password">
+            quockhanh
+        </property>
+
+
+        <!--        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>-->
 
         <!-- Automatic schema generation -->
         <property name="hibernate.hbm2ddl.auto">update</property>
@@ -42,6 +60,10 @@
         <mapping class="org.rmit.model.Property.ResidentialProperty"/>
         <mapping class="org.rmit.model.Agreement.RentalAgreement"/>
         <mapping class="org.rmit.model.Agreement.Payment"/>
+        <mapping class="org.rmit.Notification.Notification"/>
+        <mapping class="org.rmit.Notification.Request"/>
+        <mapping class="org.rmit.Notification.NormalNotification"/>
+
 
 
     </session-factory>

@@ -2,15 +2,18 @@ package org.rmit.model.Persons;
 
 import jakarta.persistence.*;
 import javafx.beans.property.*;
+import org.rmit.Notification.Notification;
+import org.rmit.Notification.Request;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 //import Database.*;
 //import UIHelper.UserInterfaceManager;
 //import UIHelper.DateCreator;
 
-@MappedSuperclass
+//@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Person {
 
 
@@ -28,6 +31,12 @@ public abstract class Person {
     @Column(unique = true)
     protected String username;
     protected String password;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private Set<Notification> sentNotifications = new HashSet<>();
+
+    @ManyToMany(mappedBy = "receivers", cascade = CascadeType.ALL)
+    private Set<Notification> receivedNotifications = new HashSet<>();
 
 ///////////////////////////////////////////////////////////////////////////////
     @Transient
@@ -49,8 +58,39 @@ public abstract class Person {
     protected abstract void synWithSimpleProperty();
 
     public Person() {
+
     }
 
+    public void sentNotification(Notification notification) {
+        sentNotifications.add(notification);
+        for(Person receiver : notification.getReceivers()) {
+            receiver.getReceivedNotifications().add(notification);
+        }
+    }
+
+    public boolean acceptRequest(Request request) {
+        return request.approve(this);
+    }
+
+    public boolean denyRequest(Request request) {
+        return request.deny(this);
+    }
+
+    public Set<Notification> getReceivedNotifications() {
+        return receivedNotifications;
+    }
+
+    public void setReceivedNotifications(Set<Notification> receivedNotifications) {
+        this.receivedNotifications = receivedNotifications;
+    }
+
+    public Set<Notification> getSentNotifications() {
+        return sentNotifications;
+    }
+
+    public void setSentNotifications(Set<Notification> sentNotifications) {
+        this.sentNotifications = sentNotifications;
+    }
 
     public String getPassword() {
         return password;

@@ -3,7 +3,9 @@ package org.rmit.database;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Owner;
@@ -24,10 +26,10 @@ public abstract class DAOInterface<T>{
     public abstract boolean delete(T t);
     public abstract T get(int id);
     public abstract List<T> getAll();
-//    public abstract T validateLogin(String usernameOrContact, String password);
     public abstract EntityGraph<T> createEntityGraph(Session session);
     public abstract List<T> search(String keyword);
 
+    //Helper methods
     public static boolean isValidUsername(Class<? extends Person> clazz,  String username){
         Session session = DatabaseUtil.getSession();
         String hql = "SELECT 1 FROM " + clazz.getSimpleName()  + " u WHERE u.username = :username";
@@ -37,7 +39,6 @@ public abstract class DAOInterface<T>{
         List<Integer> result = query.list();
         return result.isEmpty();
     }
-
     public static boolean isValidContact(Class<? extends Person> clazz,  String contact){
         Session session = DatabaseUtil.getSession();
         String hql = "SELECT 1 FROM " + clazz.getSimpleName()  + " u WHERE u.contact = :contact";
@@ -46,6 +47,13 @@ public abstract class DAOInterface<T>{
         query.setMaxResults(1);
         List<Integer> result = query.list();
         return result.isEmpty();
+    }
+    public static Notification getNotification(int id){
+        Session  session = DatabaseUtil.getSession();
+        Transaction transaction = DatabaseUtil.getTransaction(session);
+        Notification notification = session.get(Notification.class, id);
+        DatabaseUtil.shutdown(session);
+        return notification;
     }
 
     // Subgraph methods
@@ -72,8 +80,14 @@ public abstract class DAOInterface<T>{
         ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
     }
 
+    protected void notificationGraph(Subgraph<Notification> graph){
+        graph.addAttributeNodes("id", "message", "timestamp");
+    }
+
     protected <T extends Person> void personSubgraph(Subgraph<T> graph){
         graph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+//        notificationGraph(graph.addSubgraph("sentNotifications"));
+//        notificationGraph(graph.addSubgraph("receivedNotifications"));
     }
 
     protected Long parseId(String keyword) {
