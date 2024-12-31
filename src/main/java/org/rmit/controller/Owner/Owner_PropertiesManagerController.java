@@ -39,6 +39,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
     public TableView<Property> properties_tableView;
+    private ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
     //    public ObjectProperty<Property> property = new SimpleObjectProperty<>();
@@ -129,6 +130,7 @@ public class Owner_PropertiesManagerController implements Initializable {
                 })
 
         );
+        properties_tableView.setItems(propertiesObservableList);
         loadData(((Owner)currentUser.get()).getPropertiesOwned());
 
         selectedPropertyType.addListener((observableValue, oldValue, newValue) -> {
@@ -225,9 +227,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     }
 
     private void loadData(Set<Property> propertySet) {
-        ObservableList<Property> propertiesTableView = FXCollections.observableArrayList();
-        propertiesTableView.addAll(propertySet);
-        properties_tableView.setItems(propertiesTableView);
+        propertiesObservableList.setAll(propertySet);
     }
 
     private <T> TableColumn<Property, String> createColumn(String columnName, Function<Property, T> propertyExtractor) {
