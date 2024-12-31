@@ -152,18 +152,24 @@ public class Owner_PropertiesManagerController implements Initializable {
         });
 
 
-
-        deletePropertyButton.setOnAction(e-> deleteProperty());
-
-        addPropertyButton.setOnAction(e -> addProperty());
-
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             updatePropertyButton.setDisable(newValue == null);
         });
 
-        deletePropertyButton.setOnAction(e-> deleteProperty());
-        addPropertyButton.setOnAction(e -> addProperty());
-        updatePropertyButton.setOnAction(e-> updateProperty());
+        deletePropertyButton.setOnAction(e-> {
+            deleteProperty();
+            properties_tableView.refresh();
+        });
+
+        addPropertyButton.setOnAction(e -> {
+            addProperty();
+            properties_tableView.refresh();
+        });
+
+        updatePropertyButton.setOnAction(e-> {
+            updateProperty();
+            properties_tableView.refresh();
+        });
 
     }
 
@@ -177,14 +183,17 @@ public class Owner_PropertiesManagerController implements Initializable {
         boolean success = false;
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
         int id = Integer.parseInt(selectedProperty.getId()+"");
-        if (selectedProperty instanceof ResidentialProperty) {
-            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            ResidentialProperty rp = rpDAO.get(id);
-            if (rpDAO.delete(rp)) success = true;
-        } else if (selectedProperty instanceof CommercialProperty) {
-            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            CommercialProperty cp = cpDAO.get(id);
-            if (cpDAO.delete(cp)) success = true;
+        boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
+        if (confirmed) {
+            if (selectedProperty instanceof ResidentialProperty) {
+                ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+                ResidentialProperty rp = rpDAO.get(id);
+                if (rpDAO.delete(rp)) success = true;
+            } else if (selectedProperty instanceof CommercialProperty) {
+                CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+                CommercialProperty cp = cpDAO.get(id);
+                if (cpDAO.delete(cp)) success = true;
+            }
         }
         if (success) {
             properties_tableView.getItems().remove(selectedProperty);
@@ -194,6 +203,8 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     private void addProperty() {
         ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.ADD_PROPERTY);
+        loadData(((Owner) currentUser.get()).getPropertiesOwned());
+        properties_tableView.refresh();
     }
 
     private void updateProperty() {
