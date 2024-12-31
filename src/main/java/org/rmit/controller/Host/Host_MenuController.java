@@ -25,6 +25,7 @@ public class Host_MenuController implements Initializable {
     public Button agreement_btn;
     public Button ownerManager_btn;
     public ImageView avatar_ImageView;
+    public Button notifications_btn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -45,6 +46,15 @@ public class Host_MenuController implements Initializable {
         setActionButton();
         decor();
     }
+    private void decor(){
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
+        UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY, "Payment Manager");
+        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON, "Cooperating Owner");
+        UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL, "Agreement Manager");
+        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION, "Notification");
+    }
 
     private void setActionButton(){
         editProfile_btn.setOnAction(e -> editProfile());
@@ -53,15 +63,7 @@ public class Host_MenuController implements Initializable {
         propertyManager_btn.setOnAction(e -> manageProperty());
         agreement_btn.setOnAction(e -> manageAgreement());
         ownerManager_btn.setOnAction(e -> manageOwner());
-    }
-
-    private void decor(){
-        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
-        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
-        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
-        UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY, "Payment Manager");
-        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON, "Cooperating Owner");
-        UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL, "Agreement Manager");
+        notifications_btn.setOnAction(e -> openNotification());
     }
 
 
@@ -90,5 +92,9 @@ public class Host_MenuController implements Initializable {
 
     private void manageOwner(){
         ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
+    }
+
+    private void openNotification(){
+        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.NOTIFICATION);
     }
 }

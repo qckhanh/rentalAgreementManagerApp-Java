@@ -20,6 +20,7 @@ public class OwnerViewFactory {
     private AnchorPane owner_addPropertyView;
     private AnchorPane owner_updatePropertyView;
     private AnchorPane owner_hostManagerView;
+    private AnchorPane notificationView;
 
     public OwnerViewFactory() {
         ownerSelectedMenuItem = new SimpleObjectProperty<>(OWNER_MENU_OPTION.DASHBOARD);
@@ -79,6 +80,18 @@ public class OwnerViewFactory {
             }
         }
         return owner_hostManagerView;
+    }
+
+    public AnchorPane getOwner_NotificationView(){
+        if(1 == 1){
+            try{
+                notificationView = new FXMLLoader(getClass().getResource(OWNER_PATH + "notificationOwner.fxml")).load();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return notificationView;
     }
 
     //helper method

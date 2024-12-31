@@ -24,6 +24,7 @@ public class Owner_MenuController implements Initializable {
     public Button propertiesManager_btn;
     public Button hostManager_btn;
     public ImageView avatar_ImageView;
+    public Button notifications_btn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -51,6 +52,7 @@ public class Owner_MenuController implements Initializable {
         UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
         UIDecorator.setNormalButton(propertiesManager_btn, UIDecorator.PROPERTY, "Properties Manager");
         UIDecorator.setNormalButton(hostManager_btn, UIDecorator.OTHER_PERSON, "Host Manager");
+        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION, "Notifications");
     }
 
     private void setActionButton(){
@@ -59,6 +61,11 @@ public class Owner_MenuController implements Initializable {
         propertiesManager_btn.setOnAction(e->propertiesManager());
         logOut_btn.setOnAction(e->logOut());
         hostManager_btn.setOnAction(e->hostManager());
+        notifications_btn.setOnAction(e->notifications());
+    }
+
+    private void notifications() {
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.NOTIFICATION);
     }
 
 

@@ -5,7 +5,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Persons.Renter;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -122,7 +121,8 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         paymentGraph(entityGraph.addSubgraph("payments"));
-
+        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
+        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
         return entityGraph;
     }
 

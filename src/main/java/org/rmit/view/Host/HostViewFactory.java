@@ -20,6 +20,7 @@ public class HostViewFactory {
     private AnchorPane managePropertyView;
     private AnchorPane agreementManagerView;
     private AnchorPane ownerManagerView;
+    private AnchorPane notificationView;
 
     public HostViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(HOST_MENU_OPTION.DASHBOARD);      // default view
@@ -85,6 +86,18 @@ public class HostViewFactory {
             }
         }
         return ownerManagerView;
+    }
+
+    public AnchorPane getHost_NotificationView(){
+        if(1 == 1){
+            try{
+                notificationView = new FXMLLoader(getClass().getResource(HOST_PATH + "notificationHost.fxml")).load();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return notificationView;
     }
 
     //helper method

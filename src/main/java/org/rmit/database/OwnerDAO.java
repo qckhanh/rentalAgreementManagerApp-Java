@@ -123,6 +123,8 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
         propertySubgraph(entityGraph.addSubgraph("propertiesOwned"));
         personSubgraph(entityGraph.addSubgraph("hosts"));
+        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
+        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
 
         return entityGraph;
     }

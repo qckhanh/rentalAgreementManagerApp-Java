@@ -1,10 +1,8 @@
 package org.rmit.controller.Host;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,13 +11,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.kordamp.ikonli.material2.Material2RoundAL;
+import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.Notification.Request;
 import org.rmit.database.*;
-import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
-import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.ResidentialProperty;
@@ -141,11 +138,35 @@ public class Host_ManagePropertyController implements Initializable {
 
     private void requestManageProperty(Property property){
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
-        ((Host)Session.getInstance().getCurrentUser()).addProperty(property);
-        DAOInterface dao = new HostDAO();
-        dao.update(Session.getInstance().getCurrentUser());
-//        int id = Integer.parseInt(Session.getInstance().getCurrentUser().getId()+"");
-//        Session.getInstance().setCurrentUser((Host)dao.get(id));
+
+        String content = String.format(
+                NotificationUtils.CONTENT_REQUEST,
+                property.getOwner().getName(),
+                currentUser.getName(),
+                property.getId(),
+                property.getAddress()
+        );
+        String header = String.format(
+                NotificationUtils.HEADER_REQUEST,
+                property.getId(),
+                property.getAddress()
+        );
+        String draftObject = String.format(
+                ((property instanceof CommercialProperty)
+                        ? NotificationUtils.DAFT_PROPERTY_COMMERCIAL
+                        : NotificationUtils.DAFT_PROPERTY_RESIDENTIAL),
+                property.getId()
+        );
+        Request request = (Request) NotificationUtils.createRequest(
+                currentUser,
+                new ArrayList<>(Collections.singletonList(property.getOwner())),
+                header,
+                content,
+                draftObject
+        );
+        currentUser.sentNotification(request);
+        HostDAO hostDAO = new HostDAO();
+        hostDAO.update(currentUser);
         System.out.println("Successfully requested manage property");
     }
 
@@ -214,7 +235,7 @@ public class Host_ManagePropertyController implements Initializable {
         ownerName_input.setText(property.getOwner().getName());
         statusProperty_input.setText(property.getStatus().toString());
         propertyType_input.setText(property.getType().toString());
-        totalAgremeent_input.setText(property.getAgreementList().size()+"");
+//        totalAgremeent_input.setText(property.getAgreementList().size()+"");
         if(property.getType().toString().equals("COMMERCIAL")){
             CommercialProperty commercialProperty = (CommercialProperty) property;
             bussinessType_input.setText(commercialProperty.getBusinessType());
