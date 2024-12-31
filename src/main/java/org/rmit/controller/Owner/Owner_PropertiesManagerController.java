@@ -152,18 +152,24 @@ public class Owner_PropertiesManagerController implements Initializable {
         });
 
 
-
-        deletePropertyButton.setOnAction(e-> deleteProperty());
-
-        addPropertyButton.setOnAction(e -> addProperty());
-
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             updatePropertyButton.setDisable(newValue == null);
         });
 
-        deletePropertyButton.setOnAction(e-> deleteProperty());
-        addPropertyButton.setOnAction(e -> addProperty());
-        updatePropertyButton.setOnAction(e-> updateProperty());
+        deletePropertyButton.setOnAction(e-> {
+            deleteProperty();
+            properties_tableView.refresh();
+        });
+
+        addPropertyButton.setOnAction(e -> {
+            addProperty();
+            properties_tableView.refresh();
+        });
+
+        updatePropertyButton.setOnAction(e-> {
+            updateProperty();
+            properties_tableView.refresh();
+        });
 
     }
 
@@ -197,6 +203,8 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     private void addProperty() {
         ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.ADD_PROPERTY);
+        loadData(((Owner) currentUser.get()).getPropertiesOwned());
+        properties_tableView.refresh();
     }
 
     private void updateProperty() {
