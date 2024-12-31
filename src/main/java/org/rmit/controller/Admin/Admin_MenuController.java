@@ -27,6 +27,7 @@ public class Admin_MenuController implements Initializable {
     public Button hostManager_btn;
     public Button ownerManager_btn;
     public Button paymentManager_btn;
+    public Button adminManager_btn;
 
 
     @Override
@@ -58,6 +59,7 @@ public class Admin_MenuController implements Initializable {
         hostManager_btn.setOnAction(e -> manageHost());
         ownerManager_btn.setOnAction(e -> manageOwner());
         paymentManager_btn.setOnAction(e -> managePayment());
+        adminManager_btn.setOnAction(e -> manageAdmin());
     }
 
     private void decor(){
@@ -97,5 +99,9 @@ public class Admin_MenuController implements Initializable {
 
     private void managePayment(){
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PAYMENT_MANAGER);
+    }
+
+    private void manageAdmin(){
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.ADMIN_MANAGER);
     }
 }

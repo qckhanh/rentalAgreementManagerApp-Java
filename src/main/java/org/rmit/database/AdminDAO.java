@@ -3,6 +3,7 @@ package org.rmit.database;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.rmit.model.Persons.Admin;
 
 import java.util.Date;
@@ -21,7 +22,17 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
 
     @Override
     public boolean delete(Admin admin) {
-        return false;
+        try {
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = session.beginTransaction();
+            session.delete(admin);
+            session.getTransaction().commit();
+            DatabaseUtil.shutdown(session);
+            return true;
+        } catch (Exception e){
+            System.out.println("Error: " + e);
+            return false;
+        }
     }
 
     @Override
@@ -31,7 +42,18 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
 
     @Override
     public List<Admin> getAll() {
-        return List.of();
+        try {
+            Session session = DatabaseUtil.getSession();
+            String hql = String.format(GET_ALL_HQL, "Admin");
+            List<Admin> list = session.createQuery(hql, Admin.class)
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+            return list;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
