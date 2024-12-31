@@ -83,7 +83,7 @@ public abstract class DAOInterface<T>{
     }
 
     protected void notificationGraph(Subgraph<Notification> graph){
-        graph.addAttributeNodes("id", "message", "timestamp");
+        graph.addAttributeNodes("id", "content", "timestamp", "header");
         minPersonSubgraph(graph.addSubgraph("sender"));
         minPersonSubgraph(graph.addSubgraph("receivers"));
     }

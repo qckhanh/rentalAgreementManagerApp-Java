@@ -1,64 +1,60 @@
 package org.rmit.Notification;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import org.rmit.model.Persons.Person;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 @DiscriminatorValue("REQUEST")
 public class Request extends Notification {
-
-
-//    @ElementCollection
-//    private Map<Person, Boolean> approvalStatus = new HashMap<>();
     private String draftObject;
     boolean isAllApproved = false;
 
-    public Request(Person sender) {
-        super(sender);
-    }
+    ///////////////////////
+    @Transient
+    private StringProperty draftObjectP = new SimpleStringProperty();
+    @Transient
+    private BooleanProperty isAllApprovedP = new SimpleBooleanProperty();
+
 
     public Request() {
         super();
     }
-
-//    public Map<Person, Boolean> getApprovalStatus() {
-//        return approvalStatus;
-//    }
-
-//    public void setApprovalStatus(Map<Person, Boolean> approvalStatus) {
-//        this.approvalStatus = approvalStatus;
-//    }
-
-    public String getDraftObject() {
-        return draftObject;
-    }
-
-    public void setDraftObject(String draftObject) {
-        this.draftObject = draftObject;
+    public Request(Person sender) {
+        super(sender);
     }
 
     @Override
-    public void addReceiver(Person person) {
-        super.addReceiver(person);
+    public void synWithSimpleProperty(){
+        super.synWithSimpleProperty();
+        this.draftObjectP.setValue(this.draftObject);
+        this.isAllApprovedP.setValue(this.isAllApproved);
     }
 
-    // Getters and setters...
+    public StringProperty draftObjectPProperty() {
+        return draftObjectP;
+    }
 
+    public BooleanProperty isAllApprovedPProperty() {
+        return isAllApprovedP;
+    }
+
+    //Helper
     public boolean approve(Person receiver) {
         if(totalReceivers <= 0) return false;
         totalReceivers--;
-        if(totalReceivers == 0)  isAllApproved = true;
+        if(totalReceivers == 0) {
+            isAllApproved = true;
+            isAllApprovedP.set(this.isAllApproved);
+        }
         return true;
     }
-
     public boolean deny(Person receiver) {
         isAllApproved = false;
+        isAllApprovedP.set(this.isAllApproved);
         return true;
     }
 
@@ -66,10 +62,18 @@ public class Request extends Notification {
         return isAllApproved;
     }
 
-    @Override
-    public void performAction() {
-        System.out.println("All receivers approved. Performing the requested action!");
-        // Add your specific action here.
+    public String getDraftObject() {
+        return draftObject;
+    }
+
+    public void setDraftObject(String draftObject) {
+        this.draftObject = draftObject;
+        this.draftObjectP.set(this.draftObject);
+    }
+
+    public void setAllApproved(boolean allApproved) {
+        isAllApproved = allApproved;
+        isAllApprovedP.set(this.isAllApproved);
     }
 
     @Override

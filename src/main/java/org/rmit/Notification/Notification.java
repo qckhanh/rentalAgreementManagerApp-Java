@@ -1,11 +1,11 @@
 package org.rmit.Notification;
 
 import jakarta.persistence.*;
+import javafx.beans.property.*;
+import org.rmit.Helper.DateUtils;
 import org.rmit.model.Persons.Person;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,22 +31,59 @@ public abstract class Notification {
             inverseJoinColumns = @JoinColumn(name = "receiver_id")
     )
     private Set<Person> receivers = new HashSet<>();
-
-    private String message;
+    private String header;
+    private String content;
     private String timestamp;
 
+
+    /////////////////////////////////////////////////////
+    @Transient
+    private ObjectProperty<Person> senderP = new SimpleObjectProperty<>();
+    @Transient
+    private ObjectProperty<Set<Person>> receiversP = new SimpleObjectProperty<>();
+    @Transient
+    private StringProperty headerP = new SimpleStringProperty();
+    @Transient
+    private StringProperty contentP = new SimpleStringProperty();
+    @Transient
+    private StringProperty timestampP = new SimpleStringProperty();
+    @Transient
+    private IntegerProperty totalReceiversP = new SimpleIntegerProperty();
+
+    @PostLoad
+    public void synWithSimpleProperty(){
+        this.senderP.setValue(this.sender);
+        this.receiversP.setValue(this.receivers);
+        this.headerP.setValue(this.header);
+        this.contentP.setValue(this.content);
+        this.timestampP.setValue(this.timestamp);
+        this.totalReceiversP.setValue(this.totalReceivers);
+
+    }
     public Notification(Person sender) {
         this.sender = sender;
+        senderP.set(this.sender);
     }
 
     public Notification() {
     }
 
-    @PostLoad
-    protected void synWithSimpleProperty() {
-        totalReceivers = receivers.size();
+    public int getTotalReceivers() {
+        return totalReceivers;
     }
 
+    public void setTotalReceivers(int totalReceivers) {
+        this.totalReceivers = totalReceivers;
+        totalReceiversP.set(this.totalReceivers);
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
 
     public Long getId() {
         return id;
@@ -62,6 +99,7 @@ public abstract class Notification {
 
     public void setSender(Person sender) {
         this.sender = sender;
+        senderP.set(this.sender);
     }
 
     public Set<Person> getReceivers() {
@@ -70,14 +108,16 @@ public abstract class Notification {
 
     public void setReceivers(Set<Person> receivers) {
         this.receivers = receivers;
+        receiversP.set(this.receivers);
     }
 
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String message) {
+        this.content = message;
+        contentP.set(this.content);
     }
 
     public String getTimestamp() {
@@ -86,24 +126,51 @@ public abstract class Notification {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+        timestampP.set(this.timestamp);
     }
 
     public void addReceiver(Person person) {
         receivers.add(person);
-//        totalReceivers++;
+        receiversP.set(receivers);
+        totalReceivers++;
     }
 
-    // Getters and setters...
 
-    public abstract void performAction();
+
+    public IntegerProperty totalReceiversPProperty() {
+        return totalReceiversP;
+    }
+
+
+    public StringProperty timestampPProperty() {
+        return timestampP;
+    }
+
+
+    public StringProperty contentPProperty() {
+        return contentP;
+    }
+
+    public StringProperty headerPProperty() {
+        return headerP;
+    }
+
+    public ObjectProperty<Set<Person>> receiversPProperty() {
+        return receiversP;
+    }
+
+    public ObjectProperty<Person> senderPProperty() {
+        return senderP;
+    }
 
     @Override
     public String toString() {
         return "Notification{" +
                 "sender=" + sender.getName() +
                 ", receivers=" + receivers.stream().map(Person::getName).toList() +
-                ", message='" + message + '\'' +
+                ", message='" + content + '\'' +
                 ", timestamp='" + timestamp + '\'' +
                 '}';
     }
+
 }

@@ -12,12 +12,13 @@ public class NormalNotification extends Notification {
         super();
     }
 
+    @Override
+    public void synWithSimpleProperty(){
+        super.synWithSimpleProperty();
+    }
+
     public NormalNotification(Person sender) {
         super(sender);
     }
 
-    @Override
-    public void performAction() {
-        System.out.println("Normal notificationGraph delivered to receivers.");
-    }
 }

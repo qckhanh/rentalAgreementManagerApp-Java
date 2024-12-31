@@ -4,9 +4,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import org.rmit.Notification.NormalNotification;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
+import org.rmit.database.HostDAO;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
@@ -35,8 +36,12 @@ public class Host_NotificationController implements Initializable {
     public ObjectProperty<NOTI_TYPE_FILTER> notiTypeProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Host> currentUser = new SimpleObjectProperty<>((Host) Session.getInstance().getCurrentUser());
+    public Button deleteNoti_btn;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        UIDecorator.setDangerButton(deleteNoti_btn, UIDecorator.DELETE, null);
+        deleteNoti_btn.setOnAction(e -> deleteNoti());
         roleFilter_comboBox.getItems().addAll(
                 SENDER,
                 RECEIVER,
@@ -71,7 +76,7 @@ public class Host_NotificationController implements Initializable {
                     }
 
                     selectedNotificationProperty.set(notification);
-                    setText(notification.getId() + " | " +  notification.getSender().getName() + " - " + notification.getTimestamp().toString());
+                    setText(notification.getId() + " | " +  notification.getSender().getName() + " - " + notification.getTimestamp());
                 }
             }
         });
@@ -92,9 +97,16 @@ public class Host_NotificationController implements Initializable {
             System.out.println("Role filter changed");
         });
 
-
-
         loadListView(getNoFilter());
+    }
+
+    private void deleteNoti() {
+        currentUser.get().getReceivedNotifications().clear();
+        currentUser.get().getSentNotifications().clear();
+        loadListView(getNoFilter());
+        HostDAO hostDAO = new HostDAO();
+        hostDAO.update(currentUser.get());
+        System.out.println("Notification deleted");
     }
 
     private void setButtonVisible(boolean visible){
@@ -115,16 +127,10 @@ public class Host_NotificationController implements Initializable {
         Set<Notification> filtered = new HashSet<>();
         if(type == NOTI_TYPE_FILTER.REQUEST){
             for(Notification notification : notifications){
-                if(notification instanceof Request){
+                if(notification instanceof Request && type == NOTI_TYPE_FILTER.REQUEST){
                     filtered.add(notification);
                 }
-            }
-        }
-        else if(type == NOTI_TYPE_FILTER.NORMAL){
-            for(Notification notification : notifications){
-                if(notification instanceof NormalNotification){
-                    filtered.add(notification);
-                }
+                else filtered.add(notification);
             }
         }
         return filtered;
@@ -143,19 +149,13 @@ public class Host_NotificationController implements Initializable {
 
     private void showDetail(Notification notification){
         if(notification == null) return;
-        System.out.println("Show detail");
-        if(notification instanceof Request){
-            type_label.setText("Request");
-            mainContent_textArea.setText(((Request)notification).getDraftObject());
-        }
-        else{
-            type_label.setText("Normal");
-            mainContent_textArea.setText(notification.getMessage());
-        }
+        if(notification instanceof Request) type_label.setText("REQUEST");
+        else type_label.setText("ANNOUNCEMENT");
+
+        mainContent_textArea.setText(notification.getContent());
         sender_label.setText(notification.getSender().namePropertyProperty().get());
-        receiver_label.setText("Many receivers");
-        timestamp_label.setText(notification.getTimestamp().toString());
-        System.out.println("Show detail done");
+        receiver_label.setText("You and " + notification.getTotalReceivers() + " others");
+        timestamp_label.setText(notification.getTimestamp());
 
     }
 }

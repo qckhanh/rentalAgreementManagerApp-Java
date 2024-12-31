@@ -136,6 +136,12 @@ public abstract class Property {
         this.hosts = hostsProperty.get();
     }
 
+//    public void addHost(Host host) {
+//        this.hosts.add(host);
+//        this.hostsProperty.setValue(this.hosts);
+//
+//    }
+
     public Set<RentalAgreement> getAgreementList() {
         return agreementList;
     }

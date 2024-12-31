@@ -3,6 +3,7 @@ package org.rmit.Helper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -21,4 +22,11 @@ public class DateUtils {
         if(date == null) return DEFAULT_DATE;
         return date.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
     }
+
+    public static String currentTimestamp(){
+        String currentDate = formatDate(LocalDate.now());
+        String currentTime = DateTimeFormatter.ofPattern("HH:mm").format(LocalTime.now());
+        return currentTime + " " + currentDate;
+    }
+
 }
