@@ -15,6 +15,10 @@ public class AdminViewFactory {
     private AnchorPane admin_renterManagerView;
     private AnchorPane admin_dashboardView;
     private AnchorPane admin_editProfileView;
+    private AnchorPane admin_agreementManagerView;
+    private AnchorPane admine_hostManagerView;
+    private AnchorPane admin_ownerManagerView;
+    private AnchorPane admin_paymentManagerView;
 
     public AdminViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD);      // default view
@@ -60,6 +64,50 @@ public class AdminViewFactory {
             }
         }
         return admin_renterManagerView;
+    }
+
+    public AnchorPane getAdmin_agreementManagerView() {
+        if (admin_agreementManagerView == null){
+            try {
+                admin_agreementManagerView = new FXMLLoader(getClass().getResource(path + "agreementManager.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading agreement manager.fxml");
+            }
+        }
+        return admin_agreementManagerView;
+    }
+
+    public AnchorPane getAdmin_HostManagerView() {
+        if (admine_hostManagerView == null){
+            try {
+                admine_hostManagerView = new FXMLLoader(getClass().getResource(path + "hostManager.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading host manager.fxml");
+            }
+        }
+        return admine_hostManagerView;
+    }
+
+    public AnchorPane getAdmin_OwnerManagerView() {
+        if (admin_ownerManagerView == null){
+            try {
+                admin_ownerManagerView = new FXMLLoader(getClass().getResource(path + "ownerManager.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading owner manager.fxml");
+            }
+        }
+        return admin_ownerManagerView;
+    }
+
+    public AnchorPane getAdmin_PaymentManagerView() {
+        if (admin_paymentManagerView == null){
+            try {
+                admin_paymentManagerView = new FXMLLoader(getClass().getResource(path + "paymentManager.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading payment manager.fxml");
+            }
+        }
+        return admin_paymentManagerView;
     }
 
     // helper method:

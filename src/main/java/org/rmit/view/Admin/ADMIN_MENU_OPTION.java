@@ -3,5 +3,10 @@ package org.rmit.view.Admin;
 public enum ADMIN_MENU_OPTION {
     RENTER_MANAGER,
     DASHBOARD,
-    EDIT_PROFILE
+    EDIT_PROFILE,
+    AGREEMENT_MANAGER,
+    HOST_MANAGER,
+    OWNER_MANAGER,
+    PAYMENT_MANAGER,
+    LOGOUT
 }

@@ -9,15 +9,15 @@ import javafx.scene.control.TableView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class renterManagerController implements Initializable {
-    public TableView properties_tableView;
+public class HostManagerController implements Initializable {
     public Label welcomeLabel;
+    public TableView properties_tableView;
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
-    public Button addRenterButton;
-    public Button updateRenterButton;
-    public Button deleteRenterButton;
-    public Button readRenterButton;
+    public Button updateHostButton;
+    public Button addHostButton;
+    public Button deleteHostButton;
+    public Button readHostButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
