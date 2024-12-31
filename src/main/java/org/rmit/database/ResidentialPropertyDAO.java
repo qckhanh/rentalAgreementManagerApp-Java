@@ -109,6 +109,8 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
 
         personSubgraph(entityGraph.addSubgraph("owner"));
+        personSubgraph(entityGraph.addSubgraph("hosts"));
+
 
         return entityGraph;
     }

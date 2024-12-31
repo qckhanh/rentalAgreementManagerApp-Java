@@ -108,6 +108,8 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
 
         personSubgraph(entityGraph.addSubgraph("owner"));
+        personSubgraph(entityGraph.addSubgraph("hosts"));
+
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         return entityGraph;
