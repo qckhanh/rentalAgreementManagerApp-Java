@@ -1,5 +1,7 @@
 package org.rmit.controller.Admin;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -24,6 +26,7 @@ public class PaymentManagerController implements Initializable {
     public Button readPaymentButton;
     public TableView payments_tableView;
     private ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
+    private ObjectProperty<Payment> selectedPayment = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -33,9 +36,18 @@ public class PaymentManagerController implements Initializable {
                 createColumn("Rental Agreement", "rentalAgreement")
         );
         payments_tableView.setItems(paymentObservableList);
+        payments_tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            selectedPayment.set((Payment) newValue);
+        });
+
         PaymentDAO paymentDAO = new PaymentDAO();
         List<Payment> list = paymentDAO.getAll();
         loadData(list);
+
+//        deletePaymentButton.setOnAction(e -> deletePayment());
+        // update chua lam
+        // add chua lam
+        readPaymentButton.setOnAction(e-> readPayment());
     }
 
     private TableColumn<Payment, ?> createColumn(String columnName, String propertyName) {
@@ -46,5 +58,18 @@ public class PaymentManagerController implements Initializable {
 
     private void loadData(List<Payment> list) {
         paymentObservableList.setAll(list);
+    }
+
+    //    private void deletePayment() {
+//        PaymentDAO paymentDAO = new PaymentDAO();
+//        int id= Integer.parseInt(selectedPayment.get().getPaymentId() + "");
+//        Payment payment = paymentDAO.get(id);
+//        paymentDAO.delete(payment);
+//        paymentObservableList.remove(selectedPayment.get());
+//    }
+
+    private void readPayment() {
+        Payment currentSelectedPayment = selectedPayment.get();
+        System.out.println(currentSelectedPayment);
     }
 }
