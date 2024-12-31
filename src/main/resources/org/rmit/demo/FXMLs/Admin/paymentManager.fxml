@@ -14,7 +14,7 @@
                 <Font name="System Bold" size="36.0" />
             </font>
         </Label>
-        <TableView fx:id="properties_tableView" layoutX="31.0" layoutY="173.0" prefHeight="557.0" prefWidth="745.0" />
+        <TableView fx:id="payments_tableView" layoutX="31.0" layoutY="173.0" prefHeight="557.0" prefWidth="745.0" />
         <ComboBox fx:id="propertyTypeFilter_comboBox" layoutX="219.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Type" />
         <ComboBox fx:id="propertyStatusFilter_comboBox" layoutX="39.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Status" />
         <Button fx:id="addPaymentButton" layoutX="718.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="ADD" />
