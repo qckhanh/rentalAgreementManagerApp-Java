@@ -113,14 +113,14 @@ public class LoginController implements Initializable {
 
         Person loginUser = null;
         if(viewFactory.getAccountLoginType() == ACCOUNT_TYPE.ADMIN) {
-            dao = new RenterDAO();
-            loginUser = (Renter) dao.validateLogin(username, password);
+            dao = new AdminDAO();
+            loginUser = (Admin) dao.validateLogin(username, password);
             if(loginUser == null) System.out.println("Incorrect username or password");
             else {
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
                 ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
+                ModelCentral.getInstance().getAdminViewFactory().startAdminView();
             }
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.GUEST) {

@@ -33,6 +33,7 @@ module org.rmit.demo {
     opens org.rmit.controller.Owner to javafx.fxml;
     opens org.rmit.controller.Host to javafx.fxml;
     opens org.rmit.controller.Guest to javafx.fxml;
+    opens org.rmit.controller.Admin to javafx.fxml;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports org.rmit;
