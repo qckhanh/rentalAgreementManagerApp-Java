@@ -97,16 +97,21 @@ public class Owner_AddPropertiesController implements Initializable {
             dao = new CommercialPropertyDAO();
             CommercialProperty cp = new CommercialProperty();
             CommercialPropertyFactory(cp);
-            if (dao.add(cp)) System.out.println("added");
-            else System.out.println("Nope!");
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
+            if (confirmed) {
+                if (dao.add(cp)) System.out.println("added");
+                else System.out.println("Nope!");
+            }
         }
         else if (typeOfProperty_choiceBox.getValue() == PropertyType.RESIDENTIAL) {
             dao = new ResidentialPropertyDAO();
             ResidentialProperty rp = new ResidentialProperty();
-
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
             ResidentialPropertyFactory(rp);
-            if (dao.add(rp)) System.out.println("added");
-            else System.out.println("Nope!!");
+            if (confirmed) {
+                if (dao.add(rp)) System.out.println("added");
+                else System.out.println("Nope!!");
+            }
         }
     }
 
