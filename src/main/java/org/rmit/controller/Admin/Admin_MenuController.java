@@ -80,23 +80,22 @@ public class Admin_MenuController implements Initializable {
     }
 
     private void manageRenter(){
-        // Write your code here:
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.RENTER_MANAGER);
     }
 
     private void manageAgreement(){
-        // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.AGREEMENT_MANAGER);
     }
 
     private void manageHost(){
-        // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.HOST_MANAGER);
     }
 
     private void manageOwner(){
-        // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.OWNER_MANAGER);
     }
 
     private void managePayment(){
-        // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PAYMENT_MANAGER);
     }
 }
