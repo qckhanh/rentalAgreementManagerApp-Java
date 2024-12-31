@@ -1,5 +1,7 @@
 package org.rmit.controller.Admin;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -24,7 +26,7 @@ public class OwnerManagerController implements Initializable {
     public Button readOwnerButton;
     public TableView owners_tableView;
     private ObservableList<Owner> ownerObservableList = FXCollections.observableArrayList();
-
+    private ObjectProperty<Owner> selectedOwner = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -34,9 +36,18 @@ public class OwnerManagerController implements Initializable {
                 createColumn("Owner Name", "name")
         );
         owners_tableView.setItems(ownerObservableList);
+        owners_tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            selectedOwner.set((Owner) newValue);
+        });
+
         OwnerDAO ownerDAO = new OwnerDAO();
         List<Owner> list = ownerDAO.getAll();
         loadData(list);
+
+        deleteOwnerButton.setOnAction(e -> deleteOwner());
+        // update chua lam
+        // add chua lam
+        readOwnerButton.setOnAction(e-> readOwner());
     }
 
     private TableColumn<Owner, ?> createColumn(String columnName, String propertyName) {
@@ -47,5 +58,19 @@ public class OwnerManagerController implements Initializable {
 
     private void loadData(List<Owner> list) {
         ownerObservableList.setAll(list);
+    }
+
+    // Helper Method:
+    private void deleteOwner() {
+        OwnerDAO ownerDAO = new OwnerDAO();
+        int id = Integer.parseInt(selectedOwner.get().getId() + "");
+        Owner owner = ownerDAO.get(id);
+        ownerDAO.delete(owner);
+        ownerObservableList.remove(selectedOwner.get());
+    }
+
+    private void readOwner() {
+        Owner currentSelectedOwner = selectedOwner.get();
+        System.out.println(currentSelectedOwner);
     }
 }

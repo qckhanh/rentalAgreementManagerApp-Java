@@ -1,5 +1,7 @@
 package org.rmit.controller.Admin;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -24,6 +26,7 @@ public class HostManagerController implements Initializable {
     public Button deleteHostButton;
     public Button readHostButton;
     private ObservableList<Host> hostObservableList = FXCollections.observableArrayList();
+    private ObjectProperty<Host> selectedHost = new SimpleObjectProperty<>();
 
 
     @Override
@@ -34,9 +37,18 @@ public class HostManagerController implements Initializable {
                 createColumn("Host Name", "name")
         );
         hosts_tableView.setItems(hostObservableList);
+        hosts_tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            selectedHost.set(newValue);
+        });
+
         HostDAO hostDAO = new HostDAO();
         List<Host> list = hostDAO.getAll();
         loadData(list);
+
+        deleteHostButton.setOnAction(e -> deleteHost());
+        // update chua lam
+        // add chua lam
+        readHostButton.setOnAction(e-> readHost());
     }
 
     private TableColumn<Host, ?> createColumn(String columnName, String propertyName) {
@@ -47,5 +59,19 @@ public class HostManagerController implements Initializable {
 
     private void loadData(List<Host> list) {
         hostObservableList.setAll(list);
+    }
+
+    // Helper Methods:
+    private void deleteHost() {
+        HostDAO hostDAO = new HostDAO();
+        int id = Integer.parseInt(selectedHost.get().getId() + "");
+        Host host = hostDAO.get(id);
+        hostDAO.delete(host);
+        hostObservableList.remove(selectedHost.get());
+    }
+
+    private void readHost() {
+        Host currentSelectedHost = selectedHost.get();
+        System.out.println(currentSelectedHost);
     }
 }
