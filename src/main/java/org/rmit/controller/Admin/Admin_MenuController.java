@@ -6,7 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
+import org.rmit.view.Admin.ADMIN_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -65,10 +67,12 @@ public class Admin_MenuController implements Initializable {
 
     private void editProfile(){
         // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void openDashboard(){
         // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
     }
 
     private void logOut(){
@@ -77,6 +81,7 @@ public class Admin_MenuController implements Initializable {
 
     private void manageRenter(){
         // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.RENTER_MANAGER);
     }
 
     private void manageAgreement(){

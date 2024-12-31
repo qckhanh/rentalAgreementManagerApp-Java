@@ -15,14 +15,20 @@ public class AdminController implements Initializable {
     @FXML
     BorderPane borderPane;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        // nothing here
+    public AdminController() {
         ModelCentral.getInstance().getAdminViewFactory().selectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case RENTER_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getRenterManagerView());
                 case DASHBOARD -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_dashboardView());
+                case EDIT_PROFILE -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_editProfileView());
             }
         });
+    }
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // nothing here
+
     }
 }

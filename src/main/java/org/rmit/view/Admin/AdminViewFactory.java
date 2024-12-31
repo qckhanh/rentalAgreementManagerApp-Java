@@ -14,6 +14,7 @@ public class AdminViewFactory {
     private ObjectProperty<ADMIN_MENU_OPTION> selectedMenuItem;
     private AnchorPane admin_renterManagerView;
     private AnchorPane admin_dashboardView;
+    private AnchorPane admin_editProfileView;
 
     public AdminViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD);      // default view
@@ -29,20 +30,20 @@ public class AdminViewFactory {
 
     // generate admin view for each menu option
     public AnchorPane getAdmin_editProfileView(){
-        if (admin_renterManagerView == null){
+        if (admin_editProfileView == null){
             try {
-                admin_renterManagerView = new FXMLLoader(getClass().getResource(path + "editProfileAdmin.fxml")).load();
+                admin_editProfileView = new FXMLLoader(getClass().getResource(path + "editProfileAdmin.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading renter manager.fxml");
             }
         }
-        return admin_renterManagerView;
+        return admin_editProfileView;
     }
 
     public AnchorPane getAdmin_dashboardView() {
         if (admin_dashboardView == null){
             try {
-                admin_dashboardView = new FXMLLoader(getClass().getResource(path + "dashboardHost.fxml")).load();
+                admin_dashboardView = new FXMLLoader(getClass().getResource(path + "dashboardAdmin.fxml")).load();
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -80,6 +81,7 @@ public class AdminViewFactory {
         // set all view to null
         admin_renterManagerView = null;
         admin_dashboardView = null;
+        admin_editProfileView = null;
     }
 
     // Setter and Getters:
