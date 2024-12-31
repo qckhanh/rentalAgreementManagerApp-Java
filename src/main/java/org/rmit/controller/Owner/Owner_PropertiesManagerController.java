@@ -212,7 +212,12 @@ public class Owner_PropertiesManagerController implements Initializable {
         if (selectedProperty != null) {
             Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
             ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+            // Reload data after updating the property
+            Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
+            properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+            loadData(updatedProperties);
         }
+        properties_tableView.refresh();
     }
 
     private Set<Property> noFilter() {
