@@ -16,9 +16,10 @@ public class AdminViewFactory {
     private AnchorPane admin_dashboardView;
     private AnchorPane admin_editProfileView;
     private AnchorPane admin_agreementManagerView;
-    private AnchorPane admine_hostManagerView;
+    private AnchorPane admin_hostManagerView;
     private AnchorPane admin_ownerManagerView;
     private AnchorPane admin_paymentManagerView;
+    private AnchorPane admin_adminManagerView;
 
     public AdminViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD);      // default view
@@ -78,14 +79,14 @@ public class AdminViewFactory {
     }
 
     public AnchorPane getAdmin_HostManagerView() {
-        if (admine_hostManagerView == null){
+        if (admin_hostManagerView == null){
             try {
-                admine_hostManagerView = new FXMLLoader(getClass().getResource(path + "hostManager.fxml")).load();
+                admin_hostManagerView = new FXMLLoader(getClass().getResource(path + "hostManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading host manager.fxml");
             }
         }
-        return admine_hostManagerView;
+        return admin_hostManagerView;
     }
 
     public AnchorPane getAdmin_OwnerManagerView() {
@@ -108,6 +109,18 @@ public class AdminViewFactory {
             }
         }
         return admin_paymentManagerView;
+    }
+
+    public AnchorPane getAdmin_AdminManagerView() {
+        if (admin_adminManagerView == null){
+            try {
+                admin_adminManagerView = new FXMLLoader(getClass().getResource(path + "adminManager.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading admin manager.fxml");
+                e.printStackTrace();
+            }
+        }
+        return admin_adminManagerView;
     }
 
     // helper method:

@@ -25,6 +25,7 @@ public class AdminController implements Initializable {
                 case HOST_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_HostManagerView());
                 case OWNER_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_OwnerManagerView());
                 case PAYMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_PaymentManagerView());
+                case ADMIN_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_AdminManagerView());
             }
         });
     }
