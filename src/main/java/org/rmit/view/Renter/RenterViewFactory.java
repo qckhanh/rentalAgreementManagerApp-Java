@@ -17,6 +17,7 @@ public class RenterViewFactory {
     private AnchorPane renter_paymentManagerView;
     private AnchorPane renter_agreementManagerView;
     private AnchorPane renter_makePaymentView;
+    private AnchorPane renter_makeRentalAgreementView;
 
     public RenterViewFactory() {
         renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
@@ -41,6 +42,8 @@ public class RenterViewFactory {
         }
         return renter_editProfileView;
     }
+
+
     public AnchorPane getRenter_dashboardView(){
         if (null == null){
             try {
@@ -80,6 +83,17 @@ public class RenterViewFactory {
             }
         }
         return renter_makePaymentView;
+    }
+
+    public AnchorPane getRenter_makeRentalAgreementView(){
+        if(renter_makeRentalAgreementView == null){
+            try {
+                renter_makeRentalAgreementView = new FXMLLoader(getClass().getResource(RENTER_PATH + "makeRentalAgreementRenter.fxml")).load();
+            } catch (Exception e){
+                System.out.println("Error loading makeRentalAgreementRenter.fxml");
+            }
+        }
+        return renter_makeRentalAgreementView;
     }
 
 

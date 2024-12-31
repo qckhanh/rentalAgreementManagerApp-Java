@@ -69,6 +69,7 @@ public class Renter_AgreementManagerController implements Initializable {
         });
         propertyFilter_comboBox.getItems().addAll(createPropertyComboBox());
 
+        rentalAgreement_tableView.setEditable(true);
         rentalAgreement_tableView.getColumns().addAll(
                 createColumn("ID", "agreementId"),
                 createColumn("Main Renter", "mainTenant",
