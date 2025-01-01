@@ -72,14 +72,6 @@ public class Renter extends Person {
         setPayments(updatedPayments);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Renter renter)) return false;
-        return Objects.equals(agreementList, renter.agreementList) && Objects.equals(payments, renter.payments) && Objects.equals(agreementListProperty, renter.agreementListProperty) && Objects.equals(paymentsProperty, renter.paymentsProperty);
-    }
-
-
     /////////////////////
 
     public Set<RentalAgreement> getAgreementListProperty() {

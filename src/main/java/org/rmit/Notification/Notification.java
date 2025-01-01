@@ -2,6 +2,7 @@ package org.rmit.Notification;
 
 import jakarta.persistence.*;
 import javafx.beans.property.*;
+import jdk.jfr.ContentType;
 import org.rmit.Helper.DateUtils;
 import org.rmit.model.Persons.Person;
 

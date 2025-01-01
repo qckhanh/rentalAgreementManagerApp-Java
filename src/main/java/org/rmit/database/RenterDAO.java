@@ -128,7 +128,24 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
 
     @Override
     public List<Renter> search(String keyword) {
-        return null;
+        List<Renter> list = Collections.emptyList();
+        try{
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
+            String HQL = "From Renter r where LOWER(r.name) like :nameKeyword or r.id = :idKeyword";
+            list = session.createQuery(HQL, Renter.class)
+                    .setParameter("nameKeyword", "%" + keyword.toLowerCase() + "%")
+                    .setParameter("idKeyword", parseId(keyword))
+                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .list();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            DatabaseUtil.shutdown(DatabaseUtil.getSession());
+            return list;
+        }
     }
 
 

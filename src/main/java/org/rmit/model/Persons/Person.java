@@ -150,17 +150,17 @@ public abstract class Person {
         this.id = idProperty.get();
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Person person)) return false;
-//        return id == person.id;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, name, dateOfBirth, contact, Arrays.hashCode(profileAvatar), username, password, idProperty, nameProperty, dateOfBirthProperty, contactProperty, usernameProperty, passwordProperty, profileAvatarProperty);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person person)) return false;
+        return id == person.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, dateOfBirth, contact, username);
+    }
 
     //////////
 
