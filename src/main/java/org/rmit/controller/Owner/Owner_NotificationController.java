@@ -178,7 +178,7 @@ public class Owner_NotificationController implements Initializable {
                 return;
             }
             String header = String.format(
-                    NotificationUtils.HEADER_PROPERTY_REQUEST,
+                    NotificationUtils.HEADER_REQUEST_PROPERTY,
                     property.getId(),
                     property.getAddress()
             );

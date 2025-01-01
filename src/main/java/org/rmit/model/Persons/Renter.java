@@ -57,6 +57,13 @@ public class Renter extends Person {
         this.agreementList = agreementListProperty.get();
     }
 
+    public void addAgreement(RentalAgreement agreement) {
+        this.agreementList.add(agreement);
+        this.agreementListProperty.set(this.agreementList);
+    }
+
+
+
     public Set<Payment> getPayments() {
         return payments;
     }
@@ -71,14 +78,6 @@ public class Renter extends Person {
         updatedPayments.add(payment);
         setPayments(updatedPayments);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Renter renter)) return false;
-        return Objects.equals(agreementList, renter.agreementList) && Objects.equals(payments, renter.payments) && Objects.equals(agreementListProperty, renter.agreementListProperty) && Objects.equals(paymentsProperty, renter.paymentsProperty);
-    }
-
 
     /////////////////////
 

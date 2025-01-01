@@ -17,7 +17,7 @@ import java.util.*;
 @Entity
 public class RentalAgreement {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long agreementId;
 
     @ManyToOne
@@ -128,6 +128,7 @@ public class RentalAgreement {
     public void setHost(Host host) {
         this.hostProperty.setValue(host);
         this.host = hostProperty.get();
+        host.addAgreement(this);
     }
 
     public RentalPeriod getPeriod() {

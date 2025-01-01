@@ -118,4 +118,9 @@ public class Host extends Person {
     public ObjectProperty<Set<Owner>> cooperatingOwnersPropertyProperty() {
         return cooperatingOwnersProperty;
     }
+
+    public void addAgreement(RentalAgreement rentalAgreement) {
+        this.rentalAgreements.add(rentalAgreement);
+        this.rentalAgreementsProperty.set(this.rentalAgreements);
+    }
 }

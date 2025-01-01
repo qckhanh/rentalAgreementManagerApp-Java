@@ -70,7 +70,6 @@ public class Host_AgreementManagerController implements Initializable {
             selectedProperty.set((Property) propertyFilter_comboBox.getValue());
         });
         propertyFilter_comboBox.getItems().addAll(createPropertyComboBox());
-
         rentalAgreement_tableView.getColumns().addAll(
                 createColumn("ID", "agreementId"),
                 createColumn("Main Renter", "mainTenant",

@@ -2,6 +2,7 @@ package org.rmit.Notification;
 
 import jakarta.persistence.*;
 import javafx.beans.property.*;
+import jdk.jfr.ContentType;
 import org.rmit.Helper.DateUtils;
 import org.rmit.model.Persons.Person;
 
@@ -32,6 +33,7 @@ public abstract class Notification {
     )
     private Set<Person> receivers = new HashSet<>();
     private String header;
+    @Lob
     private String content;
     private String timestamp;
 

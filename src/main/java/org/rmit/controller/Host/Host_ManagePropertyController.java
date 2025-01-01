@@ -140,14 +140,14 @@ public class Host_ManagePropertyController implements Initializable {
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
 
         String content = String.format(
-                NotificationUtils.CONTENT_REQUEST,
+                NotificationUtils.CONTENT_REQUEST_PROPERTY,
                 property.getOwner().getName(),
                 currentUser.getName(),
                 property.getId(),
                 property.getAddress()
         );
         String header = String.format(
-                NotificationUtils.HEADER_REQUEST,
+                NotificationUtils.HEADER_REQUEST_PROPERTY,
                 property.getId(),
                 property.getAddress()
         );
