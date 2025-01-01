@@ -57,6 +57,13 @@ public class Renter extends Person {
         this.agreementList = agreementListProperty.get();
     }
 
+    public void addAgreement(RentalAgreement agreement) {
+        this.agreementList.add(agreement);
+        this.agreementListProperty.set(this.agreementList);
+    }
+
+
+
     public Set<Payment> getPayments() {
         return payments;
     }

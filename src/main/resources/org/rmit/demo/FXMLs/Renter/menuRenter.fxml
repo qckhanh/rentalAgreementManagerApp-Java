@@ -70,6 +70,11 @@
                   <Font name="System Bold" size="17.0" />
                </font>
             </Button>
+            <Button fx:id="notification_btn" layoutX="20.0" layoutY="544.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Notification">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Button>
             </children>
         </AnchorPane>
     </children>

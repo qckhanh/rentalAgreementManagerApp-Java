@@ -28,6 +28,7 @@ public class Renter_MenuController implements Initializable {
     public Button makePayment_btn;
     public ImageView avatar_ImageView;
     public Button makeAgreement_btn;
+    public Button notification_btn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,6 +59,7 @@ public class Renter_MenuController implements Initializable {
         rentalManager_btn.setOnAction(e -> rentalManager());
         makePayment_btn.setOnAction(e -> makePayment());
         makeAgreement_btn.setOnAction(e -> makeAgreement());
+        notification_btn.setOnAction(e ->openNotification());
     }
 
     private void decor(){
@@ -97,5 +99,9 @@ public class Renter_MenuController implements Initializable {
 
     private void makeAgreement(){
         ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.MAKE_RENTAL_AGREEMENT);
+    }
+
+    private void openNotification(){
+        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.NOTIFICATION);
     }
 }

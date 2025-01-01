@@ -18,6 +18,8 @@ public class RenterViewFactory {
     private AnchorPane renter_agreementManagerView;
     private AnchorPane renter_makePaymentView;
     private AnchorPane renter_makeRentalAgreementView;
+    private AnchorPane renter_notificationView;
+
 
     public RenterViewFactory() {
         renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
@@ -41,6 +43,17 @@ public class RenterViewFactory {
             }
         }
         return renter_editProfileView;
+    }
+
+    public AnchorPane getRenter_NotificationView(){
+        if (renter_notificationView == null){
+            try {
+                renter_notificationView = new FXMLLoader(getClass().getResource(RENTER_PATH + "notificationRenter.fxml")).load();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return renter_notificationView;
     }
 
 

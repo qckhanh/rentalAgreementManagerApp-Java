@@ -33,7 +33,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.update(rentalAgreement);
+            session.merge(rentalAgreement);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;

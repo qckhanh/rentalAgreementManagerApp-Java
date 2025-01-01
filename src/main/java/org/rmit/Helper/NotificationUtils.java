@@ -7,6 +7,8 @@ import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.RentalPeriod;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -108,5 +110,15 @@ public class NotificationUtils {
             draft += ","+ r.getId();
         }
         return draft;
+    }
+
+    public static List<String> draftID_RentalAgreement(String draft){
+        if(!getDraftType(draft).equals("RentalAgreement")) return Collections.EMPTY_LIST;
+        String[] parts = draft.split(",");
+        List<String> ids = new ArrayList<>();
+        for(int i = 1; i < parts.length; i++){
+            ids.add(parts[i]);
+        }
+        return ids;
     }
 }

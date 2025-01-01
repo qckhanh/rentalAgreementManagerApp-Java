@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.rmit.controller.Renter.Renter_NotificationController">
+    <children>
+        <Label fx:id="welcomeLabel" layoutX="38.0" layoutY="40.0" prefHeight="59.0" prefWidth="179.0" text="Notifications">
+            <font>
+                <Font name="System Bold" size="28.0" />
+            </font>
+        </Label>
+      <HBox layoutX="38.0" layoutY="116.0" prefHeight="33.0" prefWidth="346.0" spacing="30.0">
+         <children>
+            <ComboBox fx:id="roleFilter_comboBox" prefHeight="33.0" prefWidth="123.0" promptText="ROLE" />
+            <ComboBox fx:id="notiType_comboBox" prefHeight="33.0" prefWidth="125.0" promptText="TYPE" />
+         </children>
+      </HBox>
+      <Label fx:id="welcomeLabel1" alignment="CENTER" layoutX="396.0" layoutY="94.0" prefHeight="59.0" prefWidth="369.0" text="Details">
+         <font>
+            <Font name="System Bold" size="28.0" />
+         </font>
+      </Label>
+    <AnchorPane layoutX="396.0" layoutY="162.0" minHeight="0.0" minWidth="0.0" prefHeight="587.0" prefWidth="369.0">
+         <children>
+            <VBox prefHeight="587.0" prefWidth="366.0" spacing="20.0">
+               <children>
+                  <HBox prefHeight="33.0" prefWidth="347.0">
+                     <children>
+                        <Label prefHeight="33.0" prefWidth="65.0" text="Type: ">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="type_label" alignment="CENTER" prefHeight="33.0" prefWidth="283.0" text="aaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="33.0" prefWidth="346.0">
+                     <children>
+                        <Label prefHeight="33.0" prefWidth="70.0" text="Sender: ">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="sender_label" prefHeight="33.0" prefWidth="267.0" text="aaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="33.0" prefWidth="347.0">
+                     <children>
+                        <Label prefHeight="33.0" prefWidth="75.0" text="Time:">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="timestamp_label" prefHeight="33.0" prefWidth="287.0" text="aaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="33.0" prefWidth="347.0">
+                     <children>
+                        <Label prefHeight="33.0" prefWidth="64.0" text="To: ">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="receiver_label" prefHeight="33.0" prefWidth="299.0" text="aaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+                     </children>
+                  </HBox>
+                  <TextArea fx:id="mainContent_textArea" editable="false" prefHeight="200.0" prefWidth="323.0" />
+                  <Button fx:id="approve_btn" mnemonicParsing="false" prefHeight="31.0" prefWidth="359.0" text="Approve" />
+                  <Button fx:id="deny_btn" mnemonicParsing="false" prefHeight="31.0" prefWidth="359.0" text="Deny" />
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <ListView fx:id="noti_ListView" layoutX="38.0" layoutY="160.0" prefHeight="587.0" prefWidth="346.0" />
+      <Button fx:id="deleteNoti_btn" layoutX="14.0" layoutY="712.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="47.0" />
+    </children>
+</AnchorPane>

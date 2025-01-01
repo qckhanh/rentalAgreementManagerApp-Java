@@ -1,4 +1,4 @@
-package org.rmit.controller.Host;
+package org.rmit.controller.Renter;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,8 +25,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.rmit.view.Host.ROLE_FILTER.*;
+import static org.rmit.view.Host.ROLE_FILTER.SENDER;
 
-public class Host_NotificationController implements Initializable {
+public class Renter_NotificationController implements Initializable {
     public Label type_label;
     public Label sender_label;
     public Label timestamp_label;
@@ -41,7 +42,7 @@ public class Host_NotificationController implements Initializable {
     public ObjectProperty<ROLE_FILTER> roleFilterProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<NOTI_TYPE_FILTER> notiTypeProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
-    public ObjectProperty<Host> currentUser = new SimpleObjectProperty<>((Host) Session.getInstance().getCurrentUser());
+    public ObjectProperty<Renter> currentUser = new SimpleObjectProperty<>((Renter) Session.getInstance().getCurrentUser());
     public Button deleteNoti_btn;
 
     @Override
@@ -105,73 +106,22 @@ public class Host_NotificationController implements Initializable {
             loadListView(notifications);
             System.out.println("Role filter changed");
         });
-
         loadListView(getNoFilter());
     }
 
     private void approveRequest() {
-        Request request = (Request) selectedNotificationProperty.get();
-        if(request.isAllApproved()) return;
-        currentUser.get().acceptRequest(request);
-        String draft = request.getDraftObject();
-        if(NotificationUtils.getDraftType(draft).equals("RentalAgreement")){
-            List<String> ids = NotificationUtils.draftID_RentalAgreement(draft);
-            long mainRenterId = request.getSender().getId();
-            long propertyID = Long.parseLong(ids.get(0));
-            long hostID = Long.parseLong(ids.get(1));
-            long ownerID = Long.parseLong(ids.get(2));
-            RentalPeriod rentalPeriod = RentalPeriod.valueOf(ids.get(3));
-            List<Integer> subRenters = new ArrayList<>();
-            for(int i = 4; i < ids.size(); i++){
-                subRenters.add(Integer.parseInt(ids.get(i)));
-            }
-
-            RenterDAO renterDAO = new RenterDAO();
-            HostDAO hostDAO = new HostDAO();
-            OwnerDAO ownerDAO = new OwnerDAO();
-            DAOInterface dao = new CommercialPropertyDAO();
-
-            Renter mainRenter = renterDAO.get(Integer.parseInt(mainRenterId + ""));
-            Owner owner = ownerDAO.get(Integer.parseInt(ownerID + ""));
-            Property property = (Property) dao.get(Integer.parseInt(propertyID + ""));
-            if(property == null){
-                dao = new ResidentialPropertyDAO();
-                property = (Property) dao.get(Integer.parseInt(propertyID + ""));
-            }
-
-            RentalAgreement rentalAgreement = new RentalAgreement();
-            rentalAgreement.setMainTenant(mainRenter);
-            rentalAgreement.setProperty(property);
-            rentalAgreement.setHost(currentUser.get());
-            rentalAgreement.setPeriod(rentalPeriod);
-            rentalAgreement.setContractDate(LocalDate.now());
-            Set<Renter> subRentersSet = new HashSet<>();
-            for(int id: subRenters){
-                subRentersSet.add(renterDAO.get(id));
-            }
-            rentalAgreement.setSubTenants(subRentersSet);
-            rentalAgreement.setStatus(AgreementStatus.NEW);
-            rentalAgreement.setRentingFee(property.getPrice());
-            hostDAO.update(currentUser.get());
-            RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            rentalAgreementDAO.update(rentalAgreement);
-
-            System.out.println("Done ! ");
-
-        }
-
     }
 
     private void denyRequest() {
     }
 
     private void deleteNoti() {
-        currentUser.get().getReceivedNotifications().clear();
-        currentUser.get().getSentNotifications().clear();
-        loadListView(getNoFilter());
-        HostDAO hostDAO = new HostDAO();
-        hostDAO.update(currentUser.get());
-        System.out.println("Notification deleted");
+//        currentUser.get().getReceivedNotifications().clear();
+//        currentUser.get().getSentNotifications().clear();
+//        loadListView(getNoFilter());
+//        HostDAO hostDAO = new HostDAO();
+//        hostDAO.update(currentUser.get());
+//        System.out.println("Notification deleted");
     }
 
     private void setButtonVisible(boolean visible){

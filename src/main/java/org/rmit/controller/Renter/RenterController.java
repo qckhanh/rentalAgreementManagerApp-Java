@@ -26,6 +26,7 @@ public class RenterController implements Initializable{
                 case MAKE_PAYMENT -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_makePaymentView());
                 case SEARCH -> System.out.println("Search");
                 case MAKE_RENTAL_AGREEMENT -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_makeRentalAgreementView());
+                case NOTIFICATION -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_NotificationView());
             }
         });
         //set default view

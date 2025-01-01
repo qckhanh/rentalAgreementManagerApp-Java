@@ -33,6 +33,7 @@ public abstract class Notification {
     )
     private Set<Person> receivers = new HashSet<>();
     private String header;
+    @Lob
     private String content;
     private String timestamp;
 

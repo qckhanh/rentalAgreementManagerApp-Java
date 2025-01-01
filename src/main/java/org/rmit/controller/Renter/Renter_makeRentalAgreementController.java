@@ -254,7 +254,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         request.setSender(currentUser);
         request.addReceiver(selectedHost.get());
         request.setHeader(header);
-        request.setContent(s);
+        request.setContent(content);
         request.setDraftObject(s);
 
         currentUser.sentNotification(request);
