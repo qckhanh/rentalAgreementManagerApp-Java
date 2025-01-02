@@ -219,14 +219,13 @@ public class Host_DashboardController implements Initializable {
     // Create Pie Chart Data:
     private ObservableList<PieChart.Data> createPieChartData() {
         // Write Code:
-        // Tạo dữ liệu cho PieChart
         ObservableList<PieChart.Data> data;
         int numberOfResidentialProperties = countResidentialProperties();
         int numberOfCommercialProperties = countCommercialProperties();
 
         if (numberOfResidentialProperties == 0 && numberOfCommercialProperties == 0) {
             data = FXCollections.observableArrayList(
-                    new PieChart.Data("Current User is not managing any Property", 1)
+                    new PieChart.Data("No Data", 1)
             );
         }
         else {
