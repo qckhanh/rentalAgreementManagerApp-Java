@@ -247,13 +247,5 @@ public class Host_DashboardController implements Initializable {
         }
         return totalValue;
     }
-
-    // Update the Data if there is any changes in the database:
-    public void updateData() {
-        // Write Code:
-        // Update the Pie Chart Data:
-        pieChartData = createPieChartData();
-        piechart.setData(pieChartData);
-    }
 }
 
