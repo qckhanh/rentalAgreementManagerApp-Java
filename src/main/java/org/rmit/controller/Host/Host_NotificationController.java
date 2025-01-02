@@ -14,8 +14,7 @@ import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.Property;
-import org.rmit.model.Property.RentalPeriod;
+import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
@@ -142,6 +141,7 @@ public class Host_NotificationController implements Initializable {
             RentalAgreement rentalAgreement = new RentalAgreement();
             rentalAgreement.setMainTenant(mainRenter);
             rentalAgreement.setProperty(property);
+            property.setStatus(PropertyStatus.RENTED);
             rentalAgreement.setHost(currentUser.get());
             rentalAgreement.setPeriod(rentalPeriod);
             rentalAgreement.setContractDate(LocalDate.now());
@@ -155,7 +155,14 @@ public class Host_NotificationController implements Initializable {
             hostDAO.update(currentUser.get());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
             rentalAgreementDAO.update(rentalAgreement);
-
+            if (property instanceof ResidentialProperty){
+                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+                residentialPropertyDAO.update((ResidentialProperty) property);
+            }
+            else{
+                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+                commercialPropertyDAO.update((CommercialProperty) property);
+            }
             System.out.println("Done ! ");
 
         }

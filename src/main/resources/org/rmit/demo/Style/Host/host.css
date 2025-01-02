@@ -1,0 +1,36 @@
+.chart-pie {
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-transition-duration: 0.3s;  /* Thêm transition mượt mà */
+}
+
+.chart-pie:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0);
+}
+
+.chart-pie-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+/* Màu sắc cho từng phần với gradient */
+.default-color0.chart-pie {
+    -fx-pie-color: linear-gradient(to bottom right, #FF6B6B, #ee5253);
+}
+.default-color1.chart-pie {
+    -fx-pie-color: linear-gradient(to bottom right, #4ECDC4, #45b1a8);
+}
+
+/* Style cho tooltip */
+.tooltip {
+    -fx-background-color: rgba(30,30,30,0.9);
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 5px;
+}

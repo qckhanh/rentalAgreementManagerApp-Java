@@ -1,0 +1,33 @@
+        final var rnd = FAKER.random();
+        final var countries = IntStream.range(0, 5).boxed()
+                .map(i -> FAKER.country().countryCode3().toUpperCase())
+                .toList();
+
+        var x = new CategoryAxis();
+        x.setLabel("Country");
+
+        var y = new NumberAxis(0, 80, 10);
+        y.setLabel("Value");
+
+        var january = new XYChart.Series<String, Number>();
+        january.setName("January");
+        IntStream.range(0, countries.size()).forEach(i -> january.getData().add(
+                new XYChart.Data<>(countries.get(i), rnd.nextInt(10, 80))
+        ));
+
+        var february = new XYChart.Series<String, Number>();
+        february.setName("February");
+        IntStream.range(0, countries.size()).forEach(i -> february.getData().add(
+                new XYChart.Data<>(countries.get(i), rnd.nextInt(10, 80))
+        ));
+
+        var march = new XYChart.Series<String, Number>();
+        march.setName("March");
+        IntStream.range(0, countries.size()).forEach(i -> march.getData().add(
+                new XYChart.Data<>(countries.get(i), rnd.nextInt(10, 80))
+        ));
+
+        var chart = new BarChart<>(x, y);
+        chart.setTitle("Country Summary");
+        chart.setMinHeight(300);
+        chart.getData().addAll(january, february, march)
