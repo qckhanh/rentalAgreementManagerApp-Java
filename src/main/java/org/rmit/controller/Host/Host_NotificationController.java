@@ -152,14 +152,12 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setSubTenants(subRentersSet);
             rentalAgreement.setStatus(AgreementStatus.NEW);
             rentalAgreement.setRentingFee(property.getPrice());
-            hostDAO.update(currentUser.get());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            rentalAgreementDAO.update(rentalAgreement);
-
+            rentalAgreementDAO.add(rentalAgreement);
+            currentUser.get().addAgreement(rentalAgreement);
+            hostDAO.update(currentUser.get());
             System.out.println("Done ! ");
-
         }
-
     }
 
     private void denyRequest() {
