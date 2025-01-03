@@ -36,12 +36,10 @@ public class Host_DashboardController implements Initializable {
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
     public ObservableList<PieChart.Data> pieChartData;
     public PieChart piechart;
-
     @FXML
     private CategoryAxis xAxis;
     @FXML
     private NumberAxis yAxis;
-
     @FXML
     public BarChart<String, Number> barChart;
 
