@@ -130,35 +130,6 @@ public class Admin_DashboardController implements Initializable {
         lineChart.setLegendSide(Side.BOTTOM);
         lineChart.setLegendVisible(true);
     }
-//    private void setPieChartProperty(){
-//        pieChartDataProperty = createPieChartDataProperty();
-//        pieChartProperty.setData(pieChartDataProperty);
-//
-//        pieChartProperty.setTitle("Property Type Distribution");
-//        pieChartProperty.setMinSize(300,300);
-//        pieChartProperty.setMaxSize(400,400);
-//
-//        pieChartProperty.setLegendSide(Side.RIGHT);
-//        pieChartProperty.setLegendVisible(true);
-//
-//        // Hiển thị labels
-//        pieChartProperty.setLabelsVisible(false);
-//
-//        for (PieChart.Data data : pieChartDataProperty) {
-//            String percentage = String.format("%.1f%%", (data.getPieValue() / (countCommercialProperties() + countResidentialProperties()) * 100));
-//            // Format: "Role Value.0 (Percentage%)"
-//            String formattedName = String.format("%s %.1f (%s)",
-//                    data.getName(),    // Role name
-//                    data.getPieValue(), // Value
-//                    percentage         // Percentage
-//            );
-//            data.setName(formattedName);
-//        }
-//
-//        pieChartProperty.setStartAngle(60);
-//        pieChartProperty.setClockwise(true);
-//    }
-
     private void setPieChartProperty() {
         pieChartDataProperty = createPieChartDataProperty();
         pieChartProperty.setData(pieChartDataProperty);
@@ -188,7 +159,6 @@ public class Admin_DashboardController implements Initializable {
         pieChartProperty.setStartAngle(60);
         pieChartProperty.setClockwise(true);
     }
-
     private void setEstimatedYearlyRevenue(){
         double revenue = calculateEstimatedYearlyRevenue();
         approxYearRevenue.setText(revenue + " VND");
@@ -307,52 +277,6 @@ public class Admin_DashboardController implements Initializable {
         }
         return total;
     }
-
-    // Function to get the estimated yearly revenue
-//    private double calculateEstimatedYearlyRevenue(){
-//        double total = 0;
-//        List<RentalAgreement> agreements = new RentalAgreementDAO().getAll();
-//
-//        for (RentalAgreement agreement : agreements){
-//            if (agreement.getContractDate().isBefore(currentDate) && agreement.getStatus().equals(AgreementStatus.ACTIVE)){
-//                if (agreement.getPeriod().equals(RentalPeriod.DAILY)){
-//                    if (agreement.getContractDate().getYear() < currentDate.getYear()){
-//                        total += (agreement.getProperty().getPrice()) * 365;
-//                    }
-//                    else {
-//                        total += (agreement.getProperty().getPrice()) * (365 - agreement.getContractDate().getDayOfYear());
-//                    }
-//                }
-//                else if (agreement.getPeriod().equals(RentalPeriod.WEEKLY)){
-//                    if (agreement.getContractDate().getYear() < currentDate.getYear()){
-//                        total += (agreement.getProperty().getPrice()) * 52;
-//                    }
-//                    else {
-//                        total += (agreement.getProperty().getPrice()) * (52 - agreement.getContractDate().getDayOfYear() / 7);
-//                    }
-//                }
-//                else if (agreement.getPeriod().equals(RentalPeriod.FORTNIGHTLY)){
-//                    if (agreement.getContractDate().getYear() < currentDate.getYear()){
-//                        total += (agreement.getProperty().getPrice()) * 26;
-//                    }
-//                    else {
-//                        total += (agreement.getProperty().getPrice()) * (26 - agreement.getContractDate().getDayOfYear() / 14);
-//                    }
-//                }
-//                else if (agreement.getPeriod().equals(RentalPeriod.MONTHLY)){
-//                    if (agreement.getContractDate().getYear() < currentDate.getYear()){
-//                        total += (agreement.getProperty().getPrice()) * 12;
-//                    }
-//                    else {
-//                        total += (agreement.getProperty().getPrice()) * (12 - agreement.getContractDate().getMonthValue());
-//                    }
-//                }
-//            }
-//            System.out.println("Agreement: " + agreement.getAgreementId() + " Total: " + total);
-//        }
-//
-//        return total;
-//    }
 
     private double calculateEstimatedYearlyRevenue() {
         double total = 0;
