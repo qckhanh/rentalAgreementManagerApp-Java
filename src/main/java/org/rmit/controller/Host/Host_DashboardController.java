@@ -50,8 +50,9 @@ public class Host_DashboardController implements Initializable {
         );
 
         // Print Out the Piechart:
-        setPiechart();
+        setPieChart();
 //        setBarChart();
+        
         int a = countRentedResidentialProperties();
         int b = countAvailableResidentialProperties();
         int c = countRentedCommercialProperties();
@@ -59,7 +60,7 @@ public class Host_DashboardController implements Initializable {
     }
 
     // function to set the bar chart
-    private void setPiechart() {
+    private void setPieChart() {
         pieChartData = createPieChartData();
 
         // Set the chart size

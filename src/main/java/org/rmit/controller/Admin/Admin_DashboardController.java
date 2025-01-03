@@ -44,7 +44,18 @@ public class Admin_DashboardController implements Initializable {
     }
 
     private void setPieChart() {
+        pieChartData = createPieChartDataPeople();
+        pieChart.setData(pieChartData);
 
+        pieChart.setTitle("Account's Role Distribution");
+
+        pieChart.setLegendSide(javafx.geometry.Side.LEFT);
+
+        pieChart.setLabelsVisible(true);
+        pieChart.setLabelLineLength(10);
+
+        pieChart.setClockwise(true);
+        pieChart.setStartAngle(60);
     }
 
     // Helper methods to create the PieChart:
@@ -95,8 +106,9 @@ public class Admin_DashboardController implements Initializable {
             data = FXCollections.observableArrayList(
                     new PieChart.Data("Host", numberOfHost),
                     new PieChart.Data("Owner", numberOfOwner),
-                    new PieChart.Data()
-            )
+                    new PieChart.Data("Renter", numberOfRenter),
+                    new PieChart.Data("Admin", numberOfAdmin)
+            );
         }
         return data;
     }
