@@ -3,13 +3,12 @@ package org.rmit.controller.Host;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.effect.Glow;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
@@ -38,9 +37,13 @@ public class Host_DashboardController implements Initializable {
     public ObservableList<PieChart.Data> pieChartData;
     public PieChart piechart;
 
-    NumberAxis xAxis = new NumberAxis();
-    NumberAxis yAxis = new NumberAxis();
-    public BarChart barChart;
+    @FXML
+    private CategoryAxis xAxis;
+    @FXML
+    private NumberAxis yAxis;
+
+    @FXML
+    public BarChart<String, Number> barChart;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -51,12 +54,13 @@ public class Host_DashboardController implements Initializable {
 
         // Print Out the Piechart:
         setPieChart();
-//        setBarChart();
-        
-        int a = countRentedResidentialProperties();
-        int b = countAvailableResidentialProperties();
-        int c = countRentedCommercialProperties();
-        int d = countAvailableCommercialProperties();
+        setBarChart();
+
+        // for debugging purposes
+//        int a = countRentedResidentialProperties();
+//        int b = countAvailableResidentialProperties();
+//        int c = countRentedCommercialProperties();
+//        int d = countAvailableCommercialProperties();
     }
 
     // function to set the bar chart
@@ -71,41 +75,76 @@ public class Host_DashboardController implements Initializable {
         piechart.setData(pieChartData);
         piechart.setTitle("Property Type Distribution");
 
-        // Set the chart properties [LEGEND]
-        piechart.setLegendSide(Side.RIGHT);
+        // Set the legend to the bottom
+        piechart.setLegendSide(Side.BOTTOM);
         piechart.setLegendVisible(true);
 
-        // Set the chart properties [LABELS]
-        piechart.setLabelsVisible(true);
-        piechart.setLabelLineLength(10);
+        piechart.setLabelsVisible(false);
 
-        // Set the chart properties [ANGLE]
-        piechart.setStartAngle(60);
-        piechart.setClockwise(true);
+        pieChartData.forEach(data -> {
+            data.getNode().setOnMouseDragEntered(event -> {
+                piechart.setEffect(new Glow(0.5));
+            });
+        });
 
-        // Set the chart properties [TOOLTIP]
-        for (PieChart.Data data : pieChartData) {
+        for (PieChart.Data data : pieChartData){
             String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValue() * 100));
-            data.setName(data.getName() + "\n" + percentage);
-
-            Tooltip tooltip = new Tooltip(
-                    String.format("%s\nValue: %.0f", data.getName(), data.getPieValue())
+            String formattedName = String.format("%s %.1f (%s)",
+                    data.getName(),
+                    data.getPieValue(),
+                    percentage
             );
-            Tooltip.install(data.getNode(), tooltip);
+
+            data.setName(formattedName);
         }
     }
+
     private void setBarChart(){
         // Set the Axis Labels:
-        xAxis.setLabel("Type of Property");
+        xAxis.setLabel("Property Type");
         yAxis.setLabel("Number of Properties");
 
-        // Create the Bar Chart:
-//        barChart = new BarChart(xAxis, yAxis);
+        // Set the Chart's title:
+        barChart.setTitle("Rented vs Available Properties");
 
-        // Set the Chart Title:
-        barChart.setTitle("Number of Rented Properties vs Available Properties");
+        // Create the series for Rented Properties:
+        XYChart.Series<String, Number> rentedSeries = new XYChart.Series<>();
+        rentedSeries.setName("Rented Properties");
+        rentedSeries.getData().add(new XYChart.Data<>("Residential", countRentedResidentialProperties()));
+        rentedSeries.getData().add(new XYChart.Data<>("Commercial", countRentedCommercialProperties()));
+
+        // Create the series for Available Properties:
+        XYChart.Series<String, Number> availableSeries = new XYChart.Series<>();
+        availableSeries.setName("Available Properties");
+        availableSeries.getData().add(new XYChart.Data<>("Residential", countAvailableResidentialProperties()));
+        availableSeries.getData().add(new XYChart.Data<>("Commercial", countAvailableCommercialProperties()));
+
+        // Add the series to the Bar Chart:
+        barChart.getData().addAll(rentedSeries, availableSeries);
+
+        // Set the Bar Chart size:
+        barChart.setMinSize(300, 300);
+        barChart.setMaxSize(400, 400);
+
+        // Customize the x-axis:
+        xAxis.setTickLabelRotation(0);
+
+        // Remove grid lines for cleaner looks:
+        barChart.setHorizontalGridLinesVisible(false);
+        barChart.setVerticalGridLinesVisible(false);
+
+        // Add Hover effect to the bars:
+        for (XYChart.Series<String, Number> series : barChart.getData()) {
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                data.getNode().setOnMouseEntered(event -> {
+                    data.getNode().setEffect(new Glow(0.5));
+                });
+                data.getNode().setOnMouseExited(event -> {
+                    data.getNode().setEffect(null);
+                });
+            }
+        }
     }
-
 
     /* Helpers method to create the Bar Chart */
     // Calculate Bar Chart Data:
@@ -180,7 +219,7 @@ public class Host_DashboardController implements Initializable {
 
         return numberOfAvailableCommercialProperties;
     }
-
+    
     /* Helpers method to create the Pie Chart */
     // Count the number of Residential Properties managed by this host:
     private int countResidentialProperties() {
@@ -240,7 +279,6 @@ public class Host_DashboardController implements Initializable {
 
     // Get the total value of the Pie Chart:
     private double getTotalValue() {
-        // Write Code:
         double totalValue = 0;
         for (PieChart.Data data : pieChartData) {
             totalValue += data.getPieValue();
