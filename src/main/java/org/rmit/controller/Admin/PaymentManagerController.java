@@ -11,6 +11,7 @@ import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.PaymentDAO;
 import org.rmit.model.Agreement.Payment;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 
 import java.net.URL;
@@ -44,7 +45,7 @@ public class PaymentManagerController implements Initializable {
         });
 
         PaymentDAO paymentDAO = new PaymentDAO();
-        List<Payment> list = paymentDAO.getAll(EntityGraphUtils::SimplePaymentFull);
+        List<Payment> list = ModelCentral.getInstance().getAdminViewFactory().getAllPayment();
         loadData(list);
 
 //        deletePaymentButton.setOnAction(e -> deletePayment());

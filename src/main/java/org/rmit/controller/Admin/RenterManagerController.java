@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.RenterDAO;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Renter;
 
 import java.net.URL;
@@ -44,7 +45,7 @@ public class RenterManagerController implements Initializable {
         });
         renters_tableView.setItems(renterObservableList);
         RenterDAO renterDAO = new RenterDAO();
-        List<Renter> list = renterDAO.getAll(EntityGraphUtils::SimpleRenterFull);
+        List<Renter> list = ModelCentral.getInstance().getAdminViewFactory().getAllRenter();
         loadData(list);
 
         deleteRenterButton.setOnAction(e -> deleteRenter());

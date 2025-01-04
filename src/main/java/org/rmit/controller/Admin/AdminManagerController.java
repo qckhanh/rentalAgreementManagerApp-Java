@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.database.AdminDAO;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Admin;
 
 import java.net.URL;
@@ -16,7 +17,6 @@ import java.util.ResourceBundle;
 
 public class AdminManagerController implements Initializable {
     public Label welcomeLabel;
-    public TableView agreements_tableView;
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
     public Button addAdminButton;
@@ -43,8 +43,8 @@ public class AdminManagerController implements Initializable {
         });
 
         AdminDAO adminDAO = new AdminDAO();
-//        List<Admin> list = adminDAO.getAll();
-//        loadData(list);
+        List<Admin> list = ModelCentral.getInstance().getAdminViewFactory().getAllAdmin();
+        loadData(list);
 
         deleteAdminButton.setOnAction(e -> deleteAdmin());
         // update chua lam

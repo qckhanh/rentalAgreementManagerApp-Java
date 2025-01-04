@@ -10,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 
@@ -45,7 +46,7 @@ public class OwnerManagerController implements Initializable {
         });
 
         OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> list = ownerDAO.getAll(EntityGraphUtils::SimpleOwnerFull);
+        List<Owner> list = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
         loadData(list);
 
         deleteOwnerButton.setOnAction(e -> deleteOwner());
