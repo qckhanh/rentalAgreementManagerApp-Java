@@ -20,6 +20,7 @@ module org.rmit.demo {
 //    requires atlantafx.base;
 
 
+
     //model
     opens org.rmit to org.hibernate.orm.core, javafx.fxml;
     opens org.rmit.model.Persons to org.hibernate.orm.core, javafx.fxml;

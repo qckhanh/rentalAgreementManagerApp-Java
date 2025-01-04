@@ -6,25 +6,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
-import org.rmit.model.Agreement.AgreementStatus;
-import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.CommercialProperty;
-import org.rmit.model.Property.Property;
-import org.rmit.model.Property.PropertyStatus;
-import org.rmit.model.Property.ResidentialProperty;
+import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.stream.IntStream;
+import java.util.*;
 
 public class Host_DashboardController implements Initializable {
     public TextField search_input;
@@ -34,8 +26,11 @@ public class Host_DashboardController implements Initializable {
 //    public Label totalPayments_label;
 //    public ListView upcommingPayment_listView;
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
-    public ObservableList<PieChart.Data> pieChartData;
+
+    @FXML
     public PieChart piechart;
+    public ObservableList<PieChart.Data> pieChartData;
+    Set<Property> manageProperties = ((Host)currentUser.get()).getPropertiesManaged();
     @FXML
     private CategoryAxis xAxis;
     @FXML
@@ -49,19 +44,11 @@ public class Host_DashboardController implements Initializable {
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 welcomeLabel.setText("Welcome " + newValue)
         );
-
-        // Print Out the Piechart:
         setPieChart();
         setBarChart();
-
-        // for debugging purposes
-//        int a = countRentedResidentialProperties();
-//        int b = countAvailableResidentialProperties();
-//        int c = countRentedCommercialProperties();
-//        int d = countAvailableCommercialProperties();
     }
 
-    // function to set the bar chart
+    /* Main function to set the graphs  on the dashboard */
     private void setPieChart() {
         pieChartData = createPieChartData();
 
@@ -79,13 +66,10 @@ public class Host_DashboardController implements Initializable {
 
         piechart.setLabelsVisible(false);
 
-        pieChartData.forEach(data -> {
-            data.getNode().setOnMouseDragEntered(event -> {
-                piechart.setEffect(new Glow(0.5));
-            });
-        });
+        // Map to save the tooltip for each data section:
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
 
-        for (PieChart.Data data : pieChartData){
+        for (PieChart.Data data : pieChartData) {
             String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValue() * 100));
             String formattedName = String.format("%s %.1f (%s)",
                     data.getName(),
@@ -94,7 +78,47 @@ public class Host_DashboardController implements Initializable {
             );
 
             data.setName(formattedName);
+
+            // Tạo tooltip trước
+            Tooltip tooltip = new Tooltip(
+                    String.format("%s\nValue: %.1f\nPercentage: %.1f%%",
+                            data.getName().split(" ")[0],
+                            data.getPieValue(),
+                            (data.getPieValue() / getTotalValue() * 100)
+                    )
+            );
+            tooltipMap.put(data.getNode(), tooltip);
+
+            // Add Hover Effect to each data section:
+            data.getNode().setOnMouseEntered(event -> {
+                // Tạo hiệu ứng phóng to khi hover
+                data.getNode().setScaleX(1.1);
+                data.getNode().setScaleY(1.1);
+
+                // Thêm hiệu ứng phát sáng
+                data.getNode().setEffect(new Glow(0.5));
+
+                // Hiển thị tooltip
+                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                // Trả về kích thước bình thường khi không hover
+                data.getNode().setScaleX(1);
+                data.getNode().setScaleY(1);
+
+                // Xóa hiệu ứng phát sáng
+                data.getNode().setEffect(null);
+
+                // Xóa tooltip
+                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
+            });
         }
+
+        // Thêm animation khi hiển thị
+        piechart.setAnimated(true);
+        piechart.setStartAngle(90);
+        piechart.setClockwise(true);
     }
 
     private void setBarChart(){
@@ -131,26 +155,55 @@ public class Host_DashboardController implements Initializable {
         barChart.setHorizontalGridLinesVisible(false);
         barChart.setVerticalGridLinesVisible(false);
 
-        // Add Hover effect to the bars:
+        // Map để lưu trữ tooltip cho mỗi bar
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
+
+        // Add Hover effect and tooltip to the bars:
         for (XYChart.Series<String, Number> series : barChart.getData()) {
             for (XYChart.Data<String, Number> data : series.getData()) {
+                // Create the tooltip for each bar
+                Tooltip tooltip = new Tooltip(
+                        String.format("%s\nProperty Type: %s\nNumber of Properties: %d",
+                                series.getName(),
+                                data.getXValue(),
+                                data.getYValue().intValue()
+                        )
+                );
+
+                tooltipMap.put(data.getNode(), tooltip);
+
                 data.getNode().setOnMouseEntered(event -> {
+                    // Scaling effect when hover
+                    data.getNode().setScaleX(1.1);
+                    data.getNode().setScaleY(1.1);
+
+                    // Add Flow Effect
                     data.getNode().setEffect(new Glow(0.5));
+
+                    // Display the Tooltip
+                    Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
                 });
+
                 data.getNode().setOnMouseExited(event -> {
+                    // Return to normal size when not hover
+                    data.getNode().setScaleX(1);
+                    data.getNode().setScaleY(1);
+
+                    // Remove Glow Effect
                     data.getNode().setEffect(null);
+
+                    // Remove Tooltip
+                    Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
                 });
             }
         }
     }
 
     /* Helpers method to create the Bar Chart */
-    // Calculate Bar Chart Data:
+    // Functions to get and calculate the BarChart's Data:
     private int countRentedResidentialProperties() {
-        // Write Code:
         int numberOfRentedResidentialProperties = 0;
 
-        System.out.println(">> Rented Residential Properties: ");
         // Count the number of Rented Residential Properties managed by this host:
         Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManagedProperty();
         for (Property property : manageProperty) {
@@ -160,15 +213,13 @@ public class Host_DashboardController implements Initializable {
             }
         }
 
-        System.out.println("Rented R: " + numberOfRentedResidentialProperties);
-
+//        System.out.println("Rented R: " + numberOfRentedResidentialProperties);
         return numberOfRentedResidentialProperties;
     }
 
     private int countAvailableResidentialProperties() {
         int numberOfAvailableResidentialProperties = 0;
 
-        System.out.println(">> Available Residential Properties: ");
         // Count the number of Available Residential Properties managed by this host:
         Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManagedProperty();
         for (Property property : manageProperty) {
@@ -178,14 +229,13 @@ public class Host_DashboardController implements Initializable {
             }
         }
 
-        System.out.println("Available R: " + numberOfAvailableResidentialProperties);
+//        System.out.println("Available R: " + numberOfAvailableResidentialProperties);
         return numberOfAvailableResidentialProperties;
     }
 
     private int countRentedCommercialProperties() {
         int numberOfRentedCommercialProperties = 0;
 
-        System.out.println(">> Rented Commercial Properties: ");
         // Count the number of Rented Commercial Properties managed by this host:
         Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManagedProperty();
         for (Property property : manageProperty) {
@@ -195,7 +245,7 @@ public class Host_DashboardController implements Initializable {
             }
         }
 
-        System.out.println("Rented C: " + numberOfRentedCommercialProperties);
+//        System.out.println("Rented C: " + numberOfRentedCommercialProperties);
 
         return numberOfRentedCommercialProperties;
     }
@@ -203,7 +253,6 @@ public class Host_DashboardController implements Initializable {
     private int countAvailableCommercialProperties() {
         int numberOfAvailableCommercialProperties = 0;
 
-        System.out.println(">> Available Commercial Properties: ");
         // Count the number of Available Commercial Properties managed by this host:
         Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManagedProperty();
         for (Property property : manageProperty) {
@@ -213,13 +262,13 @@ public class Host_DashboardController implements Initializable {
             }
         }
 
-        System.out.println("Available C: " + numberOfAvailableCommercialProperties);
+//        System.out.println("Available C: " + numberOfAvailableCommercialProperties);
 
         return numberOfAvailableCommercialProperties;
     }
     
     /* Helpers method to create the Pie Chart */
-    // Count the number of Residential Properties managed by this host:
+    // Functions to get and calculate the PieChart's Data:
     private int countResidentialProperties() {
         // Write Code:
         int numberOfResidentialProperties = 0;
@@ -227,7 +276,7 @@ public class Host_DashboardController implements Initializable {
         // Count the number of Residential Properties managed by this host:
         Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManaged();
         for (Property property : manageProperty) {
-            if (property instanceof ResidentialProperty) {
+            if (property.getType().equals(PropertyType.RESIDENTIAL)) {
                 numberOfResidentialProperties++;
             }
         }
@@ -237,15 +286,13 @@ public class Host_DashboardController implements Initializable {
         return numberOfResidentialProperties;
     }
 
-    // Count the number of Commercial Properties managed by this host:
     private int countCommercialProperties() {
         // Write Code:
         int numberOfCommercialProperties = 0;
 
         // Count the number of Commercial Properties managed by this host:
-        Set<Property> manageProperty = ((Host)currentUser.get()).getPropertiesManaged();
-        for (Property property : manageProperty) {
-            if (!(property instanceof ResidentialProperty)) {
+        for (Property property : manageProperties) {
+            if (property.getType().equals(PropertyType.COMMERCIAL)) {
                 numberOfCommercialProperties++;
             }
         }
@@ -254,14 +301,27 @@ public class Host_DashboardController implements Initializable {
         return numberOfCommercialProperties;
     }
 
+    private int countUncategorizedProperties() {
+        int numberOfUncategorizedProperties = 0;
+
+        // Count the number of Uncategorized Properties managed by this host:
+        for (Property property : manageProperties) {
+            if (property.getType().equals(PropertyType.NONE)) {
+                numberOfUncategorizedProperties++;
+            }
+        }
+        return numberOfUncategorizedProperties;
+    }
+
     // Create Pie Chart Data:
     private ObservableList<PieChart.Data> createPieChartData() {
         // Write Code:
         ObservableList<PieChart.Data> data;
         int numberOfResidentialProperties = countResidentialProperties();
         int numberOfCommercialProperties = countCommercialProperties();
+        int numberOfUncategorizedProperties = countUncategorizedProperties();
 
-        if (numberOfResidentialProperties == 0 && numberOfCommercialProperties == 0) {
+        if (numberOfResidentialProperties == 0 && numberOfCommercialProperties == 0 && numberOfUncategorizedProperties == 0) {
             data = FXCollections.observableArrayList(
                     new PieChart.Data("No Data", 1)
             );
@@ -269,7 +329,8 @@ public class Host_DashboardController implements Initializable {
         else {
             data = FXCollections.observableArrayList(
                     new PieChart.Data("Residential Properties", numberOfResidentialProperties),
-                    new PieChart.Data("Commercial Properties", numberOfCommercialProperties)
+                    new PieChart.Data("Commercial Properties", numberOfCommercialProperties),
+                    new PieChart.Data("Uncategorized Properties", numberOfUncategorizedProperties)
             );
         }
         return data;
@@ -284,4 +345,3 @@ public class Host_DashboardController implements Initializable {
         return totalValue;
     }
 }
-

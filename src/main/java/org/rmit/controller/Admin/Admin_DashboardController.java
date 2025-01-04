@@ -1,17 +1,17 @@
 package org.rmit.controller.Admin;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.effect.Glow;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
@@ -24,7 +24,9 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class Admin_DashboardController implements Initializable {
@@ -36,20 +38,21 @@ public class Admin_DashboardController implements Initializable {
     public ListView upcommingPayment_listView;
 
     @FXML
-    public PieChart pieChart;
+    public PieChart pieChartPersonObject;
     public ObservableList<PieChart.Data> pieChartData;
 
     @FXML
     public LineChart<String, Number> lineChart;
 
     @FXML
-    public PieChart pieChartProperty;
+    public PieChart pieChartPropertyObject;
     public ObservableList<PieChart.Data> pieChartDataProperty;
 
     @FXML
     public Label approxYearRevenue;
 
     LocalDate currentDate = LocalDate.now();
+    List<RentalAgreement> agreements = new RentalAgreementDAO().getAll();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,44 +62,81 @@ public class Admin_DashboardController implements Initializable {
         );
 
         // Display the Graph:
-        setPieChart();
+        setPieChartPersonObject();
         setLineGraph();
-        setPieChartProperty();
+        setPieChartPropertyObject();
         setEstimatedYearlyRevenue();
     }
 
     /* Functions to set up the Graphs */
-    private void setPieChart() {
+    private void setPieChartPersonObject() {
         pieChartData = createPieChartDataPeople();
-        pieChart.setData(pieChartData);
+        pieChartPersonObject.setData(pieChartData);
 
-        pieChart.setTitle("Account's Role Distribution");
-        pieChart.setMinSize(300,300);
-        pieChart.setMaxSize(400,400);
+        pieChartPersonObject.setTitle("Account's Role Distribution");
+        pieChartPersonObject.setMinSize(300,300);
+        pieChartPersonObject.setMaxSize(400,400);
 
         // Đặt legend bên phải và hiện
-        pieChart.setLegendSide(Side.BOTTOM);
-        pieChart.setLegendVisible(true);
+        pieChartPersonObject.setLegendSide(Side.BOTTOM);
+        pieChartPersonObject.setLegendVisible(true);
 
         // Hiển thị labels
-        pieChart.setLabelsVisible(false);  // Tắt labels mặc định
-        pieChart.setLabelLineLength(10);
+        pieChartPersonObject.setLabelsVisible(false);
+        pieChartPersonObject.setLabelLineLength(10);
 
-        // Cập nhật dữ liệu cho legend
+        // Map để lưu trữ tooltip cho mỗi phần
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
+
         for (PieChart.Data data : pieChartData) {
             String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValuePerson() * 100));
-            // Format: "Role Value.0 (Percentage%)"
             String formattedName = String.format("%s %.1f (%s)",
-                    data.getName(),    // Role name
-                    data.getPieValue(), // Value
-                    percentage         // Percentage
+                    data.getName(),
+                    data.getPieValue(),
+                    percentage
             );
             data.setName(formattedName);
+
+            // Tạo tooltip
+            Tooltip tooltip = new Tooltip(
+                    String.format("%s\nNumber: %.1f\nPercentage: %.1f%%",
+                            data.getName().split(" ")[0],
+                            data.getPieValue(),
+                            (data.getPieValue() / getTotalValuePerson() * 100)
+                    )
+            );
+            tooltipMap.put(data.getNode(), tooltip);
+
+            // Thêm hiệu ứng hover
+            data.getNode().setOnMouseEntered(event -> {
+                // Phóng to
+                data.getNode().setScaleX(1.1);
+                data.getNode().setScaleY(1.1);
+
+                // Hiệu ứng phát sáng
+                data.getNode().setEffect(new Glow(0.5));
+
+                // Hiển thị tooltip
+                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                // Trở về kích thước bình thường
+                data.getNode().setScaleX(1);
+                data.getNode().setScaleY(1);
+
+                // Xóa hiệu ứng
+                data.getNode().setEffect(null);
+
+                // Ẩn tooltip
+                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
+            });
         }
 
-        pieChart.setStartAngle(60);
-        pieChart.setClockwise(true);
+        pieChartPersonObject.setStartAngle(60);
+        pieChartPersonObject.setClockwise(true);
     }
+
     private void setLineGraph() {
         // Create the Series for the Line Graph:
         XYChart.Series<String, Number> revenueSeries = new XYChart.Series<>();
@@ -117,7 +157,7 @@ public class Admin_DashboardController implements Initializable {
         // Customize the Line Graph:
         lineChart.setTitle("Yearly Revenue Trend");
         lineChart.getXAxis().setLabel("Year");
-        lineChart.getYAxis().setLabel("Revenue (VND");
+        lineChart.getYAxis().setLabel("Revenue (VND)");
 
         // Set the size of the Line Graph:
         lineChart.setMinSize(450, 300);
@@ -129,51 +169,145 @@ public class Admin_DashboardController implements Initializable {
         // Set the legend to the right and visible:
         lineChart.setLegendSide(Side.BOTTOM);
         lineChart.setLegendVisible(true);
-    }
-    private void setPieChartProperty() {
-        pieChartDataProperty = createPieChartDataProperty();
-        pieChartProperty.setData(pieChartDataProperty);
 
-        pieChartProperty.setTitle("Property Type Distribution");
-        pieChartProperty.setMinSize(250, 250);
-        pieChartProperty.setMaxSize(250, 250);
+        // Map để lưu trữ tooltip cho mỗi điểm dữ liệu
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
 
-        // Configure the legend after setting the data
-        pieChartProperty.setLegendSide(Side.BOTTOM);
-        pieChartProperty.setLegendVisible(true);
-        pieChartProperty.setLabelLineLength(10);
+        // Thêm hiệu ứng hover cho series
+        Node seriesLine = revenueSeries.getNode();
+        seriesLine.setOnMouseEntered(event -> {
+            seriesLine.setStyle("-fx-stroke-width: 4px;"); // Làm dày đường line khi hover
+            seriesLine.setEffect(new Glow(0.8)); // Thêm hiệu ứng phát sáng
+        });
 
-        // Hide default labels
-        pieChartProperty.setLabelsVisible(false);
+        seriesLine.setOnMouseExited(event -> {
+            seriesLine.setStyle("-fx-stroke-width: 2px;"); // Trở về độ dày bình thường
+            seriesLine.setEffect(null); // Xóa hiệu ứng
+        });
 
-        for (PieChart.Data data : pieChartDataProperty) {
-            String percentage = String.format("%.1f%%", (data.getPieValue() / (countCommercialProperties() + countResidentialProperties()) * 100));
-            String formattedName = String.format("%s %.1f (%s)",
-                    data.getName(),    // Role name
-                    data.getPieValue(), // Value
-                    percentage         // Percentage
+        // Thêm tooltip và hiệu ứng cho từng điểm dữ liệu
+        for (XYChart.Data<String, Number> data : revenueSeries.getData()) {
+            // Tạo tooltip cho mỗi điểm
+            Tooltip tooltip = new Tooltip(
+                    String.format("Year: %s\nRevenue: %s VND",
+                            data.getXValue(),
+                            formatCurrency(data.getYValue().doubleValue())
+                    )
             );
-            data.setName(formattedName);
+
+            // Đợi cho node được tạo ra
+            Platform.runLater(() -> {
+                Node dataNode = data.getNode();
+                if (dataNode != null) {
+                    tooltipMap.put(dataNode, tooltip);
+
+                    // Thêm hiệu ứng hover cho điểm dữ liệu
+                    dataNode.setOnMouseEntered(event -> {
+                        // Phóng to điểm
+                        dataNode.setScaleX(1.5);
+                        dataNode.setScaleY(1.5);
+
+                        // Thêm hiệu ứng phát sáng
+                        dataNode.setEffect(new Glow(0.8));
+
+                        // Hiển thị tooltip
+                        Tooltip.install(dataNode, tooltipMap.get(dataNode));
+                    });
+
+                    dataNode.setOnMouseExited(event -> {
+                        // Trở về kích thước bình thường
+                        dataNode.setScaleX(1);
+                        dataNode.setScaleY(1);
+
+                        // Xóa hiệu ứng
+                        dataNode.setEffect(null);
+
+                        // Ẩn tooltip
+                        Tooltip.uninstall(dataNode, tooltipMap.get(dataNode));
+                    });
+                }
+            });
         }
 
-        pieChartProperty.setStartAngle(60);
-        pieChartProperty.setClockwise(true);
+        // Tùy chọn: Thêm style cho series
+        revenueSeries.getNode().setStyle(
+                "-fx-stroke: #2196f3; " + // Màu của line
+                        "-fx-stroke-width: 2px;"   // Độ dày mặc định của line
+        );
     }
+
+    private void setPieChartPropertyObject() {
+        pieChartDataProperty = createPieChartDataProperty();
+        pieChartPropertyObject.setData(pieChartDataProperty);
+
+        pieChartPropertyObject.setTitle("Property Type Distribution");
+        pieChartPropertyObject.setMinSize(250, 250);
+        pieChartPropertyObject.setMaxSize(250, 250);
+
+        pieChartPropertyObject.setLegendSide(Side.BOTTOM);
+        pieChartPropertyObject.setLegendVisible(true);
+        pieChartPropertyObject.setLabelLineLength(10);
+        pieChartPropertyObject.setLabelsVisible(false);
+
+        // Map để lưu trữ tooltip
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
+
+        for (PieChart.Data data : pieChartDataProperty) {
+            double total = countCommercialProperties() + countResidentialProperties();
+            String percentage = String.format("%.1f%%", (data.getPieValue() / total * 100));
+            String formattedName = String.format("%s %.1f (%s)",
+                    data.getName(),
+                    data.getPieValue(),
+                    percentage
+            );
+            data.setName(formattedName);
+
+            // Tạo tooltip
+            Tooltip tooltip = new Tooltip(
+                    String.format("%s\nNumber: %.1f\nPercentage: %.1f%%",
+                            data.getName().split(" ")[0],
+                            data.getPieValue(),
+                            (data.getPieValue() / total * 100)
+                    )
+            );
+            tooltipMap.put(data.getNode(), tooltip);
+
+            // Thêm hiệu ứng hover
+            data.getNode().setOnMouseEntered(event -> {
+                // Phóng to
+                data.getNode().setScaleX(1.1);
+                data.getNode().setScaleY(1.1);
+
+                // Hiệu ứng phát sáng
+                data.getNode().setEffect(new Glow(0.5));
+
+                // Hiển thị tooltip
+                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                // Trở về kích thước bình thường
+                data.getNode().setScaleX(1);
+                data.getNode().setScaleY(1);
+
+                // Xóa hiệu ứng
+                data.getNode().setEffect(null);
+
+                // Ẩn tooltip
+                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+        }
+
+        pieChartPropertyObject.setStartAngle(60);
+        pieChartPropertyObject.setClockwise(true);
+    }
+
     private void setEstimatedYearlyRevenue(){
         double revenue = calculateEstimatedYearlyRevenue();
-        approxYearRevenue.setText(revenue + " VND");
+        approxYearRevenue.setText(formatCurrency(revenue) + " VND");
     }
 
-    /* Functions to help get and prepare the data for the graphs:*/
-    // Helper methods to create the data for the first PieChart:
-//    private int countSystemNumberOfHost() {
-//        HostDAO hostDAO = new HostDAO();
-//        List<Host> hosts = hostDAO.getAll();
-//        if (hosts == null) return 0;
-//        System.out.println("Number of Hosts: " + hosts.size());
-//        return hosts.size();
-//    }
-
+    /* Helpers method for the Person Objects Pie Chart */
     private int countSystemNumberOfOwner() {
         OwnerDAO ownerDAO = new OwnerDAO();
         List<Owner> owners = ownerDAO.getAll();
@@ -198,32 +332,6 @@ public class Admin_DashboardController implements Initializable {
         return admins.size();
     }
 
-    private double getTotalValuePerson(){
-        double total = 0;
-        for (PieChart.Data data : pieChartData){
-            total += data.getPieValue();
-        }
-        return total;
-    }
-
-    // Function to count the total number of Commercial and Residential Properties:
-    private int countCommercialProperties(){
-        List<CommercialProperty> commercialProperties = new CommercialPropertyDAO().getAll();
-
-        if (commercialProperties == null) return 0;
-        System.out.println("Number of Commercial Properties: " + commercialProperties.size());
-        return commercialProperties.size();
-    }
-
-    private int countResidentialProperties(){
-        List<ResidentialProperty> residentialProperties = new ResidentialPropertyDAO().getAll();
-
-        if (residentialProperties == null) return 0;
-        System.out.println("Number of Residential Properties: " + residentialProperties.size());
-        return residentialProperties.size();
-    }
-
-    // Function to create the data for the Person-Property PieChart:
     private ObservableList<PieChart.Data> createPieChartDataPeople(){
         ObservableList<PieChart.Data> data;
 //        int numberOfHost = countSystemNumberOfHost();
@@ -246,7 +354,31 @@ public class Admin_DashboardController implements Initializable {
         return data;
     }
 
-    // Function to create the data for the Property PieChart:
+    private double getTotalValuePerson(){
+        double total = 0;
+        for (PieChart.Data data : pieChartData){
+            total += data.getPieValue();
+        }
+        return total;
+    }
+
+    /* Helpers method for the Property Objects Pie Chart */
+    private int countCommercialProperties(){
+        List<CommercialProperty> commercialProperties = new CommercialPropertyDAO().getAll();
+
+        if (commercialProperties == null) return 0;
+        System.out.println("Number of Commercial Properties: " + commercialProperties.size());
+        return commercialProperties.size();
+    }
+
+    private int countResidentialProperties(){
+        List<ResidentialProperty> residentialProperties = new ResidentialPropertyDAO().getAll();
+
+        if (residentialProperties == null) return 0;
+        System.out.println("Number of Residential Properties: " + residentialProperties.size());
+        return residentialProperties.size();
+    }
+
     private ObservableList<PieChart.Data> createPieChartDataProperty(){
         ObservableList<PieChart.Data> data;
         int numberOfCommercialProperties = countCommercialProperties();
@@ -264,7 +396,7 @@ public class Admin_DashboardController implements Initializable {
         return data;
     }
 
-    // Functions to get the data for the Line Graph [yearly revenue - except this year]:
+    /* Helpers method for the Line Graph */
     private double calculatePastYearlyRevenue(int year){
         double total = 0;
         List<Payment> payments = new PaymentDAO().getAll();
@@ -278,51 +410,78 @@ public class Admin_DashboardController implements Initializable {
         return total;
     }
 
+    /* Helpers method for the Estimated Yearly Revenue */
     private double calculateEstimatedYearlyRevenue() {
         double total = 0;
-        List<RentalAgreement> agreements = new RentalAgreementDAO().getAll();
-
-        if (agreements == null || agreements.isEmpty()) {
-            System.out.println("No agreements found.");
-            return total;
-        }
-
-        for (RentalAgreement agreement : agreements) {
-            System.out.println("--------------------------------------------------");
-            System.out.println("Agreement ID: " + agreement.getAgreementId());
-            System.out.println("Period: " + agreement.getPeriod());
-            System.out.println("Price: " + agreement.getProperty().getPrice());
-
-            if (agreement.getContractDate().getYear() == currentDate.getYear() && agreement.getStatus().equals(AgreementStatus.ACTIVE)) {
-                if (agreement.getPeriod().equals(RentalPeriod.DAILY)) {
-                    if (agreement.getContractDate().getYear() < currentDate.getYear()) {
-                        total += (agreement.getProperty().getPrice()) * 365;
-                    } else {
-                        total += (agreement.getProperty().getPrice()) * (365 - agreement.getContractDate().getDayOfYear());
-                    }
-                } else if (agreement.getPeriod().equals(RentalPeriod.WEEKLY)) {
-                    if (agreement.getContractDate().getYear() < currentDate.getYear()) {
-                        total += (agreement.getProperty().getPrice()) * 52;
-                    } else {
-                        total += (agreement.getProperty().getPrice()) * (52 - agreement.getContractDate().getDayOfYear() / 7);
-                    }
-                } else if (agreement.getPeriod().equals(RentalPeriod.FORTNIGHTLY)) {
-                    if (agreement.getContractDate().getYear() < currentDate.getYear()) {
-                        total += (agreement.getProperty().getPrice()) * 26;
-                    } else {
-                        total += (agreement.getProperty().getPrice()) * (26 - agreement.getContractDate().getDayOfYear() / 14);
-                    }
-                } else if (agreement.getPeriod().equals(RentalPeriod.MONTHLY)) {
-                    if (agreement.getContractDate().getYear() < currentDate.getYear()) {
-                        total += (agreement.getProperty().getPrice()) * 12;
-                    } else {
-                        total += (agreement.getProperty().getPrice()) * (12 - agreement.getContractDate().getMonthValue());
+        if (agreements.isEmpty()) {return 0;}
+        else {
+            for (RentalAgreement agreement : agreements) {
+                if (agreement == null || agreement.getStatus() == null) {
+                    total += 0;
+                }
+                else {
+                    if (agreement.getStatus().equals(AgreementStatus.ACTIVE) || agreement.getStatus().equals(AgreementStatus.NEW)) {
+                        if (agreement.getPeriod().equals(RentalPeriod.DAILY)) {
+                            if (agreement.getContractDate().getYear() < currentDate.getYear()) {
+                                total += (agreement.getProperty().getPrice()) * 365;
+                            } else {
+                                total += (agreement.getProperty().getPrice()) * (365 - agreement.getContractDate().getDayOfYear());
+                            }
+                        } else if (agreement.getPeriod().equals(RentalPeriod.WEEKLY)) {
+                            if (agreement.getContractDate().getYear() < currentDate.getYear()) {
+                                total += (agreement.getProperty().getPrice()) * 52;
+                            } else {
+                                total += (agreement.getProperty().getPrice()) * (52 - (double) agreement.getContractDate().getDayOfYear() / 7);
+                            }
+                        } else if (agreement.getPeriod().equals(RentalPeriod.FORTNIGHTLY)) {
+                            if (agreement.getContractDate().getYear() < currentDate.getYear()) {
+                                total += (agreement.getProperty().getPrice()) * 26;
+                            } else {
+                                total += (agreement.getProperty().getPrice()) * (26 - (double) agreement.getContractDate().getDayOfYear() / 14);
+                            }
+                        } else if (agreement.getPeriod().equals(RentalPeriod.MONTHLY)) {
+                            if (agreement.getContractDate().getYear() < currentDate.getYear()) {
+                                total += (agreement.getProperty().getPrice()) * 12;
+                            } else {
+                                total += (agreement.getProperty().getPrice()) * (12 - agreement.getContractDate().getMonthValue());
+                            }
+                        }
                     }
                 }
             }
-            System.out.println("Total: " + total);
+        }
+        return total;
+    }
+
+    /* Other UI Helper Methods */
+    private String formatCurrency(double amount) {
+        if (amount == 0) return "0";
+
+        // Process Negative Values
+        boolean isNegative = amount < 0;
+        amount = Math.abs(amount);
+
+
+        double trillion = 1_000_000_000_000.0;
+        double billion = 1_000_000_000.0;
+        double million = 1_000_000.0;
+        double thousand = 1_000.0;
+
+        String result;
+        if (amount >= trillion) {
+            result = String.format("%.1fT", amount / trillion);
+        } else if (amount >= billion) {
+            result = String.format("%.1fB", amount / billion);
+        } else if (amount >= million) {
+            result = String.format("%.1fM", amount / million);
+        } else if (amount >= thousand) {
+            result = String.format("%.1fK", amount / thousand);
+        } else {
+            result = String.format("%.1f", amount);
         }
 
-        return total;
+        result = result.endsWith(".0") ? result.substring(0, result.length() - 2) : result;
+
+        return isNegative ? "-" + result : result;
     }
 }
