@@ -154,6 +154,12 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setRentingFee(property.getPrice());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
             rentalAgreementDAO.add(rentalAgreement);
+            mainRenter.addAgreement(rentalAgreement);
+            renterDAO.update(mainRenter);
+            for (Renter r : subRentersSet) {
+                r.addSubAgreement(rentalAgreement);
+                renterDAO.update(r);
+            }
             currentUser.get().addAgreement(rentalAgreement);
             hostDAO.update(currentUser.get());
             System.out.println("Done ! ");
