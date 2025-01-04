@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Request;
@@ -24,6 +25,9 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
+import static org.rmit.Helper.EntityGraphUtils.SimpleResidentialProperty;
 
 public class Host_ManagePropertyController implements Initializable {
     //preview
@@ -80,11 +84,11 @@ public class Host_ManagePropertyController implements Initializable {
             protected void updateItem(Property property, boolean empty) {
                 super.updateItem(property, empty);
                 if (empty || property == null) {
-//                    manageProperty_btn.setText("Select a property");
                     UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
                     setText(null);
                     setOnMouseClicked(null); // Remove click handler for empty cells
                 } else {
+//                    selectedProperty.set(property);
                     setText(property.getAddress()); // Display the address or another property field
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 1) { // Single click
@@ -106,11 +110,11 @@ public class Host_ManagePropertyController implements Initializable {
     private void searchProperty() {
         if(search_input.getText().isBlank()) return;
         Set<Property> res = new HashSet<>();
-        DAOInterface dao = new CommercialPropertyDAO();
-        List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText());
+        CommercialPropertyDAO dao = new CommercialPropertyDAO();
+        List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
         res.addAll(ans);
-        dao = new ResidentialPropertyDAO();
-        List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao.search(search_input.getText());
+        ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
+        List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao2.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
         res.addAll(ans2);
         property_listView.setItems(getPropertyList(res));
     }
@@ -136,7 +140,9 @@ public class Host_ManagePropertyController implements Initializable {
 
     }
 
-    private void requestManageProperty(Property property){
+    private void requestManageProperty(int propertyID){
+        Property property = propertyMap.get(propertyID);
+        System.out.println(property);
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
 
         String content = String.format(
@@ -205,7 +211,7 @@ public class Host_ManagePropertyController implements Initializable {
             }
         }
         UIDecorator.setSuccessButton(manageProperty_btn, UIDecorator.ADD, "Request Manage");
-        manageProperty_btn.setOnAction(event -> requestManageProperty(property));
+        manageProperty_btn.setOnAction(event -> requestManageProperty(Integer.parseInt(property.getId() + "")));
     }
 
     private void showPropertyDetail(Property property){
@@ -216,14 +222,13 @@ public class Host_ManagePropertyController implements Initializable {
             property = propertyMap.get(id);
 
         }else{
-            DAOInterface dao = null;
             if(property.getType().toString().equals("COMMERCIAL")){
-                dao = new CommercialPropertyDAO();
-                property = (CommercialProperty)dao.get(id);
+                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+                property = (CommercialProperty)commercialPropertyDAO.get(id, EntityGraphUtils::commercialPropertyForSearching);
             }
             else{
-                dao = new ResidentialPropertyDAO();
-                property = (ResidentialProperty)dao.get(id);
+                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+                property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::residentalPropertyForSearching);
             }
         }
 

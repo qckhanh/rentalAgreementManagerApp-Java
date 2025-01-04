@@ -83,40 +83,17 @@ public class RegisterController implements Initializable {
 
     private boolean validateInput(){
         boolean isValid = true;
-        if(!InputValidator.NoCondition(fullName_input.getText(), name_err)){
-            isValid = false;
-            System.out.println("Name is invalid");
-        }
-        if(!InputValidator.isValidUsername(username_input.getText(), username_err)){
-            isValid = false;
-            System.out.println("Username is invalid");
-        }
-        if(!InputValidator.isValidContact(contact_input.getText(), contact_err)){
-            isValid = false;
-            System.out.println("Contact is invalid");
-        }
-        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)){
-            isValid = false;
-            System.out.println("Date is invalid");
-        }
-        if(!InputValidator.isValidPassword(password_input.getText(), password_err)){
-            isValid = false;
-            System.out.println("Password is invalid");
-        }
-        if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)){
-            isValid = false;
-            System.out.println("RePassword is invalid");
-        }
-        if(!password_input.getText().equals(rePassword_input.getText())){
-            System.out.println("Password does not match");
-            InputValidator.setValue(repass_err, InputValidator.RED, "Password does not match");
-            isValid = false;
-        }
-        System.out.println(isValid);
+        if(!InputValidator.NoCondition(fullName_input.getText(), name_err))isValid = false;
+        if(!InputValidator.isValidUsername(username_input.getText(), username_err)) isValid = false;
+        if(!InputValidator.isValidContact(contact_input.getText(), contact_err)) isValid = false;
+        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)) isValid = false;
+        if(!InputValidator.isValidPassword(password_input.getText(), password_err)) isValid = false;
+        if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)) isValid = false;
+        if(!password_input.getText().equals(rePassword_input.getText())) isValid = false;
         return isValid;
     }
     void register() {
-        if(registerAttempt == MAX_ATTEMPT){
+        if(registerAttempt == MAX_ATTEMPT){      // you dont need to understand this
             System.out.println("Too many attempts");
             return;
         }

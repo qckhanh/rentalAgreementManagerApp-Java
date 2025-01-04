@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
 import org.rmit.model.Persons.Host;
@@ -14,6 +15,8 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleHost;
 
 public class Owner_HostManagerController implements Initializable {
     public Label welcomeLabel;
@@ -64,7 +67,7 @@ public class Owner_HostManagerController implements Initializable {
     private void searchHost() {
         if (search_input.getText().isBlank()) return;
         HostDAO hostDAO = new HostDAO();
-        List<Host> lists = hostDAO.search(search_input.getText());
+        List<Host> lists = hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost);
         Set<Host> hostSet = new HashSet<>(lists);
         loadHost(hostSet);
     }
@@ -86,12 +89,12 @@ public class Owner_HostManagerController implements Initializable {
         int id = Integer.parseInt(h.getId()+"");
         if (hostMap.containsKey(id)) {
             h = hostMap.get(id);
-            return;
         }
-        HostDAO hostDAO = new HostDAO();
-        h = hostDAO.get(id);
-        hostMap.put(id, h);
-
+        else{
+            HostDAO hostDAO = new HostDAO();
+            h = hostDAO.get(id, EntityGraphUtils::hostForSearching);
+            hostMap.put(id, h);
+        }
 
         D_input.setText(h.getId()+"");
         username_input.setText(h.getUsername());

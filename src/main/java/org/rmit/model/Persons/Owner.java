@@ -13,10 +13,10 @@ import java.util.*;
 public class Owner extends Person {
     //if the owner still owns property, the property must be removed first or change ownership
     //i.e. to make an owner "delete-able", he/she must have no property
-    @OneToMany(mappedBy = "owner"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
+    @OneToMany(mappedBy = "owner"/*, cascade = CascadeType.ALL, orphanRemoval = true*/, fetch = FetchType.LAZY)
     private Set<Property> propertiesOwned = new HashSet<>();
 
-    @ManyToMany(mappedBy = "cooperatingOwners", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "cooperatingOwners", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private Set<Host> hosts = new HashSet<>();
 ///////////////////////////////
     @Transient

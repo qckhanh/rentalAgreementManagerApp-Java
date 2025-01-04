@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.ModelCentral;
@@ -15,6 +16,9 @@ import org.rmit.view.Owner.OWNER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
+import static org.rmit.Helper.EntityGraphUtils.SimpleResidentialProperty;
 
 public class Owner_UpdatePropertiesController implements Initializable {
 
@@ -44,11 +48,11 @@ public class Owner_UpdatePropertiesController implements Initializable {
         int id = Integer.parseInt(property.getId() + "");
         if(property instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            property = cpDAO.get(id);
+            property = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
         }
         else if(property instanceof ResidentialProperty) {
             ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            property = rpDAO.get(id);
+            property = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
 
         }
         selectedProperty.set(property);

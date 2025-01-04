@@ -1,4 +1,4 @@
-package org.rmit.database;
+package org.rmit.Helper;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 
 public class DatabaseUtil {
     private static SessionFactory sessionFactory;
+    private static Session currentSession;
 
     private DatabaseUtil(){
         sessionFactory = buildSessionFactory();
@@ -26,7 +27,8 @@ public class DatabaseUtil {
         if(sessionFactory == null) {
             sessionFactory = buildSessionFactory();
         }
-        return sessionFactory.openSession();
+        currentSession = sessionFactory.openSession();
+        return currentSession;
     }
 
     public static Transaction getTransaction(Session session) {
@@ -38,5 +40,9 @@ public class DatabaseUtil {
             session.close();
             System.out.println("Session closed");
         }
+    }
+
+    public static Session getCurrentSession() {
+        return currentSession;
     }
 }

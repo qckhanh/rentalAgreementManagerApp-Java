@@ -1,17 +1,19 @@
 package org.rmit;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.rmit.Helper.DateUtils;
+import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.database.*;
+import org.rmit.database.CommercialPropertyDAO;
+import org.rmit.database.HostDAO;
+import org.rmit.database.RentalAgreementDAO;
+import org.rmit.database.RenterDAO;
+import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import org.rmit.model.Property.CommercialProperty;
+import org.rmit.model.Property.Property;
 
 public class RentalAgreementApplication extends Application {
 
@@ -26,11 +28,40 @@ public class RentalAgreementApplication extends Application {
     public void start(Stage stage) throws Exception {
         ModelCentral.getInstance().getStartViewFactory().startApplication();
 
+//        RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+//        RentalAgreement rentalAgreement = new RentalAgreement();
+//
 //        RenterDAO renterDAO = new RenterDAO();
-//        Renter renter = renterDAO.validateLogin("renter", "renter");
-//        System.out.println(renter);
-
-//        System.out.println(DateUtils.currentTimestamp());
+//        HostDAO hostDAO = new HostDAO();
+//        CommercialPropertyDAO property = new CommercialPropertyDAO();
+//
+////        Renter mainRenter = renterDAO.get(2, EntityGraphUtils::SimpleRenterFull);
+////        rentalAgreement.setMainTenant(mainRenter);
+////
+////        CommercialProperty commercialProperty = property.get(2, EntityGraphUtils::SimpleCommercialProperty);
+////
+////        Host host = hostDAO.get(41, EntityGraphUtils::SimpleHostFull);
+////
+//        Renter subRenter = renterDAO.get(7552, EntityGraphUtils::SimpleRenterFull);
+//        System.out.println(subRenter.getAgreementList().size());
+////
+////        rentalAgreement.setHost(host);
+////        rentalAgreement.setProperty(commercialProperty);
+////        rentalAgreement.addSubTenant(subRenter);
+////
+////        host.addAgreement(rentalAgreement);
+////        mainRenter.addAgreement(rentalAgreement);
+//        subRenter.addAgreement(rentalAgreement);
+////
+////        boolean isADDED = rentalAgreementDAO.add(rentalAgreement);
+////        boolean isUpdateHost =  hostDAO.update(host);
+////        boolean isUpdateMainRenter = renterDAO.update(mainRenter);
+////        boolean isUpdateSubRenter = renterDAO.update(subRenter);
+////
+////        System.out.println("Host updated: " + isUpdateHost);
+////        System.out.println("Main Renter updated: " + isUpdateMainRenter);
+////        System.out.println("Sub Renter updated: " + isUpdateSubRenter);
+////        System.out.println("Rental Agreement added: " + isADDED);
 
 
 

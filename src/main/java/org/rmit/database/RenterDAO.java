@@ -3,10 +3,13 @@ package org.rmit.database;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.model.Persons.Renter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<Renter>, ImagesDAO<Renter> {
 
@@ -61,13 +64,13 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
     }
 
     @Override
-    public Renter get(int id) {
+    public Renter get(int id, Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_BY_ID_HQL, "Renter");
             Renter obj = session.createQuery(hql, Renter.class)
                     .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return obj;
@@ -78,13 +81,18 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         }
     }
 
+
+
+
+
+
     @Override
-    public List<Renter> getAll() {
+    public List<Renter> getAll(Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "Renter");
             List<Renter> list = session.createQuery(hql, Renter.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
             return list;
         }
@@ -103,7 +111,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
             Renter user = session.createQuery(hql, Renter.class)
                     .setParameter("input", usernameOrContact)
                     .setParameter("password", password)
-                    .setHint("javax.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("javax.persistence.fetchgraph", EntityGraphUtils.RenterFULL(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return user;
@@ -113,7 +121,6 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         }
     }
 
-    @Override
     public EntityGraph<Renter> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
@@ -127,7 +134,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
     }
 
     @Override
-    public List<Renter> search(String keyword) {
+    public List<Renter> search(String keyword, Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
         List<Renter> list = Collections.emptyList();
         try{
             Session session = DatabaseUtil.getSession();
@@ -136,7 +143,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
             list = session.createQuery(HQL, Renter.class)
                     .setParameter("nameKeyword", "%" + keyword.toLowerCase() + "%")
                     .setParameter("idKeyword", parseId(keyword))
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))
                     .list();
         }
         catch (Exception e){

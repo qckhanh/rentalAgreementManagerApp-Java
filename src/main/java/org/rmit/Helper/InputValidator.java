@@ -3,13 +3,8 @@ package org.rmit.Helper;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
-import org.rmit.database.DatabaseUtil;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;

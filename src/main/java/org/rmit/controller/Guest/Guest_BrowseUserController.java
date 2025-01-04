@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
@@ -14,6 +15,9 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleHost;
+import static org.rmit.Helper.EntityGraphUtils.SimpleOwner;
 
 public class Guest_BrowseUserController implements Initializable {
     public TextField D_input;
@@ -57,8 +61,8 @@ public class Guest_BrowseUserController implements Initializable {
         OwnerDAO ownerDAO = new OwnerDAO();
         HostDAO hostDAO = new HostDAO();
         Set<Person> lists = new HashSet<>();
-        lists.addAll(ownerDAO.search(search_input.getText()));
-        lists.addAll(hostDAO.search(search_input.getText()));
+        lists.addAll(ownerDAO.search(search_input.getText(), EntityGraphUtils::SimpleOwner));
+        lists.addAll(hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost));
         loadOwner(lists);
     }
 
@@ -79,10 +83,10 @@ public class Guest_BrowseUserController implements Initializable {
         if(personMap.containsKey(id)) person = personMap.get(id);
         else{
             OwnerDAO ownerDAO = new OwnerDAO();
-            person = ownerDAO.get(id);
+            person = ownerDAO.get(id, EntityGraphUtils::SimpleOwner);
             if(person == null){
                 HostDAO hostDAO = new HostDAO();
-                person = hostDAO.get(id);
+                person = hostDAO.get(id, EntityGraphUtils::SimpleHost);
             }
             personMap.put(id, person);
         }

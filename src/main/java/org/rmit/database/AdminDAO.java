@@ -4,10 +4,11 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Persons.Admin;
 
-import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Admin> {
     @Override
@@ -36,17 +37,17 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
     }
 
     @Override
-    public Admin get(int id) {
+    public Admin get(int id, Function<Session, EntityGraph<Admin>> entityGraphFunction) {
         return null;
     }
 
     @Override
-    public List<Admin> getAll() {
+    public List<Admin> getAll(Function<Session, EntityGraph<Admin>> entityGraph) {
         try {
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "Admin");
             List<Admin> list = session.createQuery(hql, Admin.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraph.apply(session))
                     .list();
             return list;
         } catch (Exception e) {
@@ -56,7 +57,6 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
         }
     }
 
-    @Override
     public EntityGraph<Admin> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Admin> entityGraph = emf.createEntityGraph(Admin.class);
@@ -64,7 +64,7 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
     }
 
     @Override
-    public List<Admin> search(String keyword) {
+    public List<Admin> search(String keyword, Function<Session, EntityGraph<Admin>> entityGraph) {
         return List.of();
     }
 

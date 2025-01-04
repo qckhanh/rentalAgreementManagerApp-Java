@@ -4,13 +4,12 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.CommercialProperty;
-import org.rmit.model.Property.Property;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class PaymentDAO extends DAOInterface<Payment> {
     @Override
@@ -70,13 +69,13 @@ public class PaymentDAO extends DAOInterface<Payment> {
     }
 
     @Override
-    public Payment get(int id) {
+    public Payment get(int id, Function<Session, EntityGraph<Payment>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_BY_ID_HQL, "Payment");
             Payment obj = session.createQuery(hql, Payment.class)
                     .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return obj;
@@ -88,12 +87,12 @@ public class PaymentDAO extends DAOInterface<Payment> {
     }
 
     @Override
-    public List<Payment> getAll() {
+    public List<Payment> getAll(Function<Session, EntityGraph<Payment>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "Payment");
             List<Payment> list = session.createQuery(hql, Payment.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
             return list;
         }
@@ -103,8 +102,6 @@ public class PaymentDAO extends DAOInterface<Payment> {
         }
     }
 
-
-    @Override
     public EntityGraph<Payment> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Payment> entityGraph = emf.createEntityGraph(Payment.class);
@@ -112,7 +109,7 @@ public class PaymentDAO extends DAOInterface<Payment> {
     }
 
     @Override
-    public List<Payment> search(String keyword) {
+    public List<Payment> search(String keyword, Function<Session, EntityGraph<Payment>> entityGraphFunction) {
         return null;
     }
 

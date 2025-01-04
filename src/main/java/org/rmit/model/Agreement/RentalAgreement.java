@@ -112,6 +112,11 @@ public class RentalAgreement {
         this.subTenants = subTenantsProperty.get();
     }
 
+    public void addSubTenant(Renter subTenant) {
+        this.subTenants.add(subTenant);
+        this.subTenantsProperty.setValue(this.subTenants);
+    }
+
     public Property getProperty() {
         return property;
     }

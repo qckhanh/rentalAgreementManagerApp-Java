@@ -7,14 +7,18 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 
+import javax.swing.text.html.parser.Entity;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleOwnerFull;
 
 public class OwnerManagerController implements Initializable {
     public Label welcomeLabel;
@@ -41,7 +45,7 @@ public class OwnerManagerController implements Initializable {
         });
 
         OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> list = ownerDAO.getAll();
+        List<Owner> list = ownerDAO.getAll(EntityGraphUtils::SimpleOwnerFull);
         loadData(list);
 
         deleteOwnerButton.setOnAction(e -> deleteOwner());
@@ -62,11 +66,11 @@ public class OwnerManagerController implements Initializable {
 
     // Helper Method:
     private void deleteOwner() {
-        OwnerDAO ownerDAO = new OwnerDAO();
-        int id = Integer.parseInt(selectedOwner.get().getId() + "");
-        Owner owner = ownerDAO.get(id);
-        ownerDAO.delete(owner);
-        ownerObservableList.remove(selectedOwner.get());
+//        OwnerDAO ownerDAO = new OwnerDAO();
+//        int id = Integer.parseInt(selectedOwner.get().getId() + "");
+//        Owner owner = ownerDAO.get(id);
+//        ownerDAO.delete(owner);
+//        ownerObservableList.remove(selectedOwner.get());
     }
 
     private void readOwner() {

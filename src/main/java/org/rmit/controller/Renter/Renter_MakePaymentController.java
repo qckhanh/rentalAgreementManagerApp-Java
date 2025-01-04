@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.PaymentDAO;
 import org.rmit.database.RenterDAO;
@@ -103,12 +104,13 @@ public class Renter_MakePaymentController implements Initializable {
         newPayment.setPaymentMethod(selectedPaymentMethod.get());
         newPayment.setDate(purchaseDate_datepicker.getValue());
         newPayment.setMainRenter((Renter) Session.getInstance().getCurrentUser());
-        DAOInterface dao = new PaymentDAO();
+        PaymentDAO dao = new PaymentDAO();
         if (dao.add(newPayment)) {
             System.out.println("Payment successful");
-            dao = new RenterDAO();
+            RenterDAO renterDAO = new RenterDAO();
             int id = (int)Session.getInstance().getCurrentUser().getId();
-            Session.getInstance().setCurrentUser((Person)dao.get(id));
+            Renter currentRenter = renterDAO.get(id, EntityGraphUtils::RenterFULL);
+            Session.getInstance().setCurrentUser(currentRenter);
         } else {
             System.out.println("Payment failed");
         }

@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -34,6 +35,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
+import static org.rmit.Helper.EntityGraphUtils.SimpleResidentialProperty;
 
 public class Owner_PropertiesManagerController implements Initializable {
     public ComboBox propertyTypeFilter_comboBox;
@@ -189,11 +193,11 @@ public class Owner_PropertiesManagerController implements Initializable {
         if (confirmed) {
             if (selectedProperty instanceof ResidentialProperty) {
                 ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-                ResidentialProperty rp = rpDAO.get(id);
+                ResidentialProperty rp = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
                 if (rpDAO.delete(rp)) success = true;
             } else if (selectedProperty instanceof CommercialProperty) {
                 CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-                CommercialProperty cp = cpDAO.get(id);
+                CommercialProperty cp = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
                 if (cpDAO.delete(cp)) success = true;
             }
         }

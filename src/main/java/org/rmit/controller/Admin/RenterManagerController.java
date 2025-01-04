@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.Persons.Renter;
 
@@ -16,6 +17,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleRenterFull;
 
 public class RenterManagerController implements Initializable {
     public Label welcomeLabel;
@@ -41,7 +44,7 @@ public class RenterManagerController implements Initializable {
         });
         renters_tableView.setItems(renterObservableList);
         RenterDAO renterDAO = new RenterDAO();
-        List<Renter> list = renterDAO.getAll();
+        List<Renter> list = renterDAO.getAll(EntityGraphUtils::SimpleRenterFull);
         loadData(list);
 
         deleteRenterButton.setOnAction(e -> deleteRenter());
@@ -62,11 +65,11 @@ public class RenterManagerController implements Initializable {
 
     // Helper Method:
     private void deleteRenter() {
-        RenterDAO renterDAO = new RenterDAO();
-        int id = Integer.parseInt(selectedRenter.get().getId() + "");
-        Renter renter = renterDAO.get(id);
-        renterDAO.delete(renter);
-        renterObservableList.remove(selectedRenter.get());
+//        RenterDAO renterDAO = new RenterDAO();
+//        int id = Integer.parseInt(selectedRenter.get().getId() + "");
+//        Renter renter = renterDAO.get(id);
+//        renterDAO.delete(renter);
+//        renterObservableList.remove(selectedRenter.get());
     }
 
     private void readRenter() {

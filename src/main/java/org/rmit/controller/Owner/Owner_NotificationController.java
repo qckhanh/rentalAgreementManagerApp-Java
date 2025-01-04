@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.rmit.Helper.DateUtils;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
@@ -27,6 +28,7 @@ import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import static org.rmit.Helper.EntityGraphUtils.*;
 import static org.rmit.view.Host.ROLE_FILTER.*;
 import static org.rmit.view.Host.ROLE_FILTER.SENDER;
 
@@ -155,16 +157,16 @@ public class Owner_NotificationController implements Initializable {
         OwnerDAO ownerDAO = new OwnerDAO();
         Property property = null;
 
-        Host host = hostDAO.get(Integer.parseInt(request.getSender().getId() + ""));
+        Host host = hostDAO.get(Integer.parseInt(request.getSender().getId() + ""), EntityGraphUtils::SimpleHostFull);
 
         if(draftType.equals("CommercialProperty") || draftType.equals("ResidentialProperty")){
             if(draftType.equals("CommercialProperty")){
                 CommercialPropertyDAO dao = new CommercialPropertyDAO();
-                property = (CommercialProperty) dao.get(draftID);
+                property = (CommercialProperty) dao.get(draftID, EntityGraphUtils::SimpleCommercialProperty);
             }
             else{
                 ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
-                property = (ResidentialProperty) dao.get(draftID);
+                property = (ResidentialProperty) dao.get(draftID, EntityGraphUtils::SimpleResidentialProperty);
             }
 
             if(property == null){
