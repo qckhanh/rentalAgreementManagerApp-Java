@@ -16,6 +16,7 @@ import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
@@ -52,7 +53,6 @@ public class Admin_DashboardController implements Initializable {
     public Label approxYearRevenue;
 
     LocalDate currentDate = LocalDate.now();
-    List<RentalAgreement> agreements = new RentalAgreementDAO().getAll();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -309,16 +309,16 @@ public class Admin_DashboardController implements Initializable {
 
     /* Helpers method for the Person Objects Pie Chart */
     private int countSystemNumberOfOwner() {
-        OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> owners = ownerDAO.getAll();
+//        OwnerDAO ownerDAO = new OwnerDAO();
+        List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
         if (owners == null) return 0;
 //        System.out.println("Number of Owners: " + owners.size());
         return owners.size();
     }
 
     private int countSystemNumberOfRenter() {
-        RenterDAO renterDAO = new RenterDAO();
-        List<Renter> renters = renterDAO.getAll();
+//        RenterDAO renterDAO = new RenterDAO();
+        List<Renter> renters = ModelCentral.getInstance().getAdminViewFactory().getAllRenter();
         if (renters == null) return 0;
 //        System.out.println("Number of Renters: " + renters.size());
         return renters.size();
@@ -326,7 +326,7 @@ public class Admin_DashboardController implements Initializable {
 
     private int countSystemNumberOfAdmin() {
         AdminDAO adminDAO = new AdminDAO();
-        List<Admin> admins = adminDAO.getAll();
+        List<Admin> admins = ModelCentral.getInstance().getAdminViewFactory().getAllAdmin();
         if (admins == null) return 0;
 //        System.out.println("Number of Admins: " + admins.size());
         return admins.size();
@@ -364,7 +364,7 @@ public class Admin_DashboardController implements Initializable {
 
     /* Helpers method for the Property Objects Pie Chart */
     private int countCommercialProperties(){
-        List<CommercialProperty> commercialProperties = new CommercialPropertyDAO().getAll();
+        List<CommercialProperty> commercialProperties = ModelCentral.getInstance().getAdminViewFactory().getAllCommercialProperty();
 
         if (commercialProperties == null) return 0;
         System.out.println("Number of Commercial Properties: " + commercialProperties.size());
@@ -372,7 +372,7 @@ public class Admin_DashboardController implements Initializable {
     }
 
     private int countResidentialProperties(){
-        List<ResidentialProperty> residentialProperties = new ResidentialPropertyDAO().getAll();
+        List<ResidentialProperty> residentialProperties = ModelCentral.getInstance().getAdminViewFactory().getAllResidentialProperty();
 
         if (residentialProperties == null) return 0;
         System.out.println("Number of Residential Properties: " + residentialProperties.size());
@@ -399,7 +399,7 @@ public class Admin_DashboardController implements Initializable {
     /* Helpers method for the Line Graph */
     private double calculatePastYearlyRevenue(int year){
         double total = 0;
-        List<Payment> payments = new PaymentDAO().getAll();
+        List<Payment> payments = ModelCentral.getInstance().getAdminViewFactory().getAllPayment();
 
         if (payments == null) return 0;
         for (Payment payment : payments){
@@ -412,6 +412,8 @@ public class Admin_DashboardController implements Initializable {
 
     /* Helpers method for the Estimated Yearly Revenue */
     private double calculateEstimatedYearlyRevenue() {
+        List<RentalAgreement> agreements = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
+
         double total = 0;
         if (agreements.isEmpty()) {return 0;}
         else {

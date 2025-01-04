@@ -7,10 +7,7 @@ import org.hibernate.Session;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.Persons.Host;
-import org.rmit.model.Persons.Owner;
-import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
+import org.rmit.model.Persons.*;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.ResidentialProperty;
@@ -202,8 +199,8 @@ public class EntityGraphUtils {
         simpleRentalAgreement(entityGraph.addSubgraph("agreementList"));
         simplePayment(entityGraph.addSubgraph("payments"));
 
-        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
-        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
+//        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
+//        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
         return entityGraph;
     }
 
@@ -245,6 +242,15 @@ public class EntityGraphUtils {
         return entityGraph;
     }
 
+    public static EntityGraph<Admin> SimpleAdminFull(Session session) {
+
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Admin> entityGraph = emf.createEntityGraph(Admin.class);
+        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+
+        return entityGraph;
+    }
+
     public static EntityGraph<Payment> SimplePaymentFull(Session session) {
 
         EntityManager emf = session.unwrap(EntityManager.class);
@@ -253,6 +259,44 @@ public class EntityGraphUtils {
 
         simpleRentalAgreement(entityGraph.addSubgraph("rentalAgreement"));
         simplePerson(entityGraph.addSubgraph("mainRenter"));
+        simpleProperty(entityGraph.addSubgraph("property"));
+
+        return entityGraph;
+    }
+
+    public static EntityGraph<CommercialProperty> SimpleCommercialPropertyFull(Session session){
+
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
+        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
+
+        simplePerson(entityGraph.addSubgraph("owner"));
+        simplePerson(entityGraph.addSubgraph("hosts"));
+
+        return entityGraph;
+    }
+
+    public static EntityGraph<ResidentialProperty> SimpleResidentialPropertyFull(Session session) {
+
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
+        entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
+
+        simplePerson(entityGraph.addSubgraph("owner"));
+        simplePerson(entityGraph.addSubgraph("hosts"));
+
+        return entityGraph;
+    }
+
+    public static EntityGraph<RentalAgreement> SimpleRentalAgreementFull(Session session) {
+
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
+        entityGraph.addAttributeNodes("id", "period", "contractDate", "rentingFee", "status");
+
+        simplePerson(entityGraph.addSubgraph("mainTenant"));
+        simplePerson(entityGraph.addSubgraph("host"));
+        simplePerson(entityGraph.addSubgraph("subTenants"));
         simpleProperty(entityGraph.addSubgraph("property"));
 
         return entityGraph;

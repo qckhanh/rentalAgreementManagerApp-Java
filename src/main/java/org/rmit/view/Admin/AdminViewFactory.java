@@ -6,8 +6,23 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.controller.Admin.AdminController;
+import org.rmit.database.*;
+import org.rmit.model.Agreement.Payment;
+import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.Persons.Admin;
+import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Renter;
+import org.rmit.model.Property.CommercialProperty;
+import org.rmit.model.Property.Property;
+import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.view.Host.HOST_MENU_OPTION;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AdminViewFactory {
     String path = "/org/rmit/demo/FXMLs/Admin/";
@@ -21,8 +36,36 @@ public class AdminViewFactory {
     private AnchorPane admin_paymentManagerView;
     private AnchorPane admin_adminManagerView;
 
+    private ObjectProperty<List<Renter>> allRenter = new SimpleObjectProperty<>();
+    private ObjectProperty<List<Host>> allHost = new SimpleObjectProperty<>();
+    private ObjectProperty<List<Owner>> allOwner = new SimpleObjectProperty<>();
+    private ObjectProperty<List<Admin>> allAdmin = new SimpleObjectProperty<>();
+    private ObjectProperty<List<CommercialProperty>> allCommercialProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<List<ResidentialProperty>> allResidentialProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<List<Payment>> allPayment = new SimpleObjectProperty<>();
+    private ObjectProperty<List<RentalAgreement>> allRentalAgreement = new SimpleObjectProperty<>();
+
     public AdminViewFactory() {
         selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD);      // default view
+
+        RenterDAO renterDAO = new RenterDAO();
+        HostDAO hostDAO = new HostDAO();
+        OwnerDAO ownerDAO = new OwnerDAO();
+        AdminDAO adminDAO = new AdminDAO();
+        CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+        ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+        RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+        PaymentDAO paymentDAO = new PaymentDAO();
+
+        allRenter.set(renterDAO.getAll(EntityGraphUtils::SimpleRenterFull));
+        allHost.set(hostDAO.getAll(EntityGraphUtils::SimpleHostFull));
+        allOwner.set(ownerDAO.getAll(EntityGraphUtils::SimpleOwnerFull));
+        allAdmin.set(adminDAO.getAll(EntityGraphUtils::SimpleAdminFull));
+        allCommercialProperty.set(commercialPropertyDAO.getAll(EntityGraphUtils::SimpleCommercialPropertyFull));
+        allResidentialProperty.set(residentialPropertyDAO.getAll(EntityGraphUtils::SimpleResidentialPropertyFull));
+        allRentalAgreement.set(rentalAgreementDAO.getAll(EntityGraphUtils::SimpleRentalAgreementFull));
+        allPayment.set(paymentDAO.getAll(EntityGraphUtils::SimplePaymentFull));
     }
 
     // start admin view when user login as admin
@@ -156,5 +199,102 @@ public class AdminViewFactory {
 
     public void setSelectedMenuItem(ADMIN_MENU_OPTION selectedMenuItem) {
         this.selectedMenuItem.set(selectedMenuItem);
+    }
+
+
+    public List<RentalAgreement> getAllRentalAgreement() {
+        return allRentalAgreement.get();
+    }
+
+    public ObjectProperty<List<RentalAgreement>> allRentalAgreementProperty() {
+        return allRentalAgreement;
+    }
+
+    public void setAllRentalAgreement(List<RentalAgreement> allRentalAgreement) {
+        this.allRentalAgreement.set(allRentalAgreement);
+    }
+
+    public List<Payment> getAllPayment() {
+        return allPayment.get();
+    }
+
+    public ObjectProperty<List<Payment>> allPaymentProperty() {
+        return allPayment;
+    }
+
+    public void setAllPayment(List<Payment> allPayment) {
+        this.allPayment.set(allPayment);
+    }
+
+    public List<ResidentialProperty> getAllResidentialProperty() {
+        return allResidentialProperty.get();
+    }
+
+    public ObjectProperty<List<ResidentialProperty>> allResidentialPropertyProperty() {
+        return allResidentialProperty;
+    }
+
+    public void setAllResidentialProperty(List<ResidentialProperty> allResidentialProperty) {
+        this.allResidentialProperty.set(allResidentialProperty);
+    }
+
+    public List<CommercialProperty> getAllCommercialProperty() {
+        return allCommercialProperty.get();
+    }
+
+    public ObjectProperty<List<CommercialProperty>> allCommercialPropertyProperty() {
+        return allCommercialProperty;
+    }
+
+    public void setAllCommercialProperty(List<CommercialProperty> allCommercialProperty) {
+        this.allCommercialProperty.set(allCommercialProperty);
+    }
+
+    public List<Admin> getAllAdmin() {
+        return allAdmin.get();
+    }
+
+    public ObjectProperty<List<Admin>> allAdminProperty() {
+        return allAdmin;
+    }
+
+    public void setAllAdmin(List<Admin> allAdmin) {
+        this.allAdmin.set(allAdmin);
+    }
+
+    public List<Owner> getAllOwner() {
+        return allOwner.get();
+    }
+
+    public ObjectProperty<List<Owner>> allOwnerProperty() {
+        return allOwner;
+    }
+
+    public void setAllOwner(List<Owner> allOwner) {
+        this.allOwner.set(allOwner);
+    }
+
+    public List<Host> getAllHost() {
+        return allHost.get();
+    }
+
+    public ObjectProperty<List<Host>> allHostProperty() {
+        return allHost;
+    }
+
+    public void setAllHost(List<Host> allHost) {
+        this.allHost.set(allHost);
+    }
+
+    public List<Renter> getAllRenter() {
+        return allRenter.get();
+    }
+
+    public ObjectProperty<List<Renter>> allRenterProperty() {
+        return allRenter;
+    }
+
+    public void setAllRenter(List<Renter> allRenter) {
+        this.allRenter.set(allRenter);
     }
 }

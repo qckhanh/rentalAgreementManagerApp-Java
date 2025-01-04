@@ -26,7 +26,10 @@ public class RentalAgreementApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+//        ModelCentral.getInstance().getStartViewFactory().startApplication();
+
+        RenterDAO renterDAO = new RenterDAO();
+        System.out.println(renterDAO.get(1, EntityGraphUtils::SimpleRenter));
 
 //        RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
 //        RentalAgreement rentalAgreement = new RentalAgreement();
