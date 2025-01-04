@@ -36,6 +36,7 @@ public class Renter_AgreementManagerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println(((Renter) currentUser.get()).getAgreementList().size());
         propertyFilter_comboBox.setPromptText("Property");
         rentalPeriodFilter_comboBox.setPromptText("Rental Period");
         statusFilter_comboBox.setPromptText("Agreement Status");
@@ -97,7 +98,9 @@ public class Renter_AgreementManagerController implements Initializable {
 //                        agreement -> showPayment(agreement.getPayments())
 //                )
         );
-        loadData(((Renter) currentUser.get()).getAgreementList());
+//        loadData(((Renter) currentUser.get()).getAgreementList());
+//        loadData(((Renter) currentUser.get()).getSubAgreements());
+        loadData(((Renter) currentUser.get()).getAllAgreements());
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             Set<RentalAgreement> filteredList = noFilter();
@@ -133,6 +136,9 @@ public class Renter_AgreementManagerController implements Initializable {
         for(RentalAgreement ra : ((Renter) currentUser.get()).getAgreementList()) {
             properties.add(ra.getProperty());
         }
+//        for(RentalAgreement ra : ((Renter) currentUser.get()).getSubAgreements()) {
+//            properties.add(ra.getProperty());
+//        }
         return FXCollections.observableArrayList(properties);
     }
 
