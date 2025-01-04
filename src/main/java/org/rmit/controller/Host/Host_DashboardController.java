@@ -1,5 +1,7 @@
 package org.rmit.controller.Host;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
+import javafx.util.Duration;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
@@ -44,7 +47,23 @@ public class Host_DashboardController implements Initializable {
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 welcomeLabel.setText("Welcome " + newValue)
         );
+
         setPieChart();
+        setBarChart();
+
+        // Create a Timeline to update the charts every 5 seconds:
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> updateCharts()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    private void updateCharts() {
+        // Update PieChart data
+        pieChartData = createPieChartData();
+        piechart.setData(pieChartData);
+
+        // Update BarChart data
+        barChart.getData().clear();
         setBarChart();
     }
 
