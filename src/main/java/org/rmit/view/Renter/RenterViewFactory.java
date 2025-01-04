@@ -82,6 +82,7 @@ public class RenterViewFactory {
             try {
                 renter_agreementManagerView = new FXMLLoader(getClass().getResource(RENTER_PATH + "agreementManagerRenter.fxml")).load();
             } catch (Exception e){
+                e.printStackTrace();
                 System.out.println("Error loading paymentManagerRenter.fxml");
             }
         }

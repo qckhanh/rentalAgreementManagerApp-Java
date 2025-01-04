@@ -120,6 +120,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password", "profileAvatar");
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
+        rentalAgreementSubgraph(entityGraph.addSubgraph("subAgreements"));
         paymentGraph(entityGraph.addSubgraph("payments"));
         notificationGraph(entityGraph.addSubgraph("sentNotifications"));
         notificationGraph(entityGraph.addSubgraph("receivedNotifications"));

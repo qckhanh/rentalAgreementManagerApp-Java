@@ -152,21 +152,20 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setSubTenants(subRentersSet);
             rentalAgreement.setStatus(AgreementStatus.NEW);
             rentalAgreement.setRentingFee(property.getPrice());
-            hostDAO.update(currentUser.get());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            rentalAgreementDAO.update(rentalAgreement);
-            if (property instanceof ResidentialProperty){
-                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-                residentialPropertyDAO.update((ResidentialProperty) property);
+
+            rentalAgreementDAO.add(rentalAgreement);
+            mainRenter.addAgreement(rentalAgreement);
+            renterDAO.update(mainRenter);
+            for (Renter r : subRentersSet) {
+                r.addSubAgreement(rentalAgreement);
+                renterDAO.update(r);
             }
-            else{
-                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-                commercialPropertyDAO.update((CommercialProperty) property);
-            }
+            currentUser.get().addAgreement(rentalAgreement);
+            hostDAO.update(currentUser.get());
+
             System.out.println("Done ! ");
-
         }
-
     }
 
     private void denyRequest() {

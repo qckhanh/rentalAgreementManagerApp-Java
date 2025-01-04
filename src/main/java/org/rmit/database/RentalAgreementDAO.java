@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 
@@ -99,6 +100,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     public EntityGraph<RentalAgreement> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
+        personSubgraph(entityGraph.addSubgraph("host"));
         return entityGraph;
     }
 
