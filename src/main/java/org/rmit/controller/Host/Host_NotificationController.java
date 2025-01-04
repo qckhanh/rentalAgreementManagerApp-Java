@@ -15,8 +15,7 @@ import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.Property;
-import org.rmit.model.Property.RentalPeriod;
+import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
@@ -144,6 +143,7 @@ public class Host_NotificationController implements Initializable {
             RentalAgreement rentalAgreement = new RentalAgreement();
             rentalAgreement.setMainTenant(mainRenter);
             rentalAgreement.setProperty(property);
+            property.setStatus(PropertyStatus.RENTED);
             rentalAgreement.setHost(currentUser.get());
             rentalAgreement.setPeriod(rentalPeriod);
             rentalAgreement.setContractDate(LocalDate.now());
@@ -155,14 +155,20 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setSubTenants(subRentersSet);
             rentalAgreement.setStatus(AgreementStatus.NEW);
             rentalAgreement.setRentingFee(property.getPrice());
-            hostDAO.update(currentUser.get());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            rentalAgreementDAO.update(rentalAgreement);
+
+            rentalAgreementDAO.add(rentalAgreement);
+            mainRenter.addAgreement(rentalAgreement);
+            renterDAO.update(mainRenter);
+            for (Renter r : subRentersSet) {
+                r.addSubAgreement(rentalAgreement);
+                renterDAO.update(r);
+            }
+            currentUser.get().addAgreement(rentalAgreement);
+            hostDAO.update(currentUser.get());
 
             System.out.println("Done ! ");
-
         }
-
     }
 
     private void denyRequest() {
