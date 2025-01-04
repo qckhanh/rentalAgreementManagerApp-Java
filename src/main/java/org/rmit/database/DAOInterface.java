@@ -78,8 +78,10 @@ public abstract class DAOInterface<T>{
     protected void propertySubgraph(Subgraph<Property> graph ){
         graph.addAttributeNodes("address", "price", "type", "id");
 
-        Subgraph<Owner> ownerSubgraph = graph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
-        ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
+//        Subgraph<Owner> ownerSubgraph = graph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
+//        ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
+
+        personSubgraph(graph.addSubgraph("owner"));
     }
 
     protected void notificationGraph(Subgraph<Notification> graph){

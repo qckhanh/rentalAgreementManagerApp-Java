@@ -83,15 +83,24 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
     public List<Host> getAll() {
         try{
             Session session = DatabaseUtil.getSession();
+
             String hql = String.format(GET_ALL_HQL, "Host");
             List<Host> list = session.createQuery(hql, Host.class)
                     .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+
             return list;
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
             return null;
+        }
+    }
+
+    // Custom Exception class
+    public class DatabaseException extends Exception {
+        public DatabaseException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 
