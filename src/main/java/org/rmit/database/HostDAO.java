@@ -4,15 +4,14 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.model.Persons.Host;
-
-import org.rmit.model.Persons.Owner;
-import org.rmit.model.Persons.Renter;
-import org.rmit.view.Host.HostViewFactory;
 
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host> {
 
@@ -62,13 +61,13 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
     }
 
     @Override
-    public Host get(int id) {
+    public Host get(int id, Function<Session, EntityGraph<Host>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_BY_ID_HQL, "Host");
             Host obj = session.createQuery(hql, Host.class)
                     .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return obj;
@@ -80,13 +79,13 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
     }
 
     @Override
-    public List<Host> getAll() {
+    public List<Host> getAll(Function<Session, EntityGraph<Host>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
 
             String hql = String.format(GET_ALL_HQL, "Host");
             List<Host> list = session.createQuery(hql, Host.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
 
             return list;
@@ -112,7 +111,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Host user = session.createQuery(hql, Host.class)
                     .setParameter("input", usernameOrContact)
                     .setParameter("password", password)
-                    .setHint("javax.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("javax.persistence.fetchgraph", EntityGraphUtils.HostFULL(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return user;
@@ -122,7 +121,6 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
         }
     }
 
-    @Override
     public EntityGraph<Host> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
@@ -137,7 +135,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
     }
 
     @Override
-    public List<Host> search(String keyword) {
+    public List<Host> search(String keyword, Function<Session, EntityGraph<Host>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();
         List<Host> result = Collections.emptyList(); // Properly initialized
 
@@ -153,7 +151,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
                     .setParameter("nameKeyword", "%" + keyword.toLowerCase() + "%")
                     .setParameter("idKeyword", parseId(keyword))
                     .setParameter("usernameKeyword", "%" + keyword.toLowerCase() + "%")
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
         } catch (Exception e) {
             e.printStackTrace();

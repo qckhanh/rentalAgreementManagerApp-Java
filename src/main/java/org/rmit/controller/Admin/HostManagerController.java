@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.Persons.Host;
@@ -42,7 +43,7 @@ public class HostManagerController implements Initializable {
         });
 
         HostDAO hostDAO = new HostDAO();
-        List<Host> list = hostDAO.getAll();
+        List<Host> list = hostDAO.getAll(EntityGraphUtils::SimpleHostFull);
         loadData(list);
 
         deleteHostButton.setOnAction(e -> deleteHost());
@@ -63,11 +64,11 @@ public class HostManagerController implements Initializable {
 
     // Helper Methods:
     private void deleteHost() {
-        HostDAO hostDAO = new HostDAO();
-        int id = Integer.parseInt(selectedHost.get().getId() + "");
-        Host host = hostDAO.get(id);
-        hostDAO.delete(host);
-        hostObservableList.remove(selectedHost.get());
+//        HostDAO hostDAO = new HostDAO();
+//        int id = Integer.parseInt(selectedHost.get().getId() + "");
+//        Host host = hostDAO.get(id);
+//        hostDAO.delete(host);
+//        hostObservableList.remove(selectedHost.get());
     }
 
     private void readHost() {

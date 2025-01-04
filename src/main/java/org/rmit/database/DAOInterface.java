@@ -5,16 +5,18 @@ import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.rmit.Notification.NormalNotification;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
+import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class DAOInterface<T>{
 
@@ -26,10 +28,9 @@ public abstract class DAOInterface<T>{
     public abstract boolean add(T t);
     public abstract boolean update(T t);
     public abstract boolean delete(T t);
-    public abstract T get(int id);
-    public abstract List<T> getAll();
-    public abstract EntityGraph<T> createEntityGraph(Session session);
-    public abstract List<T> search(String keyword);
+    public abstract T get(int id, Function<Session, EntityGraph<T>> entityGraphFunction);
+    public abstract List<T> getAll(Function<Session, EntityGraph<T>> entityGraphFunction);
+    public abstract List<T> search(String keyword, Function<Session, EntityGraph<T>> entityGraphFunction);
 
     //Helper methods
     public static boolean isValidUsername(Class<? extends Person> clazz,  String username){

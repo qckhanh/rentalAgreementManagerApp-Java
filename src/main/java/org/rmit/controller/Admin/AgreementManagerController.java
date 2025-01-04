@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.Persons.Renter;
@@ -41,7 +42,7 @@ public class AgreementManagerController implements Initializable {
             selectedRentalAgreement.set(newValue);
         });
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-        List<RentalAgreement> list = rentalAgreementDAO.getAll();
+        List<RentalAgreement> list = rentalAgreementDAO.getAll(EntityGraphUtils::SimpleRentalAgreement);
         loadData(list);
 
         deleteAgreementButton.setOnAction(e -> deleteAgreement());
@@ -62,11 +63,11 @@ public class AgreementManagerController implements Initializable {
 
     // Helper Method:
     private void deleteAgreement() {
-        RentalAgreementDAO rentalAgreementDAO  = new RentalAgreementDAO();
-        int id = Integer.parseInt(selectedRentalAgreement.get().getAgreementId() + "");
-        RentalAgreement rentalAgreement = rentalAgreementDAO.get(id);
-        rentalAgreementDAO.delete(rentalAgreement);
-        rentalAgreementsObservableList.remove(selectedRentalAgreement.get());
+//        RentalAgreementDAO rentalAgreementDAO  = new RentalAgreementDAO();
+//        int id = Integer.parseInt(selectedRentalAgreement.get().getAgreementId() + "");
+//        RentalAgreement rentalAgreement = rentalAgreementDAO.get(id);
+//        rentalAgreementDAO.delete(rentalAgreement);
+//        rentalAgreementsObservableList.remove(selectedRentalAgreement.get());
     }
 
     private void readAgreement() {

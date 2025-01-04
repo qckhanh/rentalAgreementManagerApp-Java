@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
@@ -128,14 +129,15 @@ public class Host_NotificationController implements Initializable {
             RenterDAO renterDAO = new RenterDAO();
             HostDAO hostDAO = new HostDAO();
             OwnerDAO ownerDAO = new OwnerDAO();
-            DAOInterface dao = new CommercialPropertyDAO();
 
-            Renter mainRenter = renterDAO.get(Integer.parseInt(mainRenterId + ""));
-            Owner owner = ownerDAO.get(Integer.parseInt(ownerID + ""));
-            Property property = (Property) dao.get(Integer.parseInt(propertyID + ""));
+            Renter mainRenter = renterDAO.get(Integer.parseInt(mainRenterId + ""), EntityGraphUtils::SimpleRenter);
+            Owner owner = ownerDAO.get(Integer.parseInt(ownerID + ""), EntityGraphUtils::SimpleOwner);
+
+            CommercialPropertyDAO dao = new CommercialPropertyDAO();
+            Property property = (Property) dao.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleCommercialProperty);
             if(property == null){
-                dao = new ResidentialPropertyDAO();
-                property = (Property) dao.get(Integer.parseInt(propertyID + ""));
+                ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
+                property = (Property) dao2.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleResidentialProperty);
             }
 
             RentalAgreement rentalAgreement = new RentalAgreement();
@@ -147,7 +149,8 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setContractDate(LocalDate.now());
             Set<Renter> subRentersSet = new HashSet<>();
             for(int id: subRenters){
-                subRentersSet.add(renterDAO.get(id));
+                Renter subRenter = renterDAO.get(id, EntityGraphUtils::SimpleRenter);
+                subRentersSet.add(subRenter);
             }
             rentalAgreement.setSubTenants(subRentersSet);
             rentalAgreement.setStatus(AgreementStatus.NEW);

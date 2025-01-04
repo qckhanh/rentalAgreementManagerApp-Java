@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.PaymentDAO;
 import org.rmit.model.Agreement.Payment;
@@ -15,6 +16,8 @@ import org.rmit.model.Persons.Host;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static org.rmit.Helper.EntityGraphUtils.SimplePaymentFull;
 
 public class PaymentManagerController implements Initializable {
     public Label welcomeLabel;
@@ -41,7 +44,7 @@ public class PaymentManagerController implements Initializable {
         });
 
         PaymentDAO paymentDAO = new PaymentDAO();
-        List<Payment> list = paymentDAO.getAll();
+        List<Payment> list = paymentDAO.getAll(EntityGraphUtils::SimplePaymentFull);
         loadData(list);
 
 //        deletePaymentButton.setOnAction(e -> deletePayment());

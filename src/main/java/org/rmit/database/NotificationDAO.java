@@ -3,9 +3,11 @@ package org.rmit.database;
 import jakarta.persistence.EntityGraph;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Notification.Notification;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class NotificationDAO extends DAOInterface<Notification> {
     @Override
@@ -38,7 +40,7 @@ public class NotificationDAO extends DAOInterface<Notification> {
     }
 
     @Override
-    public Notification get(int id) {
+    public Notification get(int id, Function<Session, EntityGraph<Notification>> entityGraphFunction) {
         try{
             Session  session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
@@ -57,17 +59,16 @@ public class NotificationDAO extends DAOInterface<Notification> {
     }
 
     @Override
-    public List<Notification> getAll() {
+    public List<Notification> getAll(Function<Session, EntityGraph<Notification>> entityGraphFunction) {
         return List.of();
     }
 
-    @Override
     public EntityGraph<Notification> createEntityGraph(Session session) {
         return null;
     }
 
     @Override
-    public List<Notification> search(String keyword) {
+    public List<Notification> search(String keyword, Function<Session, EntityGraph<Notification>> entityGraphFunction) {
         return List.of();
     }
 }

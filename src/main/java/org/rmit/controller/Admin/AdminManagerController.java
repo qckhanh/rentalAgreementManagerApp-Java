@@ -43,8 +43,8 @@ public class AdminManagerController implements Initializable {
         });
 
         AdminDAO adminDAO = new AdminDAO();
-        List<Admin> list = adminDAO.getAll();
-        loadData(list);
+//        List<Admin> list = adminDAO.getAll();
+//        loadData(list);
 
         deleteAdminButton.setOnAction(e -> deleteAdmin());
         // update chua lam

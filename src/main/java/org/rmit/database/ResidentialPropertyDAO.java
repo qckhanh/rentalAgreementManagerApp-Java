@@ -5,14 +5,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Subgraph;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rmit.model.Persons.Owner;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.ResidentialProperty;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
 
@@ -68,13 +67,13 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
     }
 
     @Override
-    public ResidentialProperty get(int id) {
+    public ResidentialProperty get(int id, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_BY_ID_HQL, "ResidentialProperty");
             ResidentialProperty obj = session.createQuery(hql, ResidentialProperty.class)
                     .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return obj;
@@ -86,12 +85,12 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
     }
 
     @Override
-    public List<ResidentialProperty> getAll() {
+    public List<ResidentialProperty> getAll(Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "ResidentialProperty");
             List<ResidentialProperty> list = session.createQuery(hql, ResidentialProperty.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
             return list;
         }
@@ -102,7 +101,6 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
     }
 
 
-    @Override
     public EntityGraph<ResidentialProperty> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
@@ -122,7 +120,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
     }
 
     @Override
-    public List<ResidentialProperty> search(String keyword) {
+    public List<ResidentialProperty> search(String keyword, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();
         List<ResidentialProperty> result = Collections.emptyList(); // Properly initialized
 
@@ -136,7 +134,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
                     .setMaxResults(10) // Limit results
                     .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
                     .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();
         } catch (Exception e) {
             e.printStackTrace(); // Replace with proper logging

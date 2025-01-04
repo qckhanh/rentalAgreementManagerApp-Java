@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -15,6 +16,8 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleOwner;
 
 public class Host_ManageOwnerController implements Initializable {
     public TextField D_input;
@@ -67,7 +70,7 @@ public class Host_ManageOwnerController implements Initializable {
     private void searchOwner() {
         if(search_input.getText().isBlank()) return;
         OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> lists = ownerDAO.search(search_input.getText());
+        List<Owner> lists = ownerDAO.search(search_input.getText(), EntityGraphUtils::SimpleOwner);
         loadOwner(new HashSet<>(lists));
     }
 
@@ -88,7 +91,7 @@ public class Host_ManageOwnerController implements Initializable {
         if(ownerMap.containsKey(id)) owner = ownerMap.get(id);
         else{
             OwnerDAO ownerDAO = new OwnerDAO();
-            owner = ownerDAO.get(id);
+            owner = ownerDAO.get(id, EntityGraphUtils::ownerForSearching);
             ownerMap.put(id, owner);
         }
         if(owner == null) return;

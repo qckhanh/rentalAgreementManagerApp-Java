@@ -2,15 +2,14 @@ package org.rmit.database;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.CommercialProperty;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     @Override
@@ -62,13 +61,13 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
     @Override
-    public RentalAgreement get(int id) {
+    public RentalAgreement get(int id, Function<Session, EntityGraph<RentalAgreement>> entityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_BY_ID_HQL, "RentalAgreement");
             RentalAgreement obj = session.createQuery(hql, RentalAgreement.class)
                     .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .uniqueResult();
             DatabaseUtil.shutdown(session);
             return obj;
@@ -80,12 +79,12 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
     @Override
-    public List<RentalAgreement> getAll() {
+    public List<RentalAgreement> getAll(Function<Session, EntityGraph<RentalAgreement>> sessionEntityGraphFunction) {
         try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "RentalAgreement");
             List<RentalAgreement> list = session.createQuery(hql, RentalAgreement.class)
-                    .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))  // Apply EntityGraph
+                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
             return list;
         }
@@ -96,7 +95,6 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
 
-    @Override
     public EntityGraph<RentalAgreement> createEntityGraph(Session session) {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
@@ -105,7 +103,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
     @Override
-    public List<RentalAgreement> search(String keyword) {
+    public List<RentalAgreement> search(String keyword, Function<Session, EntityGraph<RentalAgreement>> entityGraphFunction) {
         return null;
     }
 

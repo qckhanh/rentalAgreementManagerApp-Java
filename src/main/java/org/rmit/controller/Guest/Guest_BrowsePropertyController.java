@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
@@ -25,6 +26,8 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
 
 public class Guest_BrowsePropertyController implements Initializable {
     //preview
@@ -100,11 +103,11 @@ public class Guest_BrowsePropertyController implements Initializable {
     private void searchProperty() {
         if(search_input.getText().isBlank()) return;
         Set<Property> res = new HashSet<>();
-        DAOInterface dao = new CommercialPropertyDAO();
-        List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText());
+        CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+        List<CommercialProperty> ans = (List<CommercialProperty>)commercialPropertyDAO.search(search_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
         res.addAll(ans);
-        dao = new ResidentialPropertyDAO();
-        List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao.search(search_input.getText());
+        ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+        List<ResidentialProperty> ans2 = residentialPropertyDAO.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
         res.addAll(ans2);
         property_listView.setItems(getPropertyList(res));
     }
@@ -154,14 +157,14 @@ public class Guest_BrowsePropertyController implements Initializable {
             property = propertyMap.get(id);
 
         }else{
-            DAOInterface dao = null;
+
             if(property.getType().toString().equals("COMMERCIAL")){
-                dao = new CommercialPropertyDAO();
-                property = (CommercialProperty)dao.get(id);
+                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+                property = commercialPropertyDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
             }
             else{
-                dao = new ResidentialPropertyDAO();
-                property = (ResidentialProperty)dao.get(id);
+                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+                property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
             }
         }
 

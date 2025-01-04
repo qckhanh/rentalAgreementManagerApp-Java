@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.rmit.Helper.DateUtils;
+import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Notification.Request;
 import org.rmit.database.CommercialPropertyDAO;
@@ -101,7 +102,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
     private void searchRenter() {
         if(subRenterSearch_input.getText().isBlank()) return;
         RenterDAO renterDAO = new RenterDAO();
-        List<Renter> list = renterDAO.search(subRenterSearch_input.getText());
+        List<Renter> list = renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(list);
     }
@@ -217,9 +218,9 @@ public class Renter_makeRentalAgreementController implements Initializable {
         property_ComboBox.getItems().clear();
         List<Property> list = new ArrayList<>();
         CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-        list.addAll(commercialPropertyDAO.search(propertySearch_input.getText()));
+        list.addAll(commercialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::commercialPropertyForSearching));
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-        list.addAll(residentialPropertyDAO.search(propertySearch_input.getText()));
+        list.addAll(residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::residentalPropertyForSearching));
         property_ComboBox.getItems().addAll(list);
     }
 
