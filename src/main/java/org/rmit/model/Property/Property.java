@@ -138,7 +138,7 @@ public abstract class Property {
 
 //    public void addHost(Host host) {
 //        this.hosts.add(host);
-//        this.hostsProperty.setValue(this.hosts);
+//        this.hostsProperty.setLabelError(this.hosts);
 //
 //    }
 

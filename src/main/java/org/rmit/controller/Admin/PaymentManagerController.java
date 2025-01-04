@@ -35,7 +35,7 @@ public class PaymentManagerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         payments_tableView.getColumns().addAll(
-                createColumn("Payment ID", "paymentId"),
+                createColumn("ID", "paymentId"),
                 createColumn("Date", "date"),
                 createColumn("Rental Agreement", "rentalAgreement")
         );

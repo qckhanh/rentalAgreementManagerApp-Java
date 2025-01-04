@@ -3,6 +3,7 @@ package org.rmit.controller.Start;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
@@ -18,8 +19,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static org.rmit.database.DAOInterface.isValidUsername;
 
 public class RegisterController implements Initializable {
     public TextField fullName_input;
@@ -38,6 +37,9 @@ public class RegisterController implements Initializable {
     public Label dob_err;
     public Label password_err;
     public Label repass_err;
+
+    Validator validator = new Validator();
+
 
     int registerAttempt = 0;
     int MAX_ATTEMPT = 4;
@@ -74,6 +76,8 @@ public class RegisterController implements Initializable {
             if(!Objects.equals(oldValue, newValue)) dob_err.setText("");
         });
 
+        validateInput();
+
     }
 
     void openLogin() {
@@ -81,27 +85,87 @@ public class RegisterController implements Initializable {
         ModelCentral.getInstance().getStartViewFactory().showLoginView();
     }
 
-    private boolean validateInput(){
-        boolean isValid = true;
-        if(!InputValidator.NoCondition(fullName_input.getText(), name_err))isValid = false;
-        if(!InputValidator.isValidUsername(username_input.getText(), username_err)) isValid = false;
-        if(!InputValidator.isValidContact(contact_input.getText(), contact_err)) isValid = false;
-        if(!InputValidator.isValidDateFormat(dob_datePicker.getValue(), dob_err)) isValid = false;
-        if(!InputValidator.isValidPassword(password_input.getText(), password_err)) isValid = false;
-        if(!InputValidator.isValidPassword(rePassword_input.getText(), repass_err)) isValid = false;
-        if(!password_input.getText().equals(rePassword_input.getText())) isValid = false;
-        return isValid;
+    private void validateInput(){
+        validator.createCheck()
+                .dependsOn("fullName", fullName_input.textProperty())
+                .withMethod(context ->{
+                    String input = context.get("fullName");
+                    if(!InputValidator.NoCondition(input, name_err)){
+                        context.error("Name must not be empty");
+                    }
+                })
+                .decorates(fullName_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("username", username_input.textProperty())
+                .withMethod(context ->{
+                    String input = context.get("username");
+                    if(!InputValidator.isValidUsername(input, username_err)){
+                        context.error("Username must be at least 6 characters");
+                    }
+                })
+                .decorates(username_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("contact", contact_input.textProperty())
+                .withMethod(context ->{
+                    String input = context.get("contact");
+                    if(!InputValidator.isValidContact(input, contact_err)){
+                        context.error("Invalid Phone Number");
+                    }
+                })
+                .decorates(contact_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("dob", dob_datePicker.valueProperty())
+                .withMethod(context ->{
+                    LocalDate input = context.get("dob");
+                    if(!InputValidator.isValidDateFormat(input, dob_err)){
+                        context.error("Invalid Date");
+                    }
+                })
+                .decorates(dob_datePicker)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("password", password_input.textProperty())
+                .withMethod(context ->{
+                    String input = context.get("password");
+                    if(!InputValidator.isValidPassword(input, password_err)){
+                        context.error("Password must be at least 8 characters");
+                    }
+                })
+                .decorates(password_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("rePassword", rePassword_input.textProperty())
+                .dependsOn("password", password_input.textProperty())
+                .withMethod(context ->{
+                    String password = context.get("password");
+                    String passwordConfirmation = context.get("rePassword");
+
+                    if(!password.equals(passwordConfirmation)){
+                        context.error("Password does not match");
+                        InputValidator.setLabelError(repass_err, InputValidator.RED, "Password does not match");
+                    }
+                })
+                .decorates(rePassword_input)
+                .decorates(password_input)
+                .immediateClear();     // always use this
+
+        submitRegister_btn.disableProperty().bind(validator.containsErrorsProperty()); // binding the button to the validator
     }
+
     void register() {
-        if(registerAttempt == MAX_ATTEMPT){      // you dont need to understand this
+        if(registerAttempt == MAX_ATTEMPT){     // you dont have to understand this
             System.out.println("Too many attempts");
             return;
         }
-        registerAttempt++;
-        if(!validateInput()){
-            System.out.println("Invalid Input");
-            return;
-        }
+        if(!validator.validate()) return; // if there is an invalid input, return
 
         if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.RENTER){
             RenterDAO userDAO = new RenterDAO() ;
@@ -110,6 +174,7 @@ public class RegisterController implements Initializable {
             if(userDAO.add(newUser)) System.out.println("Renter Registered");
             else{
                 System.out.println("Renter Registration Failed. Trying again");
+                registerAttempt++;
                 register();
             }
         }
@@ -120,7 +185,9 @@ public class RegisterController implements Initializable {
             if(userDAO.add(newUser)) System.out.println("Host Registered");
             else{
                 System.out.println("Renter Registration Failed. Trying again");
+                registerAttempt++;
                 register();
+
 
             }
         }
@@ -131,13 +198,14 @@ public class RegisterController implements Initializable {
             if(userDAO.add(newUser)) System.out.println("Owner Registered");
             else{
                 System.out.println("Renter Registration Failed. Trying again");
+                registerAttempt++;
                 register();
 
             }
         }
 
-        registerAttempt = 0;
-        resetTextFields();
+        registerAttempt = 0; // dont need to understand this
+        resetTextFields(); // reset texfields
     }
 
     private <T extends Person> void UserFactory(T newUser) {

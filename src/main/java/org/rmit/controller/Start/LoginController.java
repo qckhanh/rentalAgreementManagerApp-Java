@@ -1,10 +1,18 @@
 package org.rmit.controller.Start;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.synedra.validatorfx.TooltipWrapper;
+import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
 import org.rmit.model.ModelCentral;
@@ -19,6 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
+    public AnchorPane anchorPane;
     public Label username_lbl;
     public TextField username_input;
     public Label password;
@@ -33,6 +42,8 @@ public class LoginController implements Initializable {
     public Label password_err;
     public Label username_err;
     public Button guest_btn;
+
+    TooltipWrapper<Button> signUpWrapper;
 
 
     @Override
@@ -56,6 +67,7 @@ public class LoginController implements Initializable {
 //                UIDecorator.tfOK(username_input);
             }
         });
+        validate();
 
 
         status_label.setText("");
@@ -192,5 +204,74 @@ public class LoginController implements Initializable {
         return false;
     }
 
+    private void validate(){
+        Validator validator = new Validator();
+        validator.createCheck()
+                .dependsOn("username", username_input.textProperty())
+                .immediate()
+                .withMethod(c -> {
+                    String username = c.get("username");
+                    if(username.isBlank()) {
+                        c.error("Username cannot be empty");
+//                        username_err.setText("Username cannot be empty");
+                    }
+                });
+        validator.createCheck()
+                .dependsOn("password", password_input.textProperty())
+                .immediate()
+                .withMethod(c -> {
+                    String password = c.get("password");
+                    if (password.isBlank()) {
+                        c.error("Password cannot be empty");
+                    }
+                });
 
+        signIn_btn.disableProperty().bind(validator.containsErrorsProperty());
+
+        validator.validationResultProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue.getMessages().isEmpty()) {
+                status_label.setTextFill(Color.RED);
+                status_label.setText("Please fill in all fields");
+            }
+        });
+    }
+
+    private void replaceButtonWithWrapper() {
+        // Store original anchor constraints
+        Double topAnchor = AnchorPane.getTopAnchor(signIn_btn);
+        Double bottomAnchor = AnchorPane.getBottomAnchor(signIn_btn);
+        Double leftAnchor = AnchorPane.getLeftAnchor(signIn_btn);
+        Double rightAnchor = AnchorPane.getRightAnchor(signIn_btn);
+
+        // Store original button properties
+        double width = signIn_btn.getPrefWidth();
+        double height = signIn_btn.getPrefHeight();
+//        String style = signIn_btn.getStyle();
+
+        // Remove original button
+        anchorPane.getChildren().remove(signIn_btn);
+
+        // Add wrapper to AnchorPane
+        anchorPane.getChildren().add(signUpWrapper);
+
+        // Apply the same anchor constraints to wrapper
+        if (topAnchor != null) {
+            AnchorPane.setTopAnchor(signUpWrapper, topAnchor);
+        }
+        if (bottomAnchor != null) {
+            AnchorPane.setBottomAnchor(signUpWrapper, bottomAnchor);
+        }
+        if (leftAnchor != null) {
+            AnchorPane.setLeftAnchor(signUpWrapper, leftAnchor);
+        }
+        if (rightAnchor != null) {
+            AnchorPane.setRightAnchor(signUpWrapper, rightAnchor);
+        }
+
+        // Apply original button properties to wrapper if needed
+        signUpWrapper.setPrefWidth(width);
+        signUpWrapper.setPrefHeight(height);
+//        signUpWrapper.setStyle(style);
+    }
 }
+

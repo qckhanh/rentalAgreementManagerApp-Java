@@ -16,6 +16,7 @@ module org.rmit.demo {
     requires java.desktop;
     requires jdk.jfr;
     requires org.kordamp.ikonli.fontawesome5;
+    requires net.synedra.validatorfx;
 //    requires com.pixelduke.fxskins;
 //    requires atlantafx.base;
 
