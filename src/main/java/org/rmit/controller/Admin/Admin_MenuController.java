@@ -76,6 +76,8 @@ public class Admin_MenuController implements Initializable {
     private void openDashboard(){
         // Write your code here:
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
+        // Call the update data function in the dashboard controller
+
     }
 
     private void logOut(){
