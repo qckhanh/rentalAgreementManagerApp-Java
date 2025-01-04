@@ -301,17 +301,6 @@ public class Host_DashboardController implements Initializable {
         return numberOfCommercialProperties;
     }
 
-    private int countUncategorizedProperties() {
-        int numberOfUncategorizedProperties = 0;
-
-        // Count the number of Uncategorized Properties managed by this host:
-        for (Property property : manageProperties) {
-            if (property.getType().equals(PropertyType.NONE)) {
-                numberOfUncategorizedProperties++;
-            }
-        }
-        return numberOfUncategorizedProperties;
-    }
 
     // Create Pie Chart Data:
     private ObservableList<PieChart.Data> createPieChartData() {
@@ -319,9 +308,8 @@ public class Host_DashboardController implements Initializable {
         ObservableList<PieChart.Data> data;
         int numberOfResidentialProperties = countResidentialProperties();
         int numberOfCommercialProperties = countCommercialProperties();
-        int numberOfUncategorizedProperties = countUncategorizedProperties();
 
-        if (numberOfResidentialProperties == 0 && numberOfCommercialProperties == 0 && numberOfUncategorizedProperties == 0) {
+        if (numberOfResidentialProperties == 0 && numberOfCommercialProperties == 0) {
             data = FXCollections.observableArrayList(
                     new PieChart.Data("No Data", 1)
             );
@@ -329,8 +317,7 @@ public class Host_DashboardController implements Initializable {
         else {
             data = FXCollections.observableArrayList(
                     new PieChart.Data("Residential Properties", numberOfResidentialProperties),
-                    new PieChart.Data("Commercial Properties", numberOfCommercialProperties),
-                    new PieChart.Data("Uncategorized Properties", numberOfUncategorizedProperties)
+                    new PieChart.Data("Commercial Properties", numberOfCommercialProperties)
             );
         }
         return data;
