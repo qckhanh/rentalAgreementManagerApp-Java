@@ -4,12 +4,10 @@ import javafx.stage.Stage;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.database.CommercialPropertyDAO;
-import org.rmit.database.HostDAO;
-import org.rmit.database.RentalAgreementDAO;
-import org.rmit.database.RenterDAO;
+import org.rmit.database.*;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
@@ -26,10 +24,13 @@ public class RentalAgreementApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-//        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ModelCentral.getInstance().getStartViewFactory().startApplication();
 
-        RenterDAO renterDAO = new RenterDAO();
-        System.out.println(renterDAO.get(1, EntityGraphUtils::SimpleRenter));
+//        AdminDAO adminDAO = new AdminDAO();
+//        System.out.println(adminDAO.getAll(EntityGraphUtils::SimpleAdminFull).size());
+
+//        RenterDAO renterDAO = new RenterDAO();
+//        System.out.println(renterDAO.get(1, EntityGraphUtils::SimpleRenter));
 
 //        RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
 //        RentalAgreement rentalAgreement = new RentalAgreement();

@@ -10,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Renter;
 
 import java.net.URL;
@@ -42,7 +43,7 @@ public class AgreementManagerController implements Initializable {
             selectedRentalAgreement.set(newValue);
         });
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-        List<RentalAgreement> list = rentalAgreementDAO.getAll(EntityGraphUtils::SimpleRentalAgreement);
+        List<RentalAgreement> list = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
         loadData(list);
 
         deleteAgreementButton.setOnAction(e -> deleteAgreement());

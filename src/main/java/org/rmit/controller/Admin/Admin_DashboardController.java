@@ -18,6 +18,7 @@ import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Admin;
+import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.*;
@@ -324,6 +325,12 @@ public class Admin_DashboardController implements Initializable {
         return renters.size();
     }
 
+    private int countSystemNumberOfHost() {
+        List<Host> host = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
+        if (host == null) return 0;
+        return host.size();
+    }
+
     private int countSystemNumberOfAdmin() {
         AdminDAO adminDAO = new AdminDAO();
         List<Admin> admins = ModelCentral.getInstance().getAdminViewFactory().getAllAdmin();
@@ -334,8 +341,7 @@ public class Admin_DashboardController implements Initializable {
 
     private ObservableList<PieChart.Data> createPieChartDataPeople(){
         ObservableList<PieChart.Data> data;
-//        int numberOfHost = countSystemNumberOfHost();
-        int numberOfHost = 0;
+        int numberOfHost = countSystemNumberOfHost();
         int numberOfOwner = countSystemNumberOfOwner();
         int numberOfRenter = countSystemNumberOfRenter();
         int numberOfAdmin = countSystemNumberOfAdmin();

@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Persons.Admin;
+import org.rmit.model.Persons.Renter;
 
 import java.util.List;
 import java.util.function.Function;
@@ -43,16 +44,16 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
 
     @Override
     public List<Admin> getAll(Function<Session, EntityGraph<Admin>> entityGraph) {
-        try {
+        try{
             Session session = DatabaseUtil.getSession();
             String hql = String.format(GET_ALL_HQL, "Admin");
             List<Admin> list = session.createQuery(hql, Admin.class)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraph.apply(session))
-                    .list();
+                    .setHint("jakarta.persistence.fetchgraph", entityGraph.apply(session))  // Apply EntityGraph
+                    .list();  // Fetch the list of Renters
             return list;
-        } catch (Exception e) {
+        }
+        catch (Exception e){
             System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }

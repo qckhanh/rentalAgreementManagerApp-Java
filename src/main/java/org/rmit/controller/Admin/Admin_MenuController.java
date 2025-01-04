@@ -9,6 +9,7 @@ import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Admin.ADMIN_MENU_OPTION;
+import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -78,7 +79,9 @@ public class Admin_MenuController implements Initializable {
     }
 
     private void logOut(){
-        // Write your code here:
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
+        ModelCentral.getInstance().getAdminViewFactory().resetView();
+        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void manageRenter(){

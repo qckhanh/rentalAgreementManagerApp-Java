@@ -10,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
 
@@ -43,7 +44,7 @@ public class HostManagerController implements Initializable {
         });
 
         HostDAO hostDAO = new HostDAO();
-        List<Host> list = hostDAO.getAll(EntityGraphUtils::SimpleHostFull);
+        List<Host> list = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
         loadData(list);
 
         deleteHostButton.setOnAction(e -> deleteHost());
