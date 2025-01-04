@@ -301,7 +301,6 @@ public class Host_DashboardController implements Initializable {
         return numberOfCommercialProperties;
     }
 
-
     // Create Pie Chart Data:
     private ObservableList<PieChart.Data> createPieChartData() {
         // Write Code:
