@@ -135,4 +135,110 @@ public class InputValidator {
         }
         return input; // Default return as String
     }
+
+    public static boolean isValidSquareMeters(String input, Label squareMetersErr) {
+        // Check if input is a number
+        if (!isValidInteger(input, squareMetersErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            squareMetersErr.setText("Square meters must be positive");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            squareMetersErr.setText("Field must not be empty");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidParkingSpaces(String input, Label parkingSpaceErr) {
+        // Check if input is a number
+        if (!isValidInteger(input, parkingSpaceErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            parkingSpaceErr.setText("Parking spaces must be positive");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            parkingSpaceErr.setText("Field must not be empty");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidBedrooms(String input, Label bedroomErr) {
+        // Check if input is a number
+        if (!isValidInteger(input, bedroomErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            bedroomErr.setText("Bedrooms must be positive");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            bedroomErr.setText("Field must not be empty");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check the number of bedrooms is less than or equal to the number of rooms
+        if (Integer.parseInt(input) > Integer.parseInt(bedroomErr.getText())) {
+            bedroomErr.setText("Bedrooms must be less than or equal to the number of rooms");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidRooms(String input, Label roomErr) {
+        // Check if input is a number
+        if (!isValidInteger(input, roomErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            roomErr.setText("Rooms must be positive");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            roomErr.setText("Field must not be empty");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check the number of rooms is greater than or equal to the number of bedrooms
+        if (Integer.parseInt(input) < Integer.parseInt(roomErr.getText())) {
+            roomErr.setText("Rooms must be greater than or equal to the number of bedrooms");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
 }
