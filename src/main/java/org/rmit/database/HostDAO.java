@@ -21,6 +21,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.persist(host);
+            DatabaseUtil.clearAll(session);
             session.getTransaction().commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -36,6 +37,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.update(host);
+            DatabaseUtil.clearAll(session);
             session.getTransaction().commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -51,6 +53,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.delete(host);
+            DatabaseUtil.clearAll(session);
             session.getTransaction().commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -87,7 +90,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             List<Host> list = session.createQuery(hql, Host.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
-
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -153,10 +156,10 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
                     .setParameter("usernameKeyword", "%" + keyword.toLowerCase() + "%")
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
+            DatabaseUtil.shutdown(session);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DatabaseUtil.shutdown(session);
         }
         return result;
     }

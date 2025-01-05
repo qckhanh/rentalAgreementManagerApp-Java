@@ -81,6 +81,7 @@ public class Admin_MenuController implements Initializable {
     private void logOut(){
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getAdminViewFactory().resetView();
+        ModelCentral.getInstance().resetAdminView();
         ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 

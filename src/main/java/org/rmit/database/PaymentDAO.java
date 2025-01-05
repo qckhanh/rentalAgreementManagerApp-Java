@@ -14,23 +14,18 @@ import java.util.function.Function;
 public class PaymentDAO extends DAOInterface<Payment> {
     @Override
     public boolean add(Payment payment) {
-        Session session = DatabaseUtil.getSession();
         try {
+            Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
-
-            // Merge related entities to ensure they are attached to the session
             RentalAgreement rentalAgreement = session.merge(payment.getRentalAgreement());  // Merge RentalAgreement
             rentalAgreement.getPayments().add(payment);  // Add payment to the rental agreement
-
-            // Persist the payment entity as it's a new entity
             session.merge(payment);  // Persist the payment itself
-
-            // Commit transaction
+//            session.persist(payment);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
         } catch (Exception e) {
-            DatabaseUtil.shutdown(session);
             System.out.println("Error: " + e);
             return false;
         }
@@ -41,7 +36,8 @@ public class PaymentDAO extends DAOInterface<Payment> {
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
-            session.update(payment);
+            session.merge(payment);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -58,6 +54,7 @@ public class PaymentDAO extends DAOInterface<Payment> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.delete(payment);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -94,6 +91,7 @@ public class PaymentDAO extends DAOInterface<Payment> {
             List<Payment> list = session.createQuery(hql, Payment.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){

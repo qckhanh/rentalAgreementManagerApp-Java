@@ -21,6 +21,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.merge(residentialProperty);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -37,6 +38,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.update(residentialProperty);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -54,6 +56,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
             Transaction transaction = DatabaseUtil.getTransaction(session);
             ResidentialProperty obj = session.merge(residentialProperty);
             session.delete(obj);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             return true;
         }
@@ -92,6 +95,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
             List<ResidentialProperty> list = session.createQuery(hql, ResidentialProperty.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -136,6 +140,7 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
                     .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();
+            DatabaseUtil.shutdown(session);
         } catch (Exception e) {
             e.printStackTrace(); // Replace with proper logging
         } finally {

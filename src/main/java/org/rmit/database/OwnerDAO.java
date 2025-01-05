@@ -20,9 +20,8 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
-
             session.persist(owner);
-
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -38,9 +37,8 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-
             session.merge(owner);
-
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -56,9 +54,8 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-
             session.delete(owner);
-
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -95,6 +92,7 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
             List<Owner> list = session.createQuery(hql, Owner.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -158,10 +156,9 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
                     .setParameter("usernameKeyword", "%" + keyword.toLowerCase() + "%")
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
+            DatabaseUtil.shutdown(session);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DatabaseUtil.shutdown(session);
         }
         return result;
     }

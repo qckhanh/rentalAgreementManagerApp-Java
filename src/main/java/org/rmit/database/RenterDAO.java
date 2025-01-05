@@ -1,6 +1,7 @@
 package org.rmit.database;
 
 import jakarta.persistence.*;
+import javafx.scene.chart.PieChart;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.Helper.DatabaseUtil;
@@ -8,6 +9,7 @@ import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.model.Persons.Renter;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
@@ -15,19 +17,19 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
 
     @Override
     public boolean add(Renter renter) {
-        try{
-            Session session = DatabaseUtil.getSession();
+        try(Session session = DatabaseUtil.getSession()){
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.persist(renter);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
             return false;
         }
-
     }
 
     @Override
@@ -36,7 +38,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.merge(renter);
-
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -53,6 +55,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.delete(renter);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -81,11 +84,6 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         }
     }
 
-
-
-
-
-
     @Override
     public List<Renter> getAll(Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
         try{
@@ -94,6 +92,7 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
             List<Renter> list = session.createQuery(hql, Renter.class)
                     .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -146,14 +145,12 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
                     .setParameter("idKeyword", parseId(keyword))
                     .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))
                     .list();
+            DatabaseUtil.shutdown(session);
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        finally {
-            DatabaseUtil.shutdown(DatabaseUtil.getSession());
-            return list;
-        }
+        return list;
     }
 
 
