@@ -53,6 +53,9 @@ public class Admin_DashboardController implements Initializable {
     @FXML
     public Label approxYearRevenue;
 
+    @FXML
+    public Button refreshAdminDashBoard;
+
     LocalDate currentDate = LocalDate.now();
 
     @Override
@@ -67,7 +70,20 @@ public class Admin_DashboardController implements Initializable {
         setLineGraph();
         setPieChartPropertyObject();
         setEstimatedYearlyRevenue();
+
+        // Add event handler to the refresh button
+        refreshAdminDashBoard.setOnAction(event -> updateData());
+
+        // Add hover effect to the refresh button
+        refreshAdminDashBoard.setOnMouseEntered(event -> {
+            refreshAdminDashBoard.setStyle("-fx-background-color: #ffcc00; -fx-text-fill: #000000; -fx-cursor: hand;");
+        });
+
+        refreshAdminDashBoard.setOnMouseExited(event -> {
+            refreshAdminDashBoard.setStyle(""); // Reset to default style
+        });
     }
+
 
     /* Functions to set up the Graphs */
     private void setPieChartPersonObject() {
@@ -86,56 +102,10 @@ public class Admin_DashboardController implements Initializable {
         pieChartPersonObject.setLabelsVisible(false);
         pieChartPersonObject.setLabelLineLength(10);
 
-        // Map để lưu trữ tooltip cho mỗi phần
-        Map<Node, Tooltip> tooltipMap = new HashMap<>();
-
-        for (PieChart.Data data : pieChartData) {
-            String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValuePerson() * 100));
-            String formattedName = String.format("%s %.1f (%s)",
-                    data.getName(),
-                    data.getPieValue(),
-                    percentage
-            );
-            data.setName(formattedName);
-
-            // Tạo tooltip
-            Tooltip tooltip = new Tooltip(
-                    String.format("%s\nNumber: %.1f\nPercentage: %.1f%%",
-                            data.getName().split(" ")[0],
-                            data.getPieValue(),
-                            (data.getPieValue() / getTotalValuePerson() * 100)
-                    )
-            );
-            tooltipMap.put(data.getNode(), tooltip);
-
-            // Thêm hiệu ứng hover
-            data.getNode().setOnMouseEntered(event -> {
-                // Phóng to
-                data.getNode().setScaleX(1.1);
-                data.getNode().setScaleY(1.1);
-
-                // Hiệu ứng phát sáng
-                data.getNode().setEffect(new Glow(0.5));
-
-                // Hiển thị tooltip
-                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-
-            data.getNode().setOnMouseExited(event -> {
-                // Trở về kích thước bình thường
-                data.getNode().setScaleX(1);
-                data.getNode().setScaleY(1);
-
-                // Xóa hiệu ứng
-                data.getNode().setEffect(null);
-
-                // Ẩn tooltip
-                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-        }
-
         pieChartPersonObject.setStartAngle(60);
         pieChartPersonObject.setClockwise(true);
+
+        applyPieChartHoverEffects();
     }
 
     private void setLineGraph() {
@@ -250,62 +220,33 @@ public class Admin_DashboardController implements Initializable {
         pieChartPropertyObject.setLabelLineLength(10);
         pieChartPropertyObject.setLabelsVisible(false);
 
-        // Map để lưu trữ tooltip
-        Map<Node, Tooltip> tooltipMap = new HashMap<>();
-
-        for (PieChart.Data data : pieChartDataProperty) {
-            double total = countCommercialProperties() + countResidentialProperties();
-            String percentage = String.format("%.1f%%", (data.getPieValue() / total * 100));
-            String formattedName = String.format("%s %.1f (%s)",
-                    data.getName(),
-                    data.getPieValue(),
-                    percentage
-            );
-            data.setName(formattedName);
-
-            // Tạo tooltip
-            Tooltip tooltip = new Tooltip(
-                    String.format("%s\nNumber: %.1f\nPercentage: %.1f%%",
-                            data.getName().split(" ")[0],
-                            data.getPieValue(),
-                            (data.getPieValue() / total * 100)
-                    )
-            );
-            tooltipMap.put(data.getNode(), tooltip);
-
-            // Thêm hiệu ứng hover
-            data.getNode().setOnMouseEntered(event -> {
-                // Phóng to
-                data.getNode().setScaleX(1.1);
-                data.getNode().setScaleY(1.1);
-
-                // Hiệu ứng phát sáng
-                data.getNode().setEffect(new Glow(0.5));
-
-                // Hiển thị tooltip
-                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-
-            data.getNode().setOnMouseExited(event -> {
-                // Trở về kích thước bình thường
-                data.getNode().setScaleX(1);
-                data.getNode().setScaleY(1);
-
-                // Xóa hiệu ứng
-                data.getNode().setEffect(null);
-
-                // Ẩn tooltip
-                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-        }
-
         pieChartPropertyObject.setStartAngle(60);
         pieChartPropertyObject.setClockwise(true);
+
+        applyPieChartHoverEffects();
     }
 
     private void setEstimatedYearlyRevenue(){
         double revenue = calculateEstimatedYearlyRevenue();
         approxYearRevenue.setText(formatCurrency(revenue) + " VND");
+    }
+
+    private void updateData() {
+        // Update PieChart data for Person Object
+        pieChartData = createPieChartDataPeople();
+        pieChartPersonObject.setData(pieChartData);
+        applyPieChartHoverEffects();
+
+        // Update LineChart data
+        setLineGraph();
+
+        // Update PieChart data for Property Object
+        pieChartDataProperty = createPieChartDataProperty();
+        pieChartPropertyObject.setData(pieChartDataProperty);
+        applyPieChartHoverEffects();
+
+        // Update Estimated Yearly Revenue
+        setEstimatedYearlyRevenue();
     }
 
     /* Helpers method for the Person Objects Pie Chart */
@@ -492,4 +433,42 @@ public class Admin_DashboardController implements Initializable {
 
         return isNegative ? "-" + result : result;
     }
+
+    private void applyPieChartHoverEffects() {
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
+
+        for (PieChart.Data data : pieChartData) {
+            String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValuePerson() * 100));
+            String formattedName = String.format("%s %.1f (%s)",
+                    data.getName(),
+                    data.getPieValue(),
+                    percentage
+            );
+            data.setName(formattedName);
+
+            Tooltip tooltip = new Tooltip(
+                    String.format("%s\nNumber: %.1f\nPercentage: %.1f%%",
+                            data.getName().split(" ")[0],
+                            data.getPieValue(),
+                            (data.getPieValue() / getTotalValuePerson() * 100)
+                    )
+            );
+            tooltipMap.put(data.getNode(), tooltip);
+
+            data.getNode().setOnMouseEntered(event -> {
+                data.getNode().setScaleX(1.1);
+                data.getNode().setScaleY(1.1);
+                data.getNode().setEffect(new Glow(0.5));
+                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                data.getNode().setScaleX(1);
+                data.getNode().setScaleY(1);
+                data.getNode().setEffect(null);
+                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+        }
+    }
+
 }

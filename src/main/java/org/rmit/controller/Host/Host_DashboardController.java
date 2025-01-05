@@ -1,5 +1,7 @@
 package org.rmit.controller.Host;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
+import javafx.util.Duration;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
@@ -37,6 +40,8 @@ public class Host_DashboardController implements Initializable {
     private NumberAxis yAxis;
     @FXML
     public BarChart<String, Number> barChart;
+    @FXML
+    public Button refreshHostDashBoard;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -44,7 +49,32 @@ public class Host_DashboardController implements Initializable {
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 welcomeLabel.setText("Welcome " + newValue)
         );
+
         setPieChart();
+        setBarChart();
+
+        // Update the data button event
+        refreshHostDashBoard.setOnAction(event -> {
+            updateData();
+        });
+
+        // Add hover effect to the refresh button
+        refreshHostDashBoard.setOnMouseEntered(event -> {
+            refreshHostDashBoard.setStyle("-fx-background-color: #ffcc00; -fx-text-fill: #000000; -fx-cursor: hand;");
+        });
+        refreshHostDashBoard.setOnMouseExited(event -> {
+            refreshHostDashBoard.setStyle(""); // Reset to default style
+        });
+    }
+
+    private void updateData() {
+        // Update PieChart data
+        pieChartData = createPieChartData();
+        piechart.setData(pieChartData);
+        applyPieChartHoverEffects();
+
+        // Update BarChart data
+        barChart.getData().clear();
         setBarChart();
     }
 
@@ -66,54 +96,8 @@ public class Host_DashboardController implements Initializable {
 
         piechart.setLabelsVisible(false);
 
-        // Map to save the tooltip for each data section:
-        Map<Node, Tooltip> tooltipMap = new HashMap<>();
-
-        for (PieChart.Data data : pieChartData) {
-            String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValue() * 100));
-            String formattedName = String.format("%s %.1f (%s)",
-                    data.getName(),
-                    data.getPieValue(),
-                    percentage
-            );
-
-            data.setName(formattedName);
-
-            // Tạo tooltip trước
-            Tooltip tooltip = new Tooltip(
-                    String.format("%s\nValue: %.1f\nPercentage: %.1f%%",
-                            data.getName().split(" ")[0],
-                            data.getPieValue(),
-                            (data.getPieValue() / getTotalValue() * 100)
-                    )
-            );
-            tooltipMap.put(data.getNode(), tooltip);
-
-            // Add Hover Effect to each data section:
-            data.getNode().setOnMouseEntered(event -> {
-                // Tạo hiệu ứng phóng to khi hover
-                data.getNode().setScaleX(1.1);
-                data.getNode().setScaleY(1.1);
-
-                // Thêm hiệu ứng phát sáng
-                data.getNode().setEffect(new Glow(0.5));
-
-                // Hiển thị tooltip
-                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-
-            data.getNode().setOnMouseExited(event -> {
-                // Trả về kích thước bình thường khi không hover
-                data.getNode().setScaleX(1);
-                data.getNode().setScaleY(1);
-
-                // Xóa hiệu ứng phát sáng
-                data.getNode().setEffect(null);
-
-                // Xóa tooltip
-                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
-            });
-        }
+        // Add hover effect to the pie chart:
+        applyPieChartHoverEffects();
 
         // Thêm animation khi hiển thị
         piechart.setAnimated(true);
@@ -329,5 +313,57 @@ public class Host_DashboardController implements Initializable {
             totalValue += data.getPieValue();
         }
         return totalValue;
+    }
+
+    // UI Hover Effects for the Pie Chart:
+    private void applyPieChartHoverEffects() {
+        // Map to save the tooltip for each data section:
+        Map<Node, Tooltip> tooltipMap = new HashMap<>();
+
+        for (PieChart.Data data : pieChartData) {
+            String percentage = String.format("%.1f%%", (data.getPieValue() / getTotalValue() * 100));
+            String formattedName = String.format("%s %.1f (%s)",
+                    data.getName(),
+                    data.getPieValue(),
+                    percentage
+            );
+
+            data.setName(formattedName);
+
+            // Create tooltip
+            Tooltip tooltip = new Tooltip(
+                    String.format("%s\nValue: %.1f\nPercentage: %.1f%%",
+                            data.getName().split(" ")[0],
+                            data.getPieValue(),
+                            (data.getPieValue() / getTotalValue() * 100)
+                    )
+            );
+            tooltipMap.put(data.getNode(), tooltip);
+
+            // Add Hover Effect to each data section:
+            data.getNode().setOnMouseEntered(event -> {
+                // Create zoom effect when hover
+                data.getNode().setScaleX(1.1);
+                data.getNode().setScaleY(1.1);
+
+                // Add glow effect
+                data.getNode().setEffect(new Glow(0.5));
+
+                // Display tooltip
+                Tooltip.install(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+
+            data.getNode().setOnMouseExited(event -> {
+                // Return to normal size when not hover
+                data.getNode().setScaleX(1);
+                data.getNode().setScaleY(1);
+
+                // Remove glow effect
+                data.getNode().setEffect(null);
+
+                // Remove tooltip
+                Tooltip.uninstall(data.getNode(), tooltipMap.get(data.getNode()));
+            });
+        }
     }
 }
