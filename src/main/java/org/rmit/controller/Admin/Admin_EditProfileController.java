@@ -7,9 +7,11 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.database.AdminDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Session;
 
@@ -55,31 +57,11 @@ public class Admin_EditProfileController implements Initializable {
     }
 
     private void addListener(){
-        newName_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getName())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newContact_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getContact())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getDateOfBirth())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getPassword())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getUsername())) {
-                edit_btn.setDisable(false);
-            }
-        });
+        newName_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newContact_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
     }
 
     private void decorElement(){
@@ -107,23 +89,19 @@ public class Admin_EditProfileController implements Initializable {
 
     private void saveChanges() {
 //        // Save the changes to the currentUser object
-//        DAOInterface dao = new OwnerDAO();
-//
-//        currentUser.setName(newName_input.getText());
-//        currentUser.setUsername(newUsername_input.getText());
-//        currentUser.setContact(newContact_input.getText());
-//        currentUser.setDateOfBirth(newDOB_input.getValue());
-//        currentUser.setPassword(newPassword_input.getText());
-//        if (!SELECTED_PATH.equals(ImageUtils.DEFAULT_IMAGE)) {
-//            currentUser.setProfileAvatar(ImageUtils.imageToByte(SELECTED_PATH));
-//        }
-//
-//        dao.update((Admin)currentUser);
-//
-//        // Reset fields and button:
-//        setDisableAll(true);
-//        edit_btn.setText("Edit");
-//        edit_btn.setDisable(false);
+        DAOInterface dao = new AdminDAO();
+        currentUser.setName(newName_input.getText());
+        currentUser.setUsername(newUsername_input.getText());
+        currentUser.setContact(newContact_input.getText());
+        currentUser.setDateOfBirth(newDOB_input.getValue());
+        currentUser.setPassword(newPassword_input.getText());
+        if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
+        dao.update((Admin) currentUser);
+
+        // Reset fields and button:
+        setDisableAll(true);
+        edit_btn.setText("Edit");
+        edit_btn.setDisable(false);
     }
 
     private void checkForChanges(){
