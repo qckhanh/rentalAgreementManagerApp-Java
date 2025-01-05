@@ -98,42 +98,42 @@
             </font>
          </Button>
       </VBox>
-      <Label fx:id="address_err" layoutX="858.0" layoutY="155.0" text="Address must not be empty" textFill="RED">
+      <Label fx:id="address_err" layoutX="768.0" layoutY="155.0" text="Address must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="price_err" layoutX="858.0" layoutY="208.0" text="Price must not be empty" textFill="RED">
+      <Label fx:id="price_err" layoutX="768.0" layoutY="208.0" text="Price must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="status_err" layoutX="858.0" layoutY="258.0" text="A Status must be selected" textFill="RED">
+      <Label fx:id="status_err" layoutX="768.0" layoutY="258.0" text="A Status must be selected" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="businessType_err" layoutX="854.0" layoutY="311.0" text="BusinessType field must not be empty" textFill="RED">
+      <Label fx:id="businessType_err" layoutX="764.0" layoutY="311.0" text="BusinessType field must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="squareMeters_err" layoutX="854.0" layoutY="367.0" text="Square meters must not be empty" textFill="RED">
+      <Label fx:id="squareMeters_err" layoutX="764.0" layoutY="367.0" text="Square meters must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="parkingSpace_err" layoutX="854.0" layoutY="425.0" text="Parking Spaces must not be left empty" textFill="RED">
+      <Label fx:id="parkingSpace_err" layoutX="764.0" layoutY="425.0" text="Parking Spaces must not be left empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="bedroom_err" layoutX="854.0" layoutY="579.0" text="Number of bedrooms must not be empty" textFill="RED">
+      <Label fx:id="bedroom_err" layoutX="764.0" layoutY="579.0" text="Number of bedrooms must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="room_err" layoutX="854.0" layoutY="633.0" text="Number of rooms must not be empty" textFill="RED">
+      <Label fx:id="room_err" layoutX="764.0" layoutY="633.0" text="Number of rooms must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>

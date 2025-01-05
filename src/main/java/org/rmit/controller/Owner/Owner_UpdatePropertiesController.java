@@ -51,6 +51,9 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Label room_err;
     Validator validator = new Validator();
 
+    private int totalNumberBedrooms = 0;
+    private int totalNumberRooms = 0;
+
 
     public Owner_UpdatePropertiesController() {
     }
@@ -92,11 +95,15 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyPet_chBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
             propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
             propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
+            // Add listeners to update total number of bedrooms and rooms
+            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         }
         setDisable(true);
         updateProperty_btn.setText("Edit");
         updateProperty_btn.setDisable(false);
         updateProperty_btn.setOnAction(e-> updateProperty());
+
 
         addListener();
         resetErrorLabels();
@@ -132,6 +139,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     PropertyStatus input = context.get("propertyStatus");
                     if (input == null) {
                         context.error("A Status must be selected");
+                        status_err.setText("A Status must be selected");
                     }
                 })
                 .decorates(propertyStatus_cbox)
@@ -175,7 +183,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyBedrooms");
-                        if (!InputValidator.isValidBedrooms(input, bedroom_err)) {
+                        if (!InputValidator.isValidBedrooms(input, bedroom_err, totalNumberRooms)) {
                             context.error("Bedrooms must be a valid number");
                         }
                     })
@@ -186,7 +194,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyRooms");
-                        if (!InputValidator.isValidRooms(input, room_err)) {
+                        if (!InputValidator.isValidRooms(input, room_err, totalNumberBedrooms)) {
                             context.error("Rooms must be a valid number");
                         }
                     })
@@ -426,6 +434,24 @@ public class Owner_UpdatePropertiesController implements Initializable {
         propertyPet_chBox.setSelected(false);
         propertyBedrooms_txtf.clear();
         propertyRooms_txtf.clear();
+    }
+
+    private void updateTotalNumbers() {
+        try {
+            totalNumberBedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
+        } catch (NumberFormatException e) {
+            totalNumberBedrooms = 0; // Default to 0 if input is invalid
+        }
+
+        try {
+            totalNumberRooms = Integer.parseInt(propertyRooms_txtf.getText());
+        } catch (NumberFormatException e) {
+            totalNumberRooms = 0; // Default to 0 if input is invalid
+        }
+
+        // Optionally, you can update some UI elements or perform other actions based on the new totals
+        System.out.println("Total Bedrooms: " + totalNumberBedrooms);
+        System.out.println("Total Rooms: " + totalNumberRooms);
     }
 
     private void resetErrorLabels() {

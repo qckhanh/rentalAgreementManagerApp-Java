@@ -4,8 +4,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.DateUtils;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Notification.Request;
 import org.rmit.database.CommercialPropertyDAO;
@@ -25,7 +27,6 @@ import java.util.*;
 public class Renter_makeRentalAgreementController implements Initializable {
     public Renter currentUser = (Renter) Session.getInstance().getCurrentUser();
 
-
     public TextField propertySearch_input;
     public Button searchProperty_btn;
     public ComboBox<Property> property_ComboBox;
@@ -37,17 +38,21 @@ public class Renter_makeRentalAgreementController implements Initializable {
     public Button submit_btn;
     public ListView<Renter> subRenter_listView;
 
-
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
     public ObjectProperty<Owner> selectedOwner = new SimpleObjectProperty<>();
     public ObjectProperty<Host> selectedHost = new SimpleObjectProperty<>();
     public ObjectProperty<Renter> selectedSubRenter = new SimpleObjectProperty<>();
     public ObjectProperty<RentalPeriod> selectedRentalPeriod = new SimpleObjectProperty<>();
 
-
     public Button addRenter = new Button("Add");
     public Button removeRenter = new Button("Remove");
     public Set<Renter> selectedSubRenters = new HashSet<>();
+
+    public Label propertyOption_err;
+    public Label hostOption_err;
+    public Label periodOption_err;
+
+    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,9 +64,11 @@ public class Renter_makeRentalAgreementController implements Initializable {
         property_ComboBox.setOnAction(e -> {
             selectedProperty.set(property_ComboBox.getSelectionModel().getSelectedItem());
             selectedOwner.set(property_ComboBox.getSelectionModel().getSelectedItem().getOwner());
+            resetErrorLabels();
         });
         host_comboBox.setOnAction(e -> {
             selectedHost.set(host_comboBox.getSelectionModel().getSelectedItem());
+            resetErrorLabels();
         });
         selectedOwner.addListener((observable, oldValue, newValue) -> {
             owner_input.setText(newValue.getName());
@@ -77,6 +84,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         );
         rentalPeriod_comboBox.setOnAction(e -> {
             selectedRentalPeriod.set(rentalPeriod_comboBox.getSelectionModel().getSelectedItem());
+            resetErrorLabels();
         });
         subRenterSearch_input.textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.isBlank()){
@@ -86,6 +94,46 @@ public class Renter_makeRentalAgreementController implements Initializable {
         owner_input.setEditable(false);
         customCellFactory();
 
+        resetErrorLabels();
+        validateInput();
+    }
+
+    private void validateInput() {
+        validator.createCheck()
+                .dependsOn("property", property_ComboBox.valueProperty())
+                .withMethod(context -> {
+                    Property input = context.get("property");
+                    if (input == null) {
+                        context.error("A property must be selected");
+                        propertyOption_err.setText("A property must be selected");
+                    }
+                })
+                .decorates(property_ComboBox)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("host", host_comboBox.valueProperty())
+                .withMethod(context -> {
+                    Host input = context.get("host");
+                    if (input == null) {
+                        context.error("A host must be selected");
+                        hostOption_err.setText("A host must be selected");
+                    }
+                })
+                .decorates(host_comboBox)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("rentalPeriod", rentalPeriod_comboBox.valueProperty())
+                .withMethod(context -> {
+                    RentalPeriod input = context.get("rentalPeriod");
+                    if (input == null) {
+                        context.error("A rental period must be selected");
+                        periodOption_err.setText("A rental period must be selected");
+                    }
+                })
+                .decorates(rentalPeriod_comboBox)
+                .immediateClear();
     }
 
     private void addRenterToList() {
@@ -98,7 +146,6 @@ public class Renter_makeRentalAgreementController implements Initializable {
         selectedSubRenters.remove(subRenter_listView.getSelectionModel().getSelectedItem());
     }
 
-
     private void searchRenter() {
         if(subRenterSearch_input.getText().isBlank()) return;
         RenterDAO renterDAO = new RenterDAO();
@@ -106,7 +153,6 @@ public class Renter_makeRentalAgreementController implements Initializable {
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(list);
     }
-
 
     private void customCellFactory(){
         property_ComboBox.setCellFactory(p -> new ListCell<>(){
@@ -225,6 +271,9 @@ public class Renter_makeRentalAgreementController implements Initializable {
     }
 
     private void submitRA() {
+        if (!validator.validate()) {
+            return;
+        }
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
 
         String s = NotificationUtils.buildDaft_RentalAgreement(
@@ -263,5 +312,12 @@ public class Renter_makeRentalAgreementController implements Initializable {
         RenterDAO renterDAO = new RenterDAO();
         renterDAO.update(currentUser);
         System.out.println("Request sent");
+        resetErrorLabels();
+    };
+
+    private void resetErrorLabels() {
+        propertyOption_err.setText("");
+        hostOption_err.setText("");
+        periodOption_err.setText("");
     }
 }
