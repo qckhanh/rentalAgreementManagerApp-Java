@@ -45,6 +45,7 @@ public class LoginController implements Initializable {
 
     TooltipWrapper<Button> signUpWrapper;
 
+    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -205,7 +206,7 @@ public class LoginController implements Initializable {
     }
 
     private void validate(){
-        Validator validator = new Validator();
+
         validator.createCheck()
                 .dependsOn("username", username_input.textProperty())
                 .immediate()
