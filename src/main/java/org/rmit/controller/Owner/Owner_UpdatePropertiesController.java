@@ -95,15 +95,15 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyPet_chBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
             propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
             propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
+            // Add listeners to update total number of bedrooms and rooms
+            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         }
         setDisable(true);
         updateProperty_btn.setText("Edit");
         updateProperty_btn.setDisable(false);
         updateProperty_btn.setOnAction(e-> updateProperty());
 
-        // Add listeners to update total number of bedrooms and rooms
-        propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-        propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
 
         addListener();
         resetErrorLabels();
