@@ -88,27 +88,27 @@
             </cursor>
         </ImageView>
         <Button fx:id="avatarUpdate_btn" layoutX="563.0" layoutY="203.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" />
-      <Label fx:id="name_err" layoutX="635.0" layoutY="339.0" text="Name must not be empty" textFill="RED">
+      <Label fx:id="name_err" layoutX="627.0" layoutY="341.0" text="Name must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="username_err" layoutX="633.0" layoutY="393.0" text="Username existed" textFill="RED">
+      <Label fx:id="username_err" layoutX="627.0" layoutY="393.0" text="Username existed" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="contact_err" layoutX="635.0" layoutY="446.0" text="Invalid contact" textFill="RED">
+      <Label fx:id="contact_err" layoutX="627.0" layoutY="454.0" text="Invalid contact" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="dob_err" layoutX="635.0" layoutY="505.0" text="Invalid date of birth" textFill="RED">
+      <Label fx:id="dob_err" layoutX="628.0" layoutY="509.0" text="Invalid date of birth" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="password_err" layoutX="636.0" layoutY="561.0" text="Invalid password" textFill="RED">
+      <Label fx:id="password_err" layoutX="629.0" layoutY="567.0" text="Invalid password" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
