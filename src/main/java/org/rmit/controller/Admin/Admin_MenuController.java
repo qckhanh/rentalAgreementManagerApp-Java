@@ -33,6 +33,7 @@ public class Admin_MenuController implements Initializable {
     public Button ownerManager_btn;
     public Button paymentManager_btn;
     public Button adminManager_btn;
+    public Button property_manager;
 
 
     @Override
@@ -65,11 +66,16 @@ public class Admin_MenuController implements Initializable {
         ownerManager_btn.setOnAction(e -> manageOwner());
         paymentManager_btn.setOnAction(e -> managePayment());
         adminManager_btn.setOnAction(e -> manageAdmin());
+        property_manager.setOnAction(e -> manageProperty());
     }
 
     private void decor(){
         UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
         UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+    }
+
+    private void manageProperty() {
+        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PROPERTY_MANAGER);
     }
 
     private void editProfile(){
@@ -90,6 +96,7 @@ public class Admin_MenuController implements Initializable {
     private void logOut(){
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
         ModelCentral.getInstance().getAdminViewFactory().resetView();
+        ModelCentral.getInstance().resetAdminView();
         ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 

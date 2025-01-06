@@ -1,25 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.PasswordTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.RenterManagerController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.RenterManagerController">
     <children>
-        <Label fx:id="welcomeLabel" layoutX="39.0" layoutY="27.0" prefHeight="53.0" prefWidth="426.0" text="Renter Manager">
+        <Label fx:id="welcomeLabel" layoutX="39.0" layoutY="27.0" prefHeight="53.0" prefWidth="288.0" text="Renter Manager">
             <font>
                 <Font name="System Bold" size="36.0" />
             </font>
         </Label>
-        <TableView fx:id="renters_tableView" layoutX="31.0" layoutY="173.0" prefHeight="557.0" prefWidth="745.0" />
-        <ComboBox fx:id="propertyTypeFilter_comboBox" layoutX="219.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Type" />
-        <ComboBox fx:id="propertyStatusFilter_comboBox" layoutX="39.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Status" />
-        <Button fx:id="addRenterButton" layoutX="718.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="ADD" />
-        <Button fx:id="updateRenterButton" layoutX="640.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="UPDATE" />
-        <Button fx:id="deleteRenterButton" layoutX="561.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="DELETE" />
-      <Button fx:id="readRenterButton" layoutX="478.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="READ" />
+        <TableView fx:id="renters_tableView" layoutX="31.0" layoutY="93.0" prefHeight="637.0" prefWidth="379.0" />
+        <Button fx:id="create_btn" layoutX="352.0" layoutY="44.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="C" />
+        <Button fx:id="update_btn" layoutX="632.0" layoutY="44.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="U" />
+        <Button fx:id="delete_btn" layoutX="711.0" layoutY="44.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="D" />
+      <AnchorPane layoutX="436.0" layoutY="93.0" prefHeight="637.0" prefWidth="340.0" style="-fx-background-color: white;">
+         <children>
+            <VBox layoutX="14.0" prefHeight="557.0" prefWidth="341.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                     <children>
+                        <ImageView fx:id="avatarImageView" fitHeight="118.0" fitWidth="82.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../Image/DEFAULT_AVT.jpg" />
+                           </image>
+                           <HBox.margin>
+                              <Insets top="10.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <VBox alignment="CENTER_LEFT" prefHeight="102.0" prefWidth="215.0" spacing="5.0">
+                           <children>
+                              <HBox prefHeight="23.0" prefWidth="215.0">
+                                 <children>
+                                    <Label contentDisplay="CENTER" prefHeight="31.0" prefWidth="198.0" text="ID" />
+                                    <TextField fx:id="id_input" prefHeight="25.0" prefWidth="289.0" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="24.0" prefWidth="215.0">
+                                 <children>
+                                    <Label contentDisplay="CENTER" prefHeight="31.0" prefWidth="185.0" text="Username" />
+                                    <TextField fx:id="username_input" prefHeight="5.0" prefWidth="277.0" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="31.0" prefWidth="341.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Full name">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="fullName_input" prefHeight="31.0" prefWidth="233.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="31.0" prefWidth="341.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Contact">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="contact_input" prefHeight="31.0" prefWidth="233.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="31.0" prefWidth="341.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Birthday">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="dob_input" prefHeight="31.0" prefWidth="235.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="31.0" prefWidth="341.0">
+                     <children>
+                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Password">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <PasswordTextField fx:id="password_PasswordTextField" prefHeight="28.0" prefWidth="233.0" />
+                     </children>
+                  </HBox>
+                  <VBox prefHeight="158.0" prefWidth="341.0">
+                     <children>
+                        <TableView fx:id="RA_tableView" prefHeight="161.0" prefWidth="300.0" />
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="158.0" prefWidth="341.0">
+                     <children>
+                        <TableView fx:id="payment_tableView" prefHeight="167.0" prefWidth="300.0" />
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <Button fx:id="addToDB_btn" layoutX="577.0" layoutY="712.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="Save" />
     </children>
 </AnchorPane>

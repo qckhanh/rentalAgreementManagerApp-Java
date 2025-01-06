@@ -42,6 +42,11 @@ public class DatabaseUtil {
         }
     }
 
+    public static void clearAll(Session session){
+        session.flush();
+        session.clear();
+    }
+
     public static Session getCurrentSession() {
         return currentSession;
     }

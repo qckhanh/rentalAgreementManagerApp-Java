@@ -21,8 +21,9 @@ public class NotificationDAO extends DAOInterface<Notification> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.merge(notification);
-            session.flush();
-            session.clear();
+
+            DatabaseUtil.clearAll(session);
+
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;

@@ -70,8 +70,6 @@ public class RentalAgreement {
     @Transient
     transient private ObjectProperty<Set<Payment>> paymentsProperty = new SimpleObjectProperty<>();
 
-
-
     public RentalAgreement() {}
 
     @PostLoad

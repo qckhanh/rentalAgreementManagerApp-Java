@@ -41,7 +41,8 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.delete(admin);
-            session.getTransaction().commit();
+            DatabaseUtil.clearAll(session);
+            transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
         } catch (Exception e){
@@ -63,6 +64,7 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
             List<Admin> list = session.createQuery(hql, Admin.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraph.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -92,6 +94,8 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
                     .setParameter("password", password)
                     .setHint("jakarta.persistence.fetchgraph", createEntityGraph(session))
                     .uniqueResult();
+
+            DatabaseUtil.shutdown(session);
             return admin;
         }
         catch (Exception e) {

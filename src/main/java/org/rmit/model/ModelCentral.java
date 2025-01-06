@@ -68,4 +68,8 @@ public class ModelCentral {
         }
         return adminViewFactory;
     }
+
+    public void resetAdminView(){
+        adminViewFactory = null;
+    }
 }

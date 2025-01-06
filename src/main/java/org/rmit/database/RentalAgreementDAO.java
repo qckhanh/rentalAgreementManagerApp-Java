@@ -18,6 +18,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.persist(rentalAgreement);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -34,6 +35,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.merge(rentalAgreement);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -50,6 +52,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.delete(rentalAgreement);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -86,6 +89,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
             List<RentalAgreement> list = session.createQuery(hql, RentalAgreement.class)
                     .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){

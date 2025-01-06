@@ -21,6 +21,7 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.merge(commercialProperty);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -37,6 +38,7 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.update(commercialProperty);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
@@ -53,7 +55,9 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
             Transaction transaction = session.beginTransaction();
             CommercialProperty obj = session.merge(commercialProperty);
             session.delete(obj);
+            DatabaseUtil.clearAll(session);
             transaction.commit();
+            DatabaseUtil.shutdown(session);
             return true;
         }
         catch (Exception e){
@@ -91,6 +95,8 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
             List<CommercialProperty> list = session.createQuery(hql, CommercialProperty.class)
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
                     .list();  // Fetch the list of Renters
+
+            DatabaseUtil.shutdown(session);
             return list;
         }
         catch (Exception e){
@@ -125,7 +131,6 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
 
         try {
-            // JPQL to search by address (partial match) or ID (exact match)
             String jpql = "SELECT c FROM CommercialProperty c " +
                     "WHERE LOWER(c.address) LIKE :addressKeyword " +
                     "OR c.id = :idKeyword";
@@ -136,10 +141,9 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
                     .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
+            DatabaseUtil.shutdown(session);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DatabaseUtil.shutdown(session);
         }
         return result;
     }

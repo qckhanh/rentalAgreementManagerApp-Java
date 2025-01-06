@@ -57,6 +57,7 @@ public class RegisterController implements Initializable {
         backToLogin_btn.setOnAction(actionEvent -> openLogin());
         submitRegister_btn.setOnAction(e -> register());
 
+        //reset error label when textfield is changed
         username_input.textProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue.equals(oldValue)) username_err.setText("");
         });
