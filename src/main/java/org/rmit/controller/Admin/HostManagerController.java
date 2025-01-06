@@ -258,7 +258,6 @@ public class HostManagerController implements Initializable {
                 }
             }
         });
-
         return column;
     }
 

@@ -26,9 +26,6 @@ import static org.rmit.view.Admin.ADMIN_MENU_OPTION.RENTER_MANAGER;
 public class AdminController implements Initializable {
     @FXML
     BorderPane borderPane;
-
-
-
     public AdminController() {
         ModelCentral.getInstance().getAdminViewFactory().selectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
@@ -40,6 +37,7 @@ public class AdminController implements Initializable {
                 case OWNER_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_OwnerManagerView());
                 case PAYMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_PaymentManagerView());
                 case ADMIN_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getAdmin_AdminManagerView());
+                case PROPERTY_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getAdminViewFactory().getPropertyManagerView());
             }
         });
     }

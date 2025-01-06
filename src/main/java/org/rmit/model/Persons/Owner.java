@@ -59,6 +59,11 @@ public class Owner extends Person {
         this.propertiesOwned = propertiesOwnedProperty.get();
     }
 
+    public void addProperty(Property property){
+        this.propertiesOwned.add(property);
+        this.propertiesOwnedProperty.setValue(this.propertiesOwned);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

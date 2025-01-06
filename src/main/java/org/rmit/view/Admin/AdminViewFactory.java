@@ -3,6 +3,7 @@ package org.rmit.view.Admin;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -18,14 +19,12 @@ import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.ResidentialProperty;
-import org.rmit.view.Host.HOST_MENU_OPTION;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class AdminViewFactory {
-    String path = "/org/rmit/demo/FXMLs/Admin/";
+    String ADMIN_PATH = "/org/rmit/demo/FXMLs/Admin/";
     private ObjectProperty<ADMIN_MENU_OPTION> selectedMenuItem;
     private AnchorPane admin_renterManagerView;
     private AnchorPane admin_dashboardView;
@@ -35,6 +34,7 @@ public class AdminViewFactory {
     private AnchorPane admin_ownerManagerView;
     private AnchorPane admin_paymentManagerView;
     private AnchorPane admin_adminManagerView;
+    private AnchorPane admin_propertyManagerView;
 
     private ObjectProperty<List<Renter>> allRenter = new SimpleObjectProperty<>();
     private ObjectProperty<List<Host>> allHost = new SimpleObjectProperty<>();
@@ -42,6 +42,7 @@ public class AdminViewFactory {
     private ObjectProperty<List<Admin>> allAdmin = new SimpleObjectProperty<>();
     private ObjectProperty<List<CommercialProperty>> allCommercialProperty = new SimpleObjectProperty<>();
     private ObjectProperty<List<ResidentialProperty>> allResidentialProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<List<Property>> allProperty = new SimpleObjectProperty<>();
 
     private ObjectProperty<List<Payment>> allPayment = new SimpleObjectProperty<>();
     private ObjectProperty<List<RentalAgreement>> allRentalAgreement = new SimpleObjectProperty<>();
@@ -64,13 +65,19 @@ public class AdminViewFactory {
         allAdmin.set(adminDAO.getAll(EntityGraphUtils::SimpleAdminFull));
         allCommercialProperty.set(commercialPropertyDAO.getAll(EntityGraphUtils::SimpleCommercialPropertyFull));
         allResidentialProperty.set(residentialPropertyDAO.getAll(EntityGraphUtils::SimpleResidentialPropertyFull));
+
+        List<Property> combine = new ArrayList<>();
+        combine.addAll(allCommercialProperty.get());
+        combine.addAll(allResidentialProperty.get());
+        allProperty.set(combine);
+
         allRentalAgreement.set(rentalAgreementDAO.getAll(EntityGraphUtils::SimpleRentalAgreementFull));
         allPayment.set(paymentDAO.getAll(EntityGraphUtils::SimplePaymentFull));
     }
 
     // start admin view when user login as admin
     public void startAdminView(){
-        FXMLLoader load = new FXMLLoader(getClass().getResource(path + "admin.fxml"));
+        FXMLLoader load = new FXMLLoader(getClass().getResource(ADMIN_PATH + "admin.fxml"));
         AdminController controller = new AdminController();
         load.setController(controller);
         createStage(load);
@@ -80,7 +87,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_editProfileView(){
         if (admin_editProfileView == null){
             try {
-                admin_editProfileView = new FXMLLoader(getClass().getResource(path + "editProfileAdmin.fxml")).load();
+                admin_editProfileView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "editProfileAdmin.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading renter manager.fxml");
             }
@@ -91,7 +98,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_dashboardView() {
         if (admin_dashboardView == null){
             try {
-                admin_dashboardView = new FXMLLoader(getClass().getResource(path + "dashboardAdmin.fxml")).load();
+                admin_dashboardView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "dashboardAdmin.fxml")).load();
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -102,7 +109,7 @@ public class AdminViewFactory {
     public AnchorPane getRenterManagerView() {
         if (admin_renterManagerView == null){
             try {
-                admin_renterManagerView = new FXMLLoader(getClass().getResource(path + "renterManager.fxml")).load();
+                admin_renterManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "renterManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading renter manager.fxml");
             }
@@ -113,7 +120,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_agreementManagerView() {
         if (admin_agreementManagerView == null){
             try {
-                admin_agreementManagerView = new FXMLLoader(getClass().getResource(path + "agreementManager.fxml")).load();
+                admin_agreementManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "agreementManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading agreement manager.fxml");
             }
@@ -124,7 +131,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_HostManagerView() {
         if (admin_hostManagerView == null){
             try {
-                admin_hostManagerView = new FXMLLoader(getClass().getResource(path + "hostManager.fxml")).load();
+                admin_hostManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "hostManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading host manager.fxml");
             }
@@ -135,7 +142,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_OwnerManagerView() {
         if (admin_ownerManagerView == null){
             try {
-                admin_ownerManagerView = new FXMLLoader(getClass().getResource(path + "ownerManager.fxml")).load();
+                admin_ownerManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "ownerManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading owner manager.fxml");
             }
@@ -146,7 +153,7 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_PaymentManagerView() {
         if (admin_paymentManagerView == null){
             try {
-                admin_paymentManagerView = new FXMLLoader(getClass().getResource(path + "paymentManager.fxml")).load();
+                admin_paymentManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "paymentManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading payment manager.fxml");
             }
@@ -157,13 +164,25 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_AdminManagerView() {
         if (admin_adminManagerView == null){
             try {
-                admin_adminManagerView = new FXMLLoader(getClass().getResource(path + "adminManager.fxml")).load();
+                admin_adminManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "adminManager.fxml")).load();
             } catch (Exception e){
                 System.out.println("Error loading admin manager.fxml");
                 e.printStackTrace();
             }
         }
         return admin_adminManagerView;
+    }
+
+    public AnchorPane getPropertyManagerView() {
+        if(admin_adminManagerView == null){
+            try{
+                admin_propertyManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "propertyManager.fxml")).load();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return admin_propertyManagerView;
     }
 
     // helper method:
@@ -296,5 +315,17 @@ public class AdminViewFactory {
 
     public void setAllRenter(List<Renter> allRenter) {
         this.allRenter.set(allRenter);
+    }
+
+    public List<Property> getAllProperty() {
+        return allProperty.get();
+    }
+
+    public ObjectProperty<List<Property>> allPropertyProperty() {
+        return allProperty;
+    }
+
+    public void setAllProperty(List<Property> allProperty) {
+        this.allProperty.set(allProperty);
     }
 }

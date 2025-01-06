@@ -1,25 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.PaymentManagerController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.PaymentManagerController">
     <children>
         <Label fx:id="welcomeLabel" layoutX="39.0" layoutY="27.0" prefHeight="53.0" prefWidth="426.0" text="Payment Manager">
             <font>
                 <Font name="System Bold" size="36.0" />
             </font>
         </Label>
-        <TableView fx:id="payments_tableView" layoutX="31.0" layoutY="173.0" prefHeight="557.0" prefWidth="745.0" />
-        <ComboBox fx:id="propertyTypeFilter_comboBox" layoutX="219.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Type" />
-        <ComboBox fx:id="propertyStatusFilter_comboBox" layoutX="39.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Property Status" />
-        <Button fx:id="addPaymentButton" layoutX="718.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="ADD" />
-        <Button fx:id="updatePaymentButton" layoutX="640.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="UPDATE" />
-        <Button fx:id="deletePaymentButton" layoutX="561.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="DELETE" />
-        <Button fx:id="readPaymentButton" layoutX="478.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="READ" />
+        <TableView fx:id="payments_tableView" layoutX="31.0" layoutY="173.0" prefHeight="557.0" prefWidth="361.0" />
+        <ComboBox fx:id="agreementFilter_comboBox" layoutX="219.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Agreement" />
+        <ComboBox fx:id="PaymentMethodFilter_comboBox" layoutX="39.0" layoutY="115.0" prefHeight="35.0" prefWidth="148.0" promptText="Method" />
+        <Button fx:id="addPayment_btn" layoutX="420.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="ADD" />
+      <Button fx:id="savePayment_btn" layoutX="494.0" layoutY="115.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="Save" />
+      <ScrollPane layoutX="420.0" layoutY="173.0" prefHeight="557.0" prefWidth="373.0">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="538.0" prefWidth="371.0">
+               <children>
+                  <VBox layoutY="40.0" prefHeight="454.0" prefWidth="371.0" spacing="20.0" AnchorPane.bottomAnchor="513.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+                     <children>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="ID">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="id_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Amount">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="amount_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Date">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <DatePicker fx:id="paymentDate_datePicker" prefHeight="31.0" prefWidth="219.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Method">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="paymentMethod_comboBox" prefHeight="49.0" prefWidth="226.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Agreement">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="agreement_comboBox" prefHeight="37.0" prefWidth="226.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Property">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="property_comboBox" prefHeight="37.0" prefWidth="226.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="MainRenter">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="mainRenter_comboBox" prefHeight="37.0" prefWidth="226.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets left="20.0" right="20.0" />
+                     </padding>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
     </children>
 </AnchorPane>

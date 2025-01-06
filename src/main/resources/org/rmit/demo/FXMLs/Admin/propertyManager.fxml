@@ -1,136 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import atlantafx.base.controls.PasswordTextField?>
+<?import atlantafx.base.layout.DeckPane?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.rmit.controller.Admin.PropertyManagerController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.PropertyManagerController">
     <children>
-        <Label fx:id="welcomeLabel" layoutX="14.0" layoutY="35.0" prefHeight="53.0" prefWidth="288.0" text="Host Manager">
+        <Label fx:id="welcomeLabel" layoutX="14.0" layoutY="35.0" prefHeight="53.0" prefWidth="379.0" text="Properties Manager">
             <font>
                 <Font name="System Bold" size="36.0" />
             </font>
         </Label>
-        <TableView fx:id="persons_TableView" layoutX="14.0" layoutY="106.0" prefHeight="637.0" prefWidth="379.0" />
-        <Button fx:id="create_btn" layoutX="410.0" layoutY="62.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="C" />
-        <Button fx:id="update_btn" layoutX="631.0" layoutY="62.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="U" />
-        <Button fx:id="delete_btn" layoutX="712.0" layoutY="62.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="D" />
-        <ScrollPane layoutX="410.0" layoutY="106.0" prefHeight="631.0" prefWidth="373.0">
+        <TableView fx:id="property_Tableview" layoutX="23.0" layoutY="153.0" prefHeight="589.0" prefWidth="379.0" />
+        <Button fx:id="create_btn" layoutX="410.0" layoutY="105.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="C" />
+        <Button fx:id="update_btn" layoutX="644.0" layoutY="105.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="U" />
+        <Button fx:id="delete_btn" layoutX="725.0" layoutY="105.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="D" />
+        <ScrollPane layoutX="410.0" layoutY="153.0" prefHeight="589.0" prefWidth="373.0">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="793.0" prefWidth="371.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1000.0" prefWidth="371.0">
                     <children>
-                        <VBox prefHeight="200.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox prefHeight="1000.0" prefWidth="371.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                        <HBox alignment="CENTER" prefHeight="162.0" prefWidth="331.0">
+                           <children>
+                              <Button fx:id="prev_btn" mnemonicParsing="false" text="prev" />
+                              <DeckPane fx:id="deckPane" prefHeight="149.0" prefWidth="249.0" />
+                              <Button fx:id="next_btn" mnemonicParsing="false" text="next" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="ID">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="id_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Address">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="address_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                                <HBox prefHeight="31.0" prefWidth="341.0">
                                     <children>
-                                        <ImageView fx:id="avatarImageView" fitHeight="118.0" fitWidth="82.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../Image/DEFAULT_AVT.jpg" />
-                                            </image>
-                                            <HBox.margin>
-                                                <Insets top="10.0" />
-                                            </HBox.margin>
-                                        </ImageView>
-                                        <VBox alignment="CENTER_LEFT" prefHeight="102.0" prefWidth="215.0" spacing="5.0">
-                                            <children>
-                                                <HBox prefHeight="23.0" prefWidth="215.0">
-                                                    <children>
-                                                        <Label contentDisplay="CENTER" prefHeight="31.0" prefWidth="198.0" text="ID" />
-                                                        <TextField fx:id="id_input" prefHeight="25.0" prefWidth="289.0" />
-                                                    </children>
-                                                </HBox>
-                                                <HBox prefHeight="24.0" prefWidth="215.0">
-                                                    <children>
-                                                        <Label contentDisplay="CENTER" prefHeight="31.0" prefWidth="185.0" text="Username" />
-                                                        <TextField fx:id="username_input" prefHeight="5.0" prefWidth="277.0" />
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
+                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Price">
+                                            <font>
+                                                <Font size="17.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="priceInput" prefHeight="31.0" prefWidth="233.0" />
+                                    </children>
+                                </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Owner">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="owner_comboBox" prefHeight="26.0" prefWidth="231.0" />
+                           </children>
+                        </HBox>
+                                <HBox prefHeight="31.0" prefWidth="341.0">
+                                    <children>
+                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Status">
+                                            <font>
+                                                <Font size="17.0" />
+                                            </font>
+                                        </Label>
+                              <ComboBox fx:id="status_comboBox" prefHeight="26.0" prefWidth="231.0" />
                                     </children>
                                 </HBox>
                                 <HBox prefHeight="31.0" prefWidth="341.0">
                                     <children>
-                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Full name">
+                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Type">
                                             <font>
                                                 <Font size="17.0" />
                                             </font>
                                         </Label>
-                                        <TextField fx:id="fullName_input" prefHeight="31.0" prefWidth="233.0" />
+                              <TextField fx:id="propertyType" prefHeight="26.0" prefWidth="230.0" />
                                     </children>
                                 </HBox>
-                                <HBox prefHeight="31.0" prefWidth="341.0">
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label fx:id="infor1_label" contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="infor1">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="infor1_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label fx:id="infor2_label" contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="infor2">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="infor2_input" prefHeight="31.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label fx:id="infor3_label" contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="infor3">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="infor3_comboBox" prefHeight="41.0" prefWidth="227.0" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="341.0">
+                           <children>
+                              <Label fx:id="infor4_label" contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="infor4">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="infor4_comboBox" prefHeight="59.0" prefWidth="226.0" />
+                           </children>
+                        </HBox>
+                                <VBox prefHeight="205.0" prefWidth="331.0">
                                     <children>
-                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Contact">
+                                        <Label contentDisplay="CENTER" prefHeight="11.0" prefWidth="331.0" text="Managed by Hosts">
                                             <font>
                                                 <Font size="17.0" />
                                             </font>
                                         </Label>
-                                        <TextField fx:id="contact_input" prefHeight="31.0" prefWidth="233.0" />
-                                    </children>
-                                </HBox>
-                                <HBox prefHeight="31.0" prefWidth="341.0">
-                                    <children>
-                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Birthday">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
-                                        </Label>
-                                        <DatePicker fx:id="dob_input" prefHeight="31.0" prefWidth="235.0" />
-                                    </children>
-                                </HBox>
-                                <HBox prefHeight="31.0" prefWidth="341.0">
-                                    <children>
-                                        <Label contentDisplay="CENTER" prefHeight="34.0" prefWidth="111.0" text="Password">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
-                                        </Label>
-                                        <PasswordTextField fx:id="password_PasswordTextField" prefHeight="28.0" prefWidth="233.0" />
-                                    </children>
-                                </HBox>
-                                <VBox prefHeight="251.0" prefWidth="331.0">
-                                    <children>
-                                        <Label contentDisplay="CENTER" prefHeight="26.0" prefWidth="334.0" text="Cooperating Owner">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
-                                        </Label>
-                                        <TableView fx:id="cooperatingOwner_TableView" prefHeight="230.0" prefWidth="331.0" />
+                                        <TableView fx:id="Host_tableView" prefHeight="199.0" prefWidth="331.0" />
                                     </children>
                                 </VBox>
-                                <VBox prefHeight="251.0" prefWidth="331.0">
-                                    <children>
-                                        <Label contentDisplay="CENTER" prefHeight="26.0" prefWidth="334.0" text="Properties Managing">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
-                                        </Label>
-                                        <TableView fx:id="propertiesManaging_tableView" prefHeight="230.0" prefWidth="331.0" />
-                                    </children>
-                                </VBox>
-                                <VBox prefHeight="251.0" prefWidth="331.0">
-                                    <children>
-                                        <Label contentDisplay="CENTER" prefHeight="26.0" prefWidth="334.0" text="Rental Agreement">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
-                                        </Label>
-                                        <TableView fx:id="RA_tableView" prefHeight="230.0" prefWidth="331.0" />
-                                    </children>
-                                </VBox>
+                        <VBox prefHeight="190.0" prefWidth="331.0">
+                           <children>
+                              <Label contentDisplay="CENTER" prefHeight="11.0" prefWidth="331.0" text="Rental Agreement">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <TableView fx:id="RA_tableView" prefHeight="184.0" prefWidth="331.0" />
+                           </children>
+                        </VBox>
                             </children>
                             <padding>
                                 <Insets left="20.0" right="20.0" />
@@ -140,6 +166,8 @@
                 </AnchorPane>
             </content>
         </ScrollPane>
-        <Button fx:id="addToDB_btn" layoutX="482.0" layoutY="62.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="Save" />
+        <Button fx:id="addToDB_btn" layoutX="483.0" layoutY="105.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="58.0" text="Save" />
+      <ComboBox fx:id="propertyType_comboBox" layoutX="23.0" layoutY="110.0" prefHeight="35.0" prefWidth="150.0" promptText="Type" />
+      <ComboBox fx:id="propertyStatus_comboBox" layoutX="194.0" layoutY="110.0" prefHeight="35.0" prefWidth="150.0" promptText="Status" />
     </children>
 </AnchorPane>

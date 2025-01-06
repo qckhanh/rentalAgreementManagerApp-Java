@@ -10,9 +10,9 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="220.0" stylesheets="@../../Style/Renter/menuBar.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.Admin_MenuController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="220.0" stylesheets="@../../Style/Renter/menuBar.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.Admin_MenuController">
     <children>
-        <AnchorPane prefHeight="768.0" prefWidth="220.0">
+        <AnchorPane prefHeight="768.0" prefWidth="216.0">
             <children>
                 <HBox alignment="CENTER_LEFT" layoutY="-3.0" prefHeight="101.0" prefWidth="220.0" spacing="5.0" AnchorPane.bottomAnchor="666.6666666666666" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <children>
@@ -33,53 +33,62 @@
                         </VBox>
                     </children>
                 </HBox>
-                <Button fx:id="editProfile_btn" layoutX="16.0" layoutY="147.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="186.0" text="Edit Profile">
+                <Line endX="100.0" layoutX="113.0" layoutY="683.0" startX="-100.0" />
+                <Button fx:id="logOut_btn" layoutX="20.0" layoutY="701.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Log out" AnchorPane.bottomAnchor="29.0">
                     <font>
                         <Font name="System Bold" size="17.0" />
                     </font>
                 </Button>
-                <Button fx:id="dashboard_btn" layoutX="17.0" layoutY="206.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Dashboard">
-                    <font>
+                <Line endX="98.66667175292969" endY="-7.62939453125E-6" layoutX="118.0" layoutY="102.0" startX="-123.33333587646484" startY="-1.52587890625E-5" AnchorPane.bottomAnchor="665.2929008603096" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.66666666666663" />
+            <VBox alignment="TOP_CENTER" layoutY="115.0" prefHeight="563.0" prefWidth="220.0" spacing="20.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="115.0">
+               <children>
+                      <Button fx:id="editProfile_btn" mnemonicParsing="false" prefHeight="28.0" prefWidth="186.0" text="Edit Profile">
+                          <font>
+                              <Font name="System Bold" size="17.0" />
+                          </font>
+                      </Button>
+                      <Button fx:id="dashboard_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Dashboard">
+                          <font>
+                              <Font name="System Bold" size="17.0" />
+                          </font>
+                      </Button>
+                      <Button fx:id="renterManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Renter Manager">
+                          <font>
+                              <Font name="System Bold" size="17.0" />
+                          </font>
+                      </Button>
+                      <Button fx:id="hostManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Host Manager">
+                          <font>
+                              <Font name="System Bold" size="17.0" />
+                          </font>
+                      </Button>
+                  <Button fx:id="ownerManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Owner Manager">
+                     <font>
                         <Font name="System Bold" size="17.0" />
-                    </font>
-                </Button>
-                <Line endX="100.0" layoutX="113.0" layoutY="648.0" startX="-100.0" />
-                <Button fx:id="logOut_btn" layoutX="20.0" layoutY="669.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Log out" AnchorPane.bottomAnchor="61.0">
-                    <font>
+                     </font>
+                  </Button>
+                  <Button fx:id="adminManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Admin Manager">
+                     <font>
                         <Font name="System Bold" size="17.0" />
-                    </font>
-                </Button>
-                <Button fx:id="renterManager_btn" layoutX="16.0" layoutY="265.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Renter Manager">
-                    <font>
+                     </font>
+                  </Button>
+                  <Button fx:id="paymentManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Payment Manager">
+                     <font>
                         <Font name="System Bold" size="17.0" />
-                    </font>
-                </Button>
-                <Button fx:id="agreementManager_btn" layoutX="17.0" layoutY="329.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Agreement Manager">
-                    <font>
+                     </font>
+                  </Button>
+                  <Button fx:id="property_manager" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Property Manager">
+                     <font>
                         <Font name="System Bold" size="17.0" />
-                    </font>
-                </Button>
-                <Button fx:id="hostManager_btn" layoutX="17.0" layoutY="384.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Host Manager">
-                    <font>
-                        <Font name="System Bold" size="17.0" />
-                    </font>
-                </Button>
-                <Line endX="106.66665649414062" endY="-1.52587890625E-5" layoutX="118.0" layoutY="102.0" startX="-123.33333587646484" startY="-1.52587890625E-5" />
-            <Button fx:id="ownerManager_btn" layoutX="17.0" layoutY="445.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Owner Manager">
-               <font>
-                  <Font name="System Bold" size="17.0" />
-               </font>
-            </Button>
-            <Button fx:id="paymentManager_btn" layoutX="20.0" layoutY="511.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Payment Manager">
-               <font>
-                  <Font name="System Bold" size="17.0" />
-               </font>
-            </Button>
-            <Button fx:id="adminManager_btn" layoutX="20.0" layoutY="574.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Admin Manager">
-               <font>
-                  <Font name="System Bold" size="17.0" />
-               </font>
-            </Button>
+                     </font>
+                  </Button>
+                      <Button fx:id="agreementManager_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="186.0" text="Agreement Manager">
+                          <font>
+                              <Font name="System Bold" size="16.0" />
+                          </font>
+                      </Button>
+               </children>
+            </VBox>
             </children>
         </AnchorPane>
     </children>
