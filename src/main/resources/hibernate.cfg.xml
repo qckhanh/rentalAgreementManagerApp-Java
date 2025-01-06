@@ -48,6 +48,10 @@
         <!-- Ensure proper transaction management -->
         <property name="hibernate.connection.autocommit">false</property>
 
+        <!-- Increase statement timeout -->
+        <!-- Increase statement timeout to a very high value -->
+        <property name="hibernate.jdbc.statement_timeout">2147483647</property>
+
         <!-- Class mappings -->
         <mapping class="org.rmit.model.Persons.Person"/>
         <mapping class="org.rmit.model.Persons.Admin"/>
