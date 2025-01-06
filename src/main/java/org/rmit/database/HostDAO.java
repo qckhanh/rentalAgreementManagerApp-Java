@@ -36,6 +36,8 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
             session.update(host);
+            session.flush();
+            session.clear();
             session.getTransaction().commit();
             DatabaseUtil.shutdown(session);
             return true;
