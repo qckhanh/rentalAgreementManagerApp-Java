@@ -8,6 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.controller.Admin.AdminController;
+import org.rmit.controller.Admin.Admin_DashboardController;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -35,6 +36,8 @@ public class AdminViewFactory {
     private AnchorPane admin_ownerManagerView;
     private AnchorPane admin_paymentManagerView;
     private AnchorPane admin_adminManagerView;
+
+    private Admin_DashboardController adminDashboardController;
 
     private ObjectProperty<List<Renter>> allRenter = new SimpleObjectProperty<>();
     private ObjectProperty<List<Host>> allHost = new SimpleObjectProperty<>();
@@ -91,13 +94,17 @@ public class AdminViewFactory {
     public AnchorPane getAdmin_dashboardView() {
         if (admin_dashboardView == null){
             try {
-                admin_dashboardView = new FXMLLoader(getClass().getResource(path + "dashboardAdmin.fxml")).load();
+                FXMLLoader load = new FXMLLoader(getClass().getResource(path + "dashboardAdmin.fxml"));
+                Admin_DashboardController controller = load.getController();
+                admin_dashboardView = load.load();
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
         return admin_dashboardView;
     }
+
+
 
     public AnchorPane getRenterManagerView() {
         if (admin_renterManagerView == null){
@@ -296,5 +303,9 @@ public class AdminViewFactory {
 
     public void setAllRenter(List<Renter> allRenter) {
         this.allRenter.set(allRenter);
+    }
+
+    public Admin_DashboardController getAdminDashboardController() {
+        return adminDashboardController;
     }
 }

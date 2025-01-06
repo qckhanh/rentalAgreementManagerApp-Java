@@ -231,7 +231,7 @@ public class Admin_DashboardController implements Initializable {
         approxYearRevenue.setText(formatCurrency(revenue) + " VND");
     }
 
-    private void updateData() {
+    public void updateData() {
         // Update PieChart data for Person Object
         pieChartData = createPieChartDataPeople();
         pieChartPersonObject.setData(pieChartData);

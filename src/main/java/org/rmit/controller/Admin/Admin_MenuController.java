@@ -4,17 +4,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Admin.ADMIN_MENU_OPTION;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Admin_MenuController implements Initializable {
+    private static final Logger log = LoggerFactory.getLogger(Admin_MenuController.class);
     public ImageView avatar_ImageView;
 
     public Label name_label;
@@ -77,6 +81,9 @@ public class Admin_MenuController implements Initializable {
         // Write your code here:
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
         // Call the update data function in the dashboard controller
+        AnchorPane anchorPane = ModelCentral.getInstance().getAdminViewFactory().getAdmin_dashboardView();
+        Admin_DashboardController controller = ModelCentral.getInstance().getAdminViewFactory().getAdminDashboardController();
+        controller.updateData();
 
     }
 
