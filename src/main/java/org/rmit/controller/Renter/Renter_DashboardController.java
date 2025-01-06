@@ -37,6 +37,8 @@ public class Renter_DashboardController implements Initializable {
                 welcomeLabel.setText("Welcome " + newValue)
         );
         recentPayment.setItems(paymentObservableList);
+        numberOfRA.setText("Number of Rental Agreements: " + ((Renter) currentUser.get()).getAgreementList().size());
+        numberOfPayments.setText("Number of Payments: " + ((Renter) currentUser.get()).getPayments().size());
         recentNotification.setItems(notificationObservableList);
         loadRecentPayment(((Renter) currentUser.get()).getPayments());
         Set<Notification> set = (currentUser.get()).getReceivedNotifications();

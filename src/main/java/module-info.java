@@ -66,6 +66,7 @@ module org.rmit.demo {
     exports org.rmit.view.Guest;
     exports org.rmit.database;
     exports org.rmit.Helper;
+    exports org.rmit.view.Admin;
 
 
 }

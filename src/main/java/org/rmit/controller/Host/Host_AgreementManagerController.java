@@ -199,9 +199,9 @@ public class Host_AgreementManagerController implements Initializable {
                         btn.setOnAction(e -> {
                             RentalAgreement data = getTableView().getItems().get(getIndex());
                             if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure?")) return;
-                            String head = "PAY RENT NOW!!!";
+                            String head = "Rent Payment Reminder";
                             int num = expectedPayments(data.getContractDate(), data.getPeriod()) - data.getPayments().size();
-                            String content = "Pay rent or Im gonna ur ass outta the house!!!. YOU ARE LACKING " + num + "PAYMENTS";
+                            String content = "Please pay your rent. YOU ARE LACKING " + num + "PAYMENTS";
                             List<Person> l = new ArrayList<>();
                             l.add(data.getMainTenant());
                             System.out.println(data.getMainTenant());
