@@ -122,7 +122,7 @@ public class RenterViewFactory {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.show();
+        stage. show();
     }
 
     public void resetView(){

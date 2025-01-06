@@ -147,6 +147,7 @@ public class EntityGraphUtils {
 
         rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
         paymentGraph(entityGraph.addSubgraph("payments"));
+        rentalAgreementSubgraph(entityGraph.addSubgraph("subAgreements"));
 
         notificationGraph(entityGraph.addSubgraph("sentNotifications"));
         notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
@@ -358,6 +359,10 @@ public class EntityGraphUtils {
     //Simple
     private static void simpleRentalAgreement(Subgraph<RentalAgreement> graph){
         graph.addAttributeNodes("id", "period", "contractDate", "rentingFee", "status");
+        graph.addSubgraph("payments");
+        Subgraph<Renter> mainRenterSubgraph = graph.addSubgraph("mainTenant");
+        mainRenterSubgraph.addAttributeNodes("id", "name");
+        mainRenterSubgraph.addSubgraph("receivedNotifications");
 
 //        personSimple(graph.addSubgraph("mainTenant"));
 //        personSimple(graph.addSubgraph("host"));

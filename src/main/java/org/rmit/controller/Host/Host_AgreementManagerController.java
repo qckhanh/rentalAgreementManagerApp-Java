@@ -4,12 +4,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
+import org.rmit.Helper.NotificationUtils;
+import org.rmit.Notification.NormalNotification;
+import org.rmit.Notification.Notification;
+import org.rmit.database.HostDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
@@ -17,10 +24,13 @@ import org.rmit.model.Property.Property;
 import org.rmit.model.Property.RentalPeriod;
 import org.rmit.model.Session;
 
+import javax.management.relation.RelationNotFoundException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -35,6 +45,7 @@ public class Host_AgreementManagerController implements Initializable {
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
     public ObjectProperty<RentalPeriod> selectedRentalPeriod = new SimpleObjectProperty<>();
     public ObjectProperty<AgreementStatus> selectedStatus = new SimpleObjectProperty<>();
+    public ComboBox unpaidCbox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -55,6 +66,11 @@ public class Host_AgreementManagerController implements Initializable {
                 RentalPeriod.MONTHLY,
                 RentalPeriod.WEEKLY,
                 RentalPeriod.FORTNIGHTLY
+        );
+
+        unpaidCbox.getItems().addAll(
+                "UNPAID",
+                "NONE"
         );
 
         statusFilter_comboBox.setOnAction(event -> {
@@ -125,6 +141,22 @@ public class Host_AgreementManagerController implements Initializable {
             loadData(filteredList);
             System.out.println(">> Filter by rental period");
         });
+
+        unpaidCbox.setOnAction(e -> {
+            Set<RentalAgreement> filteredList = noFilter();
+            if (unpaidCbox.getValue().equals("UNPAID")) {
+                filteredList = filterByUnpaid(filteredList);
+                filteredList = filterByStatus(filteredList, selectedStatus.get());
+                filteredList = filterByProperty(filteredList, selectedProperty.get());
+                filteredList = filterByRentalPeriod(filteredList, selectedRentalPeriod.get());
+                loadData(filteredList);
+            }
+            else {
+                loadData(filteredList);
+            }
+        });
+
+        customCellFactory();
     }
 
     private ObservableList<Property> createPropertyComboBox() {
@@ -150,6 +182,94 @@ public class Host_AgreementManagerController implements Initializable {
                         "Person Password: " + person.getPassword() + "\n"
         );
         alert.showAndWait();
+    }
+
+    private void customCellFactory() {
+        TableColumn<RentalAgreement, Void> colBtn = new TableColumn<>("Action");
+
+        colBtn.setCellValueFactory(param -> null);
+
+        Callback<TableColumn<RentalAgreement, Void>, TableCell<RentalAgreement, Void>> cellFactory = new Callback<>() {
+            @Override
+            public TableCell<RentalAgreement, Void> call(final TableColumn<RentalAgreement, Void> param) {
+                final TableCell<RentalAgreement, Void> cell = new TableCell<>() {
+                    private final Button btn = new Button("Action");
+
+                    {
+                        btn.setOnAction(e -> {
+                            RentalAgreement data = getTableView().getItems().get(getIndex());
+                            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure?")) return;
+                            String head = "PAY RENT NOW!!!";
+                            int num = expectedPayments(data.getContractDate(), data.getPeriod()) - data.getPayments().size();
+                            String content = "Pay rent or Im gonna ur ass outta the house!!!. YOU ARE LACKING " + num + "PAYMENTS";
+                            List<Person> l = new ArrayList<>();
+                            l.add(data.getMainTenant());
+                            System.out.println(data.getMainTenant());
+                            NormalNotification notification = (NormalNotification) NotificationUtils.createNormalNotification(
+                                    data.getHost(),
+                                    l,
+                                    head,
+                                    content
+                            );
+                            currentUser.get().sentNotification(notification);
+                            HostDAO hostDAO = new HostDAO();
+                            hostDAO.update((Host) currentUser.get());
+                            System.out.println(data);
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            RentalAgreement data = getTableView().getItems().get(getIndex());
+                            boolean unpaid = isUnpaid(data);
+                            if (unpaid) {
+                                setGraphic(btn);
+                            } else {
+                                setGraphic(null);
+                            }
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+
+        colBtn.setCellFactory(cellFactory);
+        rentalAgreement_tableView.getColumns().add(colBtn);
+    }
+
+    private Set<RentalAgreement> filterByUnpaid(Set<RentalAgreement> list) {
+        Set<RentalAgreement> filtered = new HashSet<>();
+        for (RentalAgreement ra : list) {
+            if (isUnpaid(ra)) {
+                filtered.add(ra);
+            }
+        }
+        return filtered;
+    }
+
+    boolean isUnpaid(RentalAgreement ra) {
+        return expectedPayments(ra.getContractDate(), ra.getPeriod()) > ra.getPayments().size();
+    }
+
+    private int expectedPayments(LocalDate start, RentalPeriod r) {
+        long days = ChronoUnit.DAYS.between(start, LocalDate.now());
+        if (r.equals(RentalPeriod.DAILY)) {
+            return (int) days;
+        } else if (r.equals(RentalPeriod.WEEKLY)) {
+            return (int) days / 7;
+        }
+        else if (r.equals(RentalPeriod.MONTHLY)) {
+            return (int) days / 30;
+        }
+        else if (r.equals(RentalPeriod.FORTNIGHTLY)) {
+            return (int) days / 14;
+        }
+        return 0;
     }
 
     private void showPayment(Set<Payment> payments) {

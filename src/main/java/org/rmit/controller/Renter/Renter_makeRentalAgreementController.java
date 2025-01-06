@@ -78,9 +78,10 @@ public class Renter_makeRentalAgreementController implements Initializable {
             host_comboBox.getItems().addAll(newValue.getHosts());
         });
         rentalPeriod_comboBox.getItems().addAll(
+                RentalPeriod.DAILY,
                 RentalPeriod.WEEKLY,
                 RentalPeriod.FORTNIGHTLY,
-                RentalPeriod.FORTNIGHTLY
+                RentalPeriod.MONTHLY
         );
         rentalPeriod_comboBox.setOnAction(e -> {
             selectedRentalPeriod.set(rentalPeriod_comboBox.getSelectionModel().getSelectedItem());
