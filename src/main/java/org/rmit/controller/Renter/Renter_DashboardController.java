@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import org.hibernate.property.access.spi.SetterMethodImpl;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Persons.Person;
@@ -17,20 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Renter_DashboardController implements Initializable {
     public TextField search_input;
     public Button search_button;
     public Label welcomeLabel;
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
-    public ListView<Payment> recentPayment;
-    public ListView<Notification> recentNotification;
+    public ListView recentPayment;
+    public ListView recentNotification;
     public TextArea numberOfRA;
     public TextArea numberOfPayments;
 
-    private final ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
-    private final ObservableList<Notification> notificationObservableList = FXCollections.observableArrayList();
+    private ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
+    private ObservableList<Notification> notificationObservableList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,31 +36,21 @@ public class Renter_DashboardController implements Initializable {
         Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->
                 welcomeLabel.setText("Welcome " + newValue)
         );
-
-        loadRecentNotification();
-        loadRecentPayment();
-        recentNotification.setItems(notificationObservableList);
         recentPayment.setItems(paymentObservableList);
-    }
-
-    private void loadRecentPayment() {
-        Set<Payment> set = ((Renter) currentUser.get()).getPayments();
-        Set<Payment> recentPayments = set.stream()
-                .sorted((p1, p2) -> p2.getDate().compareTo(p1.getDate()))
-                .limit(3)
-                .collect(Collectors.toSet());
-        paymentObservableList.addAll(recentPayments);
-    }
-
-
-
-    private void loadRecentNotification() {
+        recentNotification.setItems(notificationObservableList);
+        loadRecentPayment(((Renter) currentUser.get()).getPayments());
         Set<Notification> set = (currentUser.get()).getReceivedNotifications();
-        Set<Notification> recentNotifications = set.stream()
-                .sorted((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp())) // Assuming Notification has a getDate() method
-                .limit(3)
-                .collect(Collectors.toSet());
-        notificationObservableList.addAll(recentNotifications);
+        System.out.println(set.size());
+        loadRecentNotification(set);
+        recentNotification.setItems(notificationObservableList);
+
     }
 
+    private void loadRecentPayment(Set<Payment> p) {
+        paymentObservableList.addAll(p);
+    }
+
+    private void loadRecentNotification(Set<Notification> s) {
+        notificationObservableList.addAll(s);
+    }
 }
