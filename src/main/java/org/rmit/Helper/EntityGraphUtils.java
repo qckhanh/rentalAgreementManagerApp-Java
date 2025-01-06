@@ -385,8 +385,12 @@ public class EntityGraphUtils {
         Subgraph<Renter> mainTenantSubgraph = graph.addSubgraph("mainTenant");
         mainTenantSubgraph.addAttributeNodes("name");
 
+        mainTenantSubgraph.addSubgraph("receivedNotifications");
 
-//        personSimple(graph.addSubgraph("mainTenant"));
+        Subgraph<Payment> paymentSubgraph = graph.addSubgraph("payments");
+        paymentSubgraph.addAttributeNodes("paymentId", "amount", "date", "paymentMethod");
+
+//        simplePerson(graph.addSubgraph("mainTenant"));
 //        personSimple(graph.addSubgraph("host"));
 //        personSimple(graph.addSubgraph("subTenants"));
 //        personSimple(graph.addSubgraph("property"));

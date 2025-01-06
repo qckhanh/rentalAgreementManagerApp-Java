@@ -37,7 +37,8 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.update(residentialProperty);
+            //session.update(residentialProperty);
+            session.merge(residentialProperty);
             DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);

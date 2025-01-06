@@ -37,7 +37,8 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         try{
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
-            session.update(commercialProperty);
+            session.merge(commercialProperty);
+            //session.update(commercialProperty);
             DatabaseUtil.clearAll(session);
             transaction.commit();
             DatabaseUtil.shutdown(session);
