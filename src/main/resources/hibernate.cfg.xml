@@ -11,10 +11,10 @@
                     jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
                 </property>
                 <property name="hibernate.connection.username">
-                    postgres.hfjwcjkrtorqkbulvain
+                    postgres.qzrobawhuhlydmxxhcjo
                 </property>
                 <property name="hibernate.connection.password">
-                    Duclamdao2k5
+                    11022005
                 </property>
 
 <!--        &lt;!&ndash;  TEST  &ndash;&gt;-->
