@@ -102,8 +102,8 @@ public class AdminViewFactory {
         if (admin_dashboardView == null){
             try {
 
-                FXMLLoader load = new FXMLLoader(getClass().getResource(path + "dashboardAdmin.fxml"));
-                Admin_DashboardController controller = load.getController();
+                FXMLLoader load = new FXMLLoader(getClass().getResource(ADMIN_PATH + "dashboardAdmin.fxml"));
+                adminDashboardController = load.getController();
                 admin_dashboardView = load.load();
 
             } catch (Exception e){
@@ -336,9 +336,9 @@ public class AdminViewFactory {
 
     public void setAllProperty(List<Property> allProperty) {
         this.allProperty.set(allProperty);
+    }
 
     public Admin_DashboardController getAdminDashboardController() {
         return adminDashboardController;
-
     }
 }
