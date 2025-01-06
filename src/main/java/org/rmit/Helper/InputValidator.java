@@ -91,16 +91,25 @@ public class InputValidator {
 
     }
     public static boolean isValidPrice(String s, Label label){
+        if (!NoCondition(s, label)) return false;
         for(int i = 0; i < s.length(); i++){
             if(!Character.isDigit(s.charAt(i)) && s.charAt(i) != '.'){
                 setLabelError(label, RED, "Input must be a number");
                 return false;
             }
         }
+
+        if (s.isEmpty()) {
+            setLabelError(label, RED, "Field must not be empty");
+            return false;
+        }
+
         double price = parseDouble(s);
         boolean isValid =  price > 0;
+        if(!isValid) setLabelError(label, RED, "Price must be positive");
         return isValid;
     }
+
     public static boolean isValidType(String s, List<String> types, Label label){
         for(String type : types){
             if(type.equalsIgnoreCase(s)) return true;
@@ -134,5 +143,179 @@ public class InputValidator {
             }
         }
         return input; // Default return as String
+    }
+
+
+    public static boolean isValidSquareMeters(String input, Label squareMetersErr) {
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            squareMetersErr.setText("Field must not be empty");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if input is a number
+        try {
+            double squareMeters = Double.parseDouble(input);
+
+            // Check if the number is positive
+            if (squareMeters <= 0) {
+                squareMetersErr.setText("Square meters must be positive");
+                squareMetersErr.setTextFill(RED);
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            squareMetersErr.setText("Input must be a number");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidParkingSpaces(String input, Label parkingSpaceErr) {
+        // Check if input is a number
+        if (!isValidInteger(input, parkingSpaceErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            parkingSpaceErr.setText("Parking spaces must be positive");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            parkingSpaceErr.setText("Field must not be empty");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+//    public static boolean isValidBedrooms(String input, Label bedroomErr) {
+//        // Check if the input is empty
+//        if (input.isEmpty()) {
+//            bedroomErr.setText("Field must not be empty");
+//            bedroomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        // Check if input is a number
+//        if (!isValidInteger(input, bedroomErr)) {
+//            return false;
+//        }
+//
+//        // Check if the number is positive
+//        if (Integer.parseInt(input) <= 0) {
+//            bedroomErr.setText("Bedrooms must be positive");
+//            bedroomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//
+//        // Check the number of bedrooms is less than or equal to the number of rooms
+//        if (Integer.parseInt(input) > Integer.parseInt(bedroomErr.getText())) {
+//            bedroomErr.setText("Bedrooms must be less than or equal to the number of rooms");
+//            bedroomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        return true;
+//    }
+
+//    public static boolean isValidRooms(String input, Label roomErr) {
+//        // Check if the input is empty
+//        if (input.isEmpty()) {
+//            roomErr.setText("Field must not be empty");
+//            roomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        // Check if input is a number
+//        if (!isValidInteger(input, roomErr)) {
+//            return false;
+//        }
+//
+//        // Check if the number is positive
+//        if (Integer.parseInt(input) <= 0) {
+//            roomErr.setText("Rooms must be positive");
+//            roomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//
+//        // Check the number of rooms is greater than or equal to the number of bedrooms
+//        if (Integer.parseInt(input) < Integer.parseInt(roomErr.getText())) {
+//            roomErr.setText("Rooms must be greater than or equal to the number of bedrooms");
+//            roomErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        return true;
+//    }
+
+    public static boolean isValidBedrooms(String input, Label bedroomErr, int totalRooms) {
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            bedroomErr.setText("Field must not be empty");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if input is a number
+        if (!isValidInteger(input, bedroomErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            bedroomErr.setText("Bedrooms must be positive");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check the number of bedrooms is less than or equal to the number of rooms
+        if (Integer.parseInt(input) > totalRooms) {
+            bedroomErr.setText("Bedrooms must be less than or equal to the number of rooms");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidRooms(String input, Label roomErr, int totalBedrooms) {
+        // Check if the input is empty
+        if (input.isEmpty()) {
+            roomErr.setText("Field must not be empty");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if input is a number
+        if (!isValidInteger(input, roomErr)) {
+            return false;
+        }
+
+        // Check if the number is positive
+        if (Integer.parseInt(input) <= 0) {
+            roomErr.setText("Rooms must be positive");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check the number of rooms is greater than or equal to the number of bedrooms
+        if (Integer.parseInt(input) < totalBedrooms) {
+            roomErr.setText("Rooms must be greater than or equal to the number of bedrooms");
+            roomErr.setTextFill(RED);
+            return false;
+        }
+
+        return true;
     }
 }

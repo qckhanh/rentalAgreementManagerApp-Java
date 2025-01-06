@@ -169,7 +169,6 @@ public abstract class Notification {
     public String toString() {
         return "Notification{" +
                 "sender=" + sender.getName() +
-                ", receivers=" + receivers.stream().map(Person::getName).toList() +
                 ", message='" + content + '\'' +
                 ", timestamp='" + timestamp + '\'' +
                 '}';

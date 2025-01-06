@@ -3,18 +3,23 @@ package org.rmit.controller.Admin;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.database.AdminDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Session;
 
 import javax.naming.spi.InitialContextFactory;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import static org.rmit.Helper.UIDecorator.EDIT;
@@ -30,7 +35,12 @@ public class Admin_EditProfileController implements Initializable {
     public ImageView avatar_ImageView;
     public Button avatarUpdate_btn;
     public String SELECTED_PATH = ImageUtils.DEFAULT_IMAGE;
-
+    public Label name_err;
+    public Label username_err;
+    public Label contact_err;
+    public Label dob_err;
+    public Label password_err;
+    Validator validator = new Validator();
     Person currentUser = Session.getInstance().getCurrentUser();
 
     @Override
@@ -42,6 +52,8 @@ public class Admin_EditProfileController implements Initializable {
         edit_btn.setDisable(false);
         edit_btn.setOnAction(event -> editProfile());
         avatarUpdate_btn.setOnAction(event -> updateAvatar());
+        resetErrorLabels();
+        validateInput();
     }
 
     private void innitText(){
@@ -55,31 +67,11 @@ public class Admin_EditProfileController implements Initializable {
     }
 
     private void addListener(){
-        newName_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getName())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newContact_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getContact())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getDateOfBirth())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getPassword())) {
-                edit_btn.setDisable(false);
-            }
-        });
-        newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(currentUser.getUsername())) {
-                edit_btn.setDisable(false);
-            }
-        });
+        newName_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newContact_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newDOB_input.valueProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newPassword_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
+        newUsername_input.textProperty().addListener((observable, oldValue, newValue) -> checkForChanges());
     }
 
     private void decorElement(){
@@ -87,12 +79,73 @@ public class Admin_EditProfileController implements Initializable {
         UIDecorator.buttonIcon(avatarUpdate_btn, EDIT);
     }
 
+    private void validateInput() {
+        validator.createCheck()
+                .dependsOn("newName", newName_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("newName");
+                    if (!InputValidator.NoCondition(input, name_err)) {
+                        context.error("Name must not be empty");
+                    }
+                })
+                .decorates(newName_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("newUsername", newUsername_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("newUsername");
+                    if (!InputValidator.isValidUsername(input, username_err)) {
+                        context.error("Username must be at least 6 characters");
+                    }
+                })
+                .decorates(newUsername_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("newContact", newContact_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("newContact");
+                    if (!InputValidator.isValidContact(input, contact_err)) {
+                        context.error("Invalid Phone Number");
+                    }
+                })
+                .decorates(newContact_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("newDOB", newDOB_input.valueProperty())
+                .withMethod(context -> {
+                    LocalDate input = context.get("newDOB");
+                    if (!InputValidator.isValidDateFormat(input, dob_err)) {
+                        context.error("Invalid Date");
+                    }
+                })
+                .decorates(newDOB_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("newPassword", newPassword_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("newPassword");
+                    if (!InputValidator.isValidPassword(input, password_err)) {
+                        context.error("Password must be at least 8 characters");
+                    }
+                })
+                .decorates(newPassword_input)
+                .immediateClear();
+
+        edit_btn.disableProperty().bind(validator.containsErrorsProperty());
+    }
+
     private void editProfile(){
         if (edit_btn.getText().equals("Save")) {
-            // Invoke Confirm Message
-            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
-            if (confirmed) {
-                saveChanges();
+            if (validator.validate()){
+                // Invoke Confirm Message
+                boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
+                if (confirmed) {
+                    saveChanges();
+                }
             }
         } else {
             setDisableAll(false);
@@ -107,23 +160,19 @@ public class Admin_EditProfileController implements Initializable {
 
     private void saveChanges() {
 //        // Save the changes to the currentUser object
-//        DAOInterface dao = new OwnerDAO();
-//
-//        currentUser.setName(newName_input.getText());
-//        currentUser.setUsername(newUsername_input.getText());
-//        currentUser.setContact(newContact_input.getText());
-//        currentUser.setDateOfBirth(newDOB_input.getValue());
-//        currentUser.setPassword(newPassword_input.getText());
-//        if (!SELECTED_PATH.equals(ImageUtils.DEFAULT_IMAGE)) {
-//            currentUser.setProfileAvatar(ImageUtils.imageToByte(SELECTED_PATH));
-//        }
-//
-//        dao.update((Admin)currentUser);
-//
-//        // Reset fields and button:
-//        setDisableAll(true);
-//        edit_btn.setText("Edit");
-//        edit_btn.setDisable(false);
+        DAOInterface dao = new AdminDAO();
+        currentUser.setName(newName_input.getText());
+        currentUser.setUsername(newUsername_input.getText());
+        currentUser.setContact(newContact_input.getText());
+        currentUser.setDateOfBirth(newDOB_input.getValue());
+        currentUser.setPassword(newPassword_input.getText());
+        if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
+        dao.update((Admin) currentUser);
+
+        // Reset fields and button:
+        setDisableAll(true);
+        edit_btn.setText("Edit");
+        edit_btn.setDisable(false);
     }
 
     private void checkForChanges(){
@@ -151,5 +200,13 @@ public class Admin_EditProfileController implements Initializable {
         newPassword_input.setDisable(value);
         newUsername_input.setDisable(value);
         avatarUpdate_btn.setDisable(value);
+    }
+
+    private void resetErrorLabels(){
+        name_err.setText("");
+        username_err.setText("");
+        contact_err.setText("");
+        dob_err.setText("");
+        password_err.setText("");
     }
 }

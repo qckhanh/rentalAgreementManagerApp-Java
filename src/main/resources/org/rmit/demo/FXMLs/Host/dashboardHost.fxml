@@ -28,5 +28,6 @@
           <NumberAxis fx:id="yAxis" side="LEFT" />
         </yAxis>
       </BarChart>
+      <Button fx:id="refreshHostDashBoard" layoutX="660.0" layoutY="227.0" mnemonicParsing="false" text="Refresh" />
    </children>
 </AnchorPane>

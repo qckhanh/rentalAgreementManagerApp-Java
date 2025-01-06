@@ -19,7 +19,20 @@ public class AdminDAO extends DAOInterface<Admin> implements ValidateLoginDAO<Ad
 
     @Override
     public boolean update(Admin admin) {
-        return false;
+        try {
+            Session session = DatabaseUtil.getSession();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
+
+            session.merge(admin);
+            transaction.commit();
+
+            DatabaseUtil.shutdown(session);
+            return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

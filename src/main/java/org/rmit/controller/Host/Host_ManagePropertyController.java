@@ -5,10 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.rmit.Helper.EntityGraphUtils;
@@ -18,8 +15,10 @@ import org.rmit.Notification.Request;
 import org.rmit.database.*;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
+import org.rmit.model.Property.PropertyStatus;
 import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 
@@ -60,11 +59,15 @@ public class Host_ManagePropertyController implements Initializable {
     public ObjectProperty<Set<Property>> managedProperties = new SimpleObjectProperty<>(currentUser.getPropertiesManaged());
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
     public Map<Integer, Property> propertyMap = new HashMap<>();
+    public ComboBox<PropertyStatus> propertyStatusCbox;
+    public Button saveChangesButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         UIDecorator.buttonIcon(search_btn, new FontIcon(Material2MZ.SEARCH));
         UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
+
+        saveChangesButton.setDisable(true);
 
         search_btn.setOnAction(event -> searchProperty());
         search_input.setOnAction(event -> searchProperty());
@@ -74,9 +77,21 @@ public class Host_ManagePropertyController implements Initializable {
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             showPropertyDetail(newValue);
+            saveChangesButton.setDisable(true);
         });
 
         property_listView.setItems(getPropertyList(managedProperties.get()));
+
+        propertyStatusCbox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Property selected = selectedProperty.get();
+            if (selected != null && selected.getStatus() != newValue) {
+                saveChangesButton.setDisable(false);
+            }
+            else {
+                saveChangesButton.setDisable(true);
+            }
+        });
+        saveChangesButton.setOnAction(e-> saveChanges());
 
         // Create clickable rows with a custom cell factory
         property_listView.setCellFactory(listView -> new ListCell<>() {
@@ -92,6 +107,7 @@ public class Host_ManagePropertyController implements Initializable {
                     setText(property.getAddress()); // Display the address or another property field
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 1) { // Single click
+                            selectedProperty.set(property);
                             isManagingThisProperty(property);
                             showPropertyDetail(property);
                         }
@@ -101,6 +117,20 @@ public class Host_ManagePropertyController implements Initializable {
         });
 
         System.out.println("Host_ManagePropertyController initialized");
+    }
+
+    private void saveChanges() {
+        selectedProperty.get().setStatus(propertyStatusCbox.getValue());
+        System.out.println(selectedProperty.get().getStatus());
+        Property selected = selectedProperty.get();
+        if (selected instanceof CommercialProperty) {
+            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+            cpDAO.update((CommercialProperty) selected);
+        }
+        else {
+            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+            rpDAO.update((ResidentialProperty) selected);
+        }
     }
 
     private void decor(){
@@ -194,7 +224,7 @@ public class Host_ManagePropertyController implements Initializable {
         address_input.setText("");
         price_input.setText("");
         ownerName_input.setText("");
-        statusProperty_input.setText("");
+        propertyStatusCbox.setValue(null);
         propertyType_input.setText("");
         totalAgremeent_input.setText("");
         clearDataCommercial();
@@ -238,8 +268,12 @@ public class Host_ManagePropertyController implements Initializable {
         address_input.setText(property.getAddress());
         price_input.setText(property.getPrice()+"");
         ownerName_input.setText(property.getOwner().getName());
-        statusProperty_input.setText(property.getStatus().toString());
         propertyType_input.setText(property.getType().toString());
+        propertyStatusCbox.setValue(property.getStatus());
+        propertyStatusCbox.setItems(FXCollections.observableArrayList(
+                PropertyStatus.AVAILABLE,
+                PropertyStatus.UNAVAILABLE
+        ));
 //        totalAgremeent_input.setText(property.getAgreementList().size()+"");
         if(property.getType().toString().equals("COMMERCIAL")){
             CommercialProperty commercialProperty = (CommercialProperty) property;
