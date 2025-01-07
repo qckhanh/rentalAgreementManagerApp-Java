@@ -17,8 +17,9 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
 
     @Override
     public boolean add(Host host) {
-        try{
-            Session session = DatabaseUtil.getSession();
+
+        try (Session session = DatabaseUtil.getSession()) {
+
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.persist(host);
             DatabaseUtil.clearAll(session);
@@ -38,7 +39,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             Session session = DatabaseUtil.getSession();
             Transaction transaction = session.beginTransaction();
 
-            session.update(host);
+            session.merge(host);
             DatabaseUtil.clearAll(session);
 
             session.getTransaction().commit();

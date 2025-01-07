@@ -19,6 +19,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
+import org.rmit.database.OwnerDAO;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
@@ -43,6 +44,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     public ComboBox propertyTypeFilter_comboBox;
     public ComboBox propertyStatusFilter_comboBox;
     public TableView<Property> properties_tableView;
+    public Button refresh;
     private ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
@@ -177,6 +179,18 @@ public class Owner_PropertiesManagerController implements Initializable {
             properties_tableView.refresh();
         });
 
+        refresh.setOnAction(e -> {
+            refreshData();
+        });
+
+    }
+
+    private void refreshData() {
+        OwnerDAO ownerDAO = new OwnerDAO();
+        int id = Integer.parseInt(currentUser.get().getId()+"");
+        Owner owner = ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull);
+        Set<Property> updatedProperties = owner.getPropertiesOwned();
+        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
     }
 
     private void decor(){

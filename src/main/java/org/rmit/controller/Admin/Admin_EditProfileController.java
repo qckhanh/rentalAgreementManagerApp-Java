@@ -199,6 +199,9 @@ public class Admin_EditProfileController implements Initializable {
         newDOB_input.setDisable(value);
         newPassword_input.setDisable(value);
         newUsername_input.setDisable(value);
+        if (edit_btn.disableProperty().isBound()) {
+            edit_btn.disableProperty().unbind();
+        }
         avatarUpdate_btn.setDisable(value);
     }
 

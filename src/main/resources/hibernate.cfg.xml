@@ -17,6 +17,16 @@
                     11022005
                 </property>
 
+<!--                        <property name="hibernate.connection.username">-->
+<!--                            postgres.hfjwcjkrtorqkbulvain-->
+<!--                        </property>-->
+<!--                        <property name="hibernate.connection.password">-->
+<!--                            Duclamdao2k5-->
+<!--                        </property>-->
+
+        <property name="hibernate.c3p0.testConnectionOnCheckout">true</property>
+        <property name="hibernate.c3p0.testConnectionOnCheckin">true</property>
+
 <!--        &lt;!&ndash;  TEST  &ndash;&gt;-->
 <!--        <property name="hibernate.connection.url">-->
 <!--            jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres-->
