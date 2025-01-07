@@ -99,7 +99,7 @@ public class EntityGraphUtils {
 
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
+        entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
 //        hostEntityGraph.addSubgraph("receivedNotifications");
@@ -110,7 +110,7 @@ public class EntityGraphUtils {
 
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
+        entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
 //        hostEntityGraph.addSubgraph("receivedNotifications");
@@ -277,7 +277,7 @@ public class EntityGraphUtils {
 
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
+        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters", "images"); // Add only the name of the Owner
         Subgraph<RentalAgreement> rentalAgreementSubgraph = entityGraph.addSubgraph("agreementList");
         Subgraph<Renter> mainTenantSubgraph = rentalAgreementSubgraph.addSubgraph("mainTenant");
         Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
@@ -296,7 +296,7 @@ public class EntityGraphUtils {
 
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
+        entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden", "images"); // Add only the name of the Owner
 
         Subgraph<RentalAgreement> rentalAgreementSubgraph = entityGraph.addSubgraph("agreementList");
         Subgraph<Renter> mainTenantSubgraph = rentalAgreementSubgraph.addSubgraph("mainTenant");

@@ -1,11 +1,15 @@
 package org.rmit.controller.Owner;
 
+import atlantafx.base.layout.DeckPane;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -17,16 +21,16 @@ import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
-import static org.rmit.Helper.EntityGraphUtils.SimpleResidentialProperty;
 
 public class Owner_UpdatePropertiesController implements Initializable {
 
 
     private static final ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
+
     public Button returnTableView_btn;
     public Label updateProperty_label;
     public TextField propertyAddress_txtf;
@@ -49,10 +53,19 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Label parkingSpace_err;
     public Label bedroom_err;
     public Label room_err;
+    public Button prevImg_btn;
+
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
+    public Button nextImg_btn;
+    public Button addImage_btn;
+    public Button clearImage_btn;
     Validator validator = new Validator();
 
     private int totalNumberBedrooms = 0;
     private int totalNumberRooms = 0;
+    private List<byte[]> images = new ArrayList<>();
+    private int currentImageIndex = 0;
 
 
     public Owner_UpdatePropertiesController() {
@@ -75,13 +88,14 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        btn.setOnAction(e-> {
-            System.out.println(selectedProperty);
-        });
+
         returnTableView_btn.setOnAction(e-> {
             ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
         });
+
         addSelectedPropertyChangeListener();
+        Image firstImg = (images.size() == 0) ? ImageUtils.byteToImage(null) : ImageUtils.byteToImage(images.get(0));
+        imageView_propertyImg.setImage(firstImg);
         propertyAddress_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
         propertyPrice_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
         propertyStatus_cbox.valueProperty().addListener(((observableValue, propertyStatus, t1) -> checkChanges()));
@@ -100,9 +114,15 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         }
         setDisable(true);
+
         updateProperty_btn.setText("Edit");
         updateProperty_btn.setDisable(false);
         updateProperty_btn.setOnAction(e-> updateProperty());
+        nextImg_btn.setOnAction(e -> nextImg_btn());
+        prevImg_btn.setOnAction(e -> prevImg_btn());
+        clearImage_btn.setOnAction(e -> clearSelectedImage());
+        addImage_btn.setOnAction(e -> addImage());
+
 
 
         addListener();
@@ -202,7 +222,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .immediateClear();
         }
 
-        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
+//        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
     }
 
     private void addListener() {
@@ -251,12 +271,12 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void updateProperty() {
         if (updateProperty_btn.getText().equals("Save")) {
-            if (validator.validate()) {
-                boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
-                if (confirmed) {
-                    saveChanges();
-                }
+            if (!validator.validate()){
+                System.out.println("not valid");
+                return;
             }
+            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
+            if (confirmed) saveChanges();
         }
         else {
             setDisable(false);
@@ -267,6 +287,9 @@ public class Owner_UpdatePropertiesController implements Initializable {
         selectedProperty.get().setAddress(propertyAddress_txtf.getText());
         selectedProperty.get().setPrice(Double.parseDouble(propertyPrice_txtf.getText()));
         selectedProperty.get().setStatus(propertyStatus_cbox.getValue());
+        for(byte[] bytes: images){
+            selectedProperty.get().addImages(bytes);
+        }
         if (selectedProperty.get() instanceof CommercialProperty) {
             ((CommercialProperty) selectedProperty.get()).setBusinessType(propertyBtype_txtf.getText());
             ((CommercialProperty) selectedProperty.get()).setSquareMeters(Double.parseDouble(propertySquareMeters_txtf.getText()));
@@ -319,6 +342,10 @@ public class Owner_UpdatePropertiesController implements Initializable {
         if (!propertyStatus_cbox.getValue().equals(selectedProperty.get().getStatus())) {
             changed = true;
         }
+        if(isDifferent(images, selectedProperty.get().getImages())) {
+            changed = true;
+        }
+
         if (selectedProperty.get() instanceof CommercialProperty) {
             if (!propertyBtype_txtf.getText().equals(((CommercialProperty) selectedProperty.get()).getBusinessType())) {
                 changed = true;
@@ -381,8 +408,11 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
 
     private void updateFormFields(Property property) {
+        images.clear();
+        images.addAll(property.getImages());
         propertyAddress_txtf.setText(property.getAddress());
         propertyPrice_txtf.setText(String.valueOf(property.getPrice()));
+        propertyStatus_cbox.getItems().addAll(PropertyStatus.values());
         propertyStatus_cbox.setValue(property.getStatus());
         if (property instanceof CommercialProperty) {
             propertyBtype_txtf.setText(((CommercialProperty) property).getBusinessType());
@@ -434,6 +464,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         propertyPet_chBox.setSelected(false);
         propertyBedrooms_txtf.clear();
         propertyRooms_txtf.clear();
+        images.clear();
+        currentImageIndex = 0;
     }
 
     private void updateTotalNumbers() {
@@ -463,5 +495,52 @@ public class Owner_UpdatePropertiesController implements Initializable {
         parkingSpace_err.setText("");
         bedroom_err.setText("");
         room_err.setText("");
+    }
+
+    private void addImage() {
+        if(images.size() >= 3) System.out.println("Exception: Image limit reached");
+        else {
+            String path = ImageUtils.openFileChooseDialog();
+            if (path != ImageUtils.DEFAULT_IMAGE) {
+                images.add(ImageUtils.getByte(path));
+                currentImageIndex = images.size() - 1;
+                imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(currentImageIndex)));
+            }
+        }
+    }
+
+    private void prevImg_btn() {
+        if(images.size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = images.size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(images.size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = images.size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(position)));
+    }
+    private void clearSelectedImage() {
+        images.clear();
+        imageView_propertyImg.setImage(null);
+    }
+
+    boolean isDifferent(List<byte[] > a, List<byte[]> b) {
+        if (a.size() != b.size()) return true;
+        for (int i = 0; i < a.size(); i++) {
+            if (!a.get(i).equals(b.get(i))) return true;
+        }
+        return false;
     }
 }

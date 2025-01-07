@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -51,9 +53,16 @@ public class PropertyManagerController implements Initializable {
     public List<Property> propertyList = ModelCentral.getInstance().getAdminViewFactory().getAllProperty();
     public ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
+    public ObjectProperty<List<byte[]>> selectedImages = new SimpleObjectProperty<>();
     public TextField propertyType;
     public ComboBox<PropertyType> propertyType_comboBox;
     public ComboBox<PropertyStatus> propertyStatus_comboBox;
+    public int currentImageIndex = 0;
+
+    public Button prevImg_btn;
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
+    public Button nextImg_btn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,6 +78,7 @@ public class PropertyManagerController implements Initializable {
         prev_btn.setOnAction(e -> prevImage());
         next_btn.setOnAction(e -> nextImage());
         addToDB_btn.setOnAction(e -> addToDB());
+
 
         addToDB_btn.setVisible(false);
     }
@@ -106,7 +116,11 @@ public class PropertyManagerController implements Initializable {
 
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
+            if(newValue == null) return;
             setUpInfor(newValue);
+            currentImageIndex = 0;
+            if(newValue.getImages().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(newValue.getImages().get(0)));
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
         });
         propertyType_comboBox.getSelectionModel().selectedItemProperty().addListener((o, old, neww) -> {
             if(neww.equals(PropertyType.COMMERCIAL)){
@@ -458,5 +472,28 @@ public class PropertyManagerController implements Initializable {
             }
         });
         return column;
+    }
+
+    private void prevImg_btn() {
+        if(selectedImages.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.get().size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(selectedImages.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.get().size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
     }
 }
