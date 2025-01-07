@@ -27,6 +27,10 @@ public class InputValidator {
         return isValid;
     }
     public static boolean isValidPassword(String s, Label password_err) {
+        if (s == null) {
+            setLabelError(password_err, RED, "Password must not be empty");
+            return false;
+        }
         boolean isValid = s.length() >= 8;
         if(!isValid) setLabelError(password_err, RED, "Password must be at least 8 characters");
         return isValid;
