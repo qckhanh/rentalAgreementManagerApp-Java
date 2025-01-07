@@ -87,9 +87,9 @@ public class Admin_MenuController implements Initializable {
         // Write your code here:
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
         // Call the update data function in the dashboard controller
-        AnchorPane anchorPane = ModelCentral.getInstance().getAdminViewFactory().getAdmin_dashboardView();
-        Admin_DashboardController controller = ModelCentral.getInstance().getAdminViewFactory().getAdminDashboardController();
-        controller.updateData();
+//        AnchorPane anchorPane = ModelCentral.getInstance().getAdminViewFactory().getAdmin_dashboardView();
+//        Admin_DashboardController controller = ModelCentral.getInstance().getAdminViewFactory().getAdminDashboardController();
+//        controller.updateData();
 
     }
 

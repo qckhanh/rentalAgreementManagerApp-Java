@@ -1,6 +1,5 @@
 package org.rmit.controller.Admin;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -47,48 +46,127 @@ public class AgreementManagerController implements Initializable {
     private ObservableList<RentalAgreement> rentalAgreementsObservableList = FXCollections.observableArrayList();
     private List<RentalAgreement> rentalAgreementsList = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
     private Set<Renter> selectedSubRenters = new HashSet<>();
-    private ObjectProperty<Renter> mainRenter = new SimpleObjectProperty<>();
+
+    private ObjectProperty<Renter> selectedMainRenter = new SimpleObjectProperty<>();
+    private ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Host> selectedHost = new SimpleObjectProperty<>();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setUpDataView();
-        setUpDataBehavior();
         setUpButtonAction();
+        setUpDataBehavior();
+        setUpDataView();
     }
 
     private void setUpButtonAction(){
-        saveToDB_btn.setVisible(false);
-        saveToDB_btn.setOnAction(e -> saveToDB());
-        addAgreementButton.setOnAction(e -> addAgreement());
-        updateAgreeementButton.setOnAction(e -> updateAgreement());
-        deleteAgreementButton.setOnAction(e -> deleteAgreement());
+//        saveToDB_btn.setVisible(false);
+//        saveToDB_btn.setOnAction(e -> saveToDB());
+//        addAgreementButton.setOnAction(e -> addAgreement());
+//        updateAgreeementButton.setOnAction(e -> updateAgreement());
+//        deleteAgreementButton.setOnAction(e -> deleteAgreement());
     }
 
     private void saveToDB() {
+        if(isTextFieldChanged(new RentalAgreement())){
+            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
+            RentalAgreement ra = new RentalAgreement();
+            ra.setProperty(selectedProperty.get());
+            ra.setPeriod(rentalPeriod_comboBox.getValue());
+            ra.setRentingFee(Double.parseDouble(fee_input.getText()));
+            ra.setStatus(status_comboBox.getValue());
+            ra.setContractDate(contractDate_datePicker.getValue());
+            ra.setHost(selectedHost.get());
+            ra.setMainTenant(selectedMainRenter.get());
+            ra.setSubTenants(selectedSubRenters);
+
+            RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            boolean isUpdate = rentalAgreementDAO.update(ra);
+            if(isUpdate){
+                rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
+                rentalAgreementsObservableList.setAll(rentalAgreementsList);
+                System.out.println("Agreement updated");
+            }
+            else{
+                System.out.println("Agreement not updated");
+            }
+        }
     }
 
     private void addAgreement() {
         clearInput();
-        saveToDB_btn.setVisible(true);
+//        saveToDB_btn.setVisible(true);
         setEditable(true);
 
+        mainRenter_comboBox.getItems().clear();
+        mainRenter_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
+
+        subRenter_listView.getItems().clear();
+        subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
     }
 
     private void updateAgreement() {
         boolean isEditable = fee_input.isEditable();
         setEditable(!isEditable);
+        if(isTextFieldChanged(selectedRentalAgreement.get())){
+            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
+            RentalAgreement ra = selectedRentalAgreement.get();
+            ra.setProperty(selectedProperty.get());
+            ra.setPeriod(rentalPeriod_comboBox.getValue());
+            ra.setRentingFee(Double.parseDouble(fee_input.getText()));
+            ra.setStatus(status_comboBox.getValue());
+            ra.setContractDate(contractDate_datePicker.getValue());
+            ra.setHost(selectedHost.get());
+            ra.setMainTenant(selectedMainRenter.get());
+            ra.setSubTenants(selectedSubRenters);
+
+            RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            boolean isUpdate = rentalAgreementDAO.update(ra);
+            if(isUpdate){
+                rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
+                rentalAgreementsObservableList.setAll(rentalAgreementsList);
+                System.out.println("Agreement updated");
+            }
+            else{
+                System.out.println("Agreement not updated");
+            }
+
+        }
 
     }
 
     private void setUpDataBehavior() {
         agreements_tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedRentalAgreement.set(newValue);
-            saveToDB_btn.setVisible(false);
+//            saveToDB_btn.setVisible(false);
             showInfor(newValue);
         });
-
         agreements_tableView.setItems(rentalAgreementsObservableList);
         rentalAgreementsObservableList.setAll(rentalAgreementsList);
+
+        property_comboBox.setButtonCell(new ListCell<Property>() {
+            @Override
+            protected void updateItem(Property item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("All");
+                } else {
+                    setText("ID: " + item.getId() + " - " +  item.addressPropertyProperty().get());
+                }
+            }
+        });
+
+        property_comboBox.setCellFactory(param -> new ListCell<Property>() {
+            @Override
+            protected void updateItem(Property item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("All");
+                } else {
+                    setText("ID: " + item.getId() + " - " +  item.addressPropertyProperty().get());
+                }
+            }
+        });
 
         propertyFilter_comboBox.setButtonCell(new ListCell<Property>() {
             @Override
@@ -114,29 +192,7 @@ public class AgreementManagerController implements Initializable {
             }
         });
 
-        property_comboBox.setButtonCell(new ListCell<Property>() {
-            @Override
-            protected void updateItem(Property item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("All");
-                } else {
-                    setText("ID: " + item.getId() + " - " +  item.addressPropertyProperty().get());
-                }
-            }
-        });
 
-        property_comboBox.setCellFactory(param -> new ListCell<Property>() {
-            @Override
-            protected void updateItem(Property item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("All");
-                } else {
-                    setText("ID: " + item.getId() + " - " +  item.addressPropertyProperty().get());
-                }
-            }
-        });
 
         host_comboBox.setButtonCell(new ListCell<Host>() {
             @Override
@@ -202,6 +258,7 @@ public class AgreementManagerController implements Initializable {
                     Renter item = getItem();
                     if (item != null && selectedSubRenters.contains(item)) {
                         selectedSubRenters.remove(item);  // Remove from the selected list
+
                         subRenter_listView.getItems().clear();
                         subRenter_listView.getItems().addAll(item);
                         subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
@@ -219,7 +276,7 @@ public class AgreementManagerController implements Initializable {
                     setGraphic(null);
                 } else {
                     setText(item.getId() + " - " + item.getName());
-                    if( mainRenter.get() == null  || mainRenter.get().getId() == item.getId()) setGraphic(null);
+                    if( selectedMainRenter.get() == null  || selectedMainRenter.get().getId() == item.getId()) setGraphic(null);
                     else if (selectedSubRenters.contains(item)) {
                         setGraphic(removeRenter);  // Show "Remove" button
                     } else {
@@ -230,11 +287,31 @@ public class AgreementManagerController implements Initializable {
             }
         });
 
-//        mainRenter.addListener((observable, oldValue, newValue) -> {
-//            setUpDataBehavior();
-//        });
+        property_comboBox.setOnAction(e -> {
+            selectedProperty.set(property_comboBox.getSelectionModel().getSelectedItem());
+//            selectedOwner.set(property_ComboBox.getSelectionModel().getSelectedItem().getOwner());
+//            resetErrorLabels();
+        });
 
-//        subRenter_listView.setItems(FXCollections.observableArrayList(ModelCentral.getInstance().getAdminViewFactory().getAllRenter()));
+        selectedProperty.addListener((o, old, neww) -> {
+            host_comboBox.getItems().clear();
+            if(neww != null){
+                host_comboBox.getItems().addAll(neww.getHosts());
+            }
+        });
+
+        mainRenter_comboBox.getSelectionModel().selectedItemProperty().addListener((o, old, neww) -> {
+            if(neww != null){
+                selectedMainRenter.set(neww);
+                selectedSubRenters.remove(neww);
+            }
+        });
+
+        host_comboBox.getSelectionModel().selectedItemProperty().addListener((o, old, neww) -> {
+            selectedHost.set(neww);
+            System.out.println("Selected host: " + neww);
+        });
+
     }
 
     private void setUpDataView(){
@@ -251,7 +328,6 @@ public class AgreementManagerController implements Initializable {
         agreementStatusFilter_comboBox.getItems().addAll(AgreementStatus.values());
         rentalPeriod_comboBox.getItems().addAll(RentalPeriod.values());
         status_comboBox.getItems().addAll(AgreementStatus.values());
-        host_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllHost());
         mainRenter_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
         property_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllProperty());
         subRenter_listView.setItems(FXCollections.observableArrayList(ModelCentral.getInstance().getAdminViewFactory().getAllRenter()));
@@ -260,33 +336,28 @@ public class AgreementManagerController implements Initializable {
     private void showInfor(RentalAgreement newValue) {
         if(newValue == null) return;
         setEditable(false);
+
         id_input.setText(newValue.getAgreementId() + "");
         fee_input.setText(newValue.rentingFeePropertyProperty().get() + "");
         contractDate_datePicker.setValue(newValue.contractDatePropertyProperty().get());
+
         property_comboBox.setValue(newValue.getProperty());
         rentalPeriod_comboBox.setValue(newValue.periodPropertyProperty().get());
         status_comboBox.setValue(newValue.statusPropertyProperty().get());
-
-        host_comboBox.setValue(newValue.getHost());
-        List<Host> hosts = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
-        List<Host> myHost = new ArrayList<>();
-        for(Host host : hosts){
-            for(RentalAgreement ra: host.getRentalAgreements()){
-                if(ra.getAgreementId() == newValue.getAgreementId()){
-                    myHost.add(host);
-                    break;
-                }
-            }
-        }
-        host_comboBox.getItems().addAll(myHost);
-
         mainRenter_comboBox.setValue(newValue.mainTenantPropertyProperty().get());
+
+
+
+        host_comboBox.getItems().clear();
+        host_comboBox.getItems().addAll(selectedProperty.get().getHosts());
+        host_comboBox.setValue(newValue.getHost());
+
+
+
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(newValue.getSubTenants());
         subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
 
-        //update the selected subrenters
-        mainRenter.set(newValue.mainTenantPropertyProperty().get());
         selectedSubRenters.clear();
         selectedSubRenters.addAll(newValue.getSubTenants());
     }
@@ -294,6 +365,7 @@ public class AgreementManagerController implements Initializable {
     private void setEditable(boolean isEditable) {
         id_input.setEditable(false);
         fee_input.setEditable(isEditable);
+        contractDate_datePicker.setDisable(!isEditable);
         contractDate_datePicker.setEditable(isEditable);
         property_comboBox.setDisable(!isEditable);
         rentalPeriod_comboBox.setDisable(!isEditable);
@@ -307,30 +379,58 @@ public class AgreementManagerController implements Initializable {
         id_input.clear();
         fee_input.clear();
         contractDate_datePicker.setValue(null);
+        host_comboBox.setValue(null);
+        host_comboBox.getItems().clear();
+
         property_comboBox.setValue(null);
         rentalPeriod_comboBox.setValue(null);
         status_comboBox.setValue(null);
-        host_comboBox.setValue(null);
         mainRenter_comboBox.setValue(null);
         subRenter_listView.getItems().clear();
     }
 
-    private boolean isTextTextFieldChanged(RentalAgreement ra){
+    private boolean isTextFieldChanged(RentalAgreement ra){
         if(ra == null) return false;
+        if(!property_comboBox.getValue().equals(ra.getProperty())) return true;
+        if(!rentalPeriod_comboBox.getValue().equals(ra.periodPropertyProperty().get())) return true;
+        if(!status_comboBox.getValue().equals(ra.statusPropertyProperty().get())) return true;
+        if(!host_comboBox.getValue().equals(ra.getHost())) return true;
+        if(!mainRenter_comboBox.getValue().equals(ra.mainTenantPropertyProperty().get())) return true;
+        for(Renter renter: selectedSubRenters){
+            if(!ra.getSubTenants().contains(renter)) return true;
+        }
         return false;
     }
     // Helper Method:
     private void deleteAgreement() {
-//        RentalAgreementDAO rentalAgreementDAO  = new RentalAgreementDAO();
-//        int id = Integer.parseInt(selectedRentalAgreement.get().getAgreementId() + "");
-//        RentalAgreement rentalAgreement = rentalAgreementDAO.get(id);
-//        rentalAgreementDAO.delete(rentalAgreement);
-//        rentalAgreementsObservableList.remove(selectedRentalAgreement.get());
-    }
+        RentalAgreement ra = selectedRentalAgreement.get();
+        if(ra == null) return;
+        if(ra.getStatus() != null){
+            if(!ra.getStatus().equals(AgreementStatus.COMPLETED)){
+                System.out.println("Cannot delete this agreement because it is not completed");
+                return;
+            }
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement?")) return;
+        RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
 
-    private void readAgreement() {
-        RentalAgreement currentSelectedRentalAgreement = selectedRentalAgreement.get();
-        System.out.println(currentSelectedRentalAgreement);
+        ra.setHost(null);
+//        ra.setMainTenant(null);
+//        ra.setSubTenants(null);
+//        ra.setProperty(null);
+
+        rentalAgreementDAO.update(ra);
+
+        boolean isDelete = rentalAgreementDAO.delete(ra);
+        if(isDelete){
+            rentalAgreementsList.remove(ra);
+            rentalAgreementsObservableList.setAll(rentalAgreementsList);
+            System.out.println("Agreement deleted");
+        }
+        else{
+            System.out.println("Agreement not deleted");
+        }
+
     }
 
     private <S, T> TableColumn<S, T> createColumn(String columnName, String propertyName) {

@@ -17,7 +17,9 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
 
     @Override
     public boolean add(Host host) {
+
         try (Session session = DatabaseUtil.getSession()) {
+
             Transaction transaction = DatabaseUtil.getTransaction(session);
             session.persist(host);
             DatabaseUtil.clearAll(session);
@@ -25,6 +27,7 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             DatabaseUtil.shutdown(session);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Error: " + e);
             return false;
         }
