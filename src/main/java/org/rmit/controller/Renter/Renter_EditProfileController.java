@@ -222,6 +222,9 @@ public class Renter_EditProfileController implements Initializable {
         newPassword_input.setDisable(status);
         newUsername_input.setDisable(status);
         avatarUpdate_btn.setDisable(status);
+        if (edit_btn.disableProperty().isBound()) {
+            edit_btn.disableProperty().unbind();
+        }
         edit_btn.setDisable(status);
     }
 
