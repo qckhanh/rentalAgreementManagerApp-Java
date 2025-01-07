@@ -350,6 +350,7 @@ public class Admin_DashboardController implements Initializable {
 
         if (payments == null) return 0;
         for (Payment payment : payments){
+            if(payment.getDate() == null) continue;
             if (payment.getDate().getYear() == year){
                 total += payment.getAmount();
             }
@@ -360,7 +361,7 @@ public class Admin_DashboardController implements Initializable {
     /* Helpers method for the Estimated Yearly Revenue */
     private double calculateEstimatedYearlyRevenue() {
         List<RentalAgreement> agreements = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
-
+        if(agreements == null) return 0;
         double total = 0;
         if (agreements.isEmpty()) {return 0;}
         else {

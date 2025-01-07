@@ -36,8 +36,8 @@ public class RentalAgreement {
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "host_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "host_id", nullable = true)
     private Host host;
 
     private RentalPeriod period;
@@ -131,7 +131,7 @@ public class RentalAgreement {
     public void setHost(Host host) {
         this.hostProperty.setValue(host);
         this.host = hostProperty.get();
-        host.addAgreement(this);
+        if(host == null) host.addAgreement(this);
     }
 
     public RentalPeriod getPeriod() {

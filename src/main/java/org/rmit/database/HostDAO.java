@@ -19,13 +19,14 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
     public boolean add(Host host) {
         try{
             Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
+            Transaction transaction = DatabaseUtil.getTransaction(session);
             session.persist(host);
             DatabaseUtil.clearAll(session);
-            session.getTransaction().commit();
+            transaction.commit();
             DatabaseUtil.shutdown(session);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Error: " + e);
             return false;
         }

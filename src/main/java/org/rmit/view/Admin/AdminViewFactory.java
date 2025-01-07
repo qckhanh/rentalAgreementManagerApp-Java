@@ -99,11 +99,10 @@ public class AdminViewFactory {
     }
 
     public AnchorPane getAdmin_dashboardView() {
-        if (admin_dashboardView == null){
+        if (1 == 1){
             try {
 
                 FXMLLoader load = new FXMLLoader(getClass().getResource(ADMIN_PATH + "dashboardAdmin.fxml"));
-                adminDashboardController = load.getController();
                 admin_dashboardView = load.load();
 
             } catch (Exception e){
@@ -112,8 +111,6 @@ public class AdminViewFactory {
         }
         return admin_dashboardView;
     }
-
-
 
     public AnchorPane getRenterManagerView() {
         if (admin_renterManagerView == null){
