@@ -183,19 +183,19 @@ public class OwnerManagerController implements Initializable {
         setEditableTextField(!isEditable);
         if(isTextFieldChanged(selectedPerson.get()) && validator.validate()){
             if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this owner?")) return;
-                Owner person = selectedPerson.get();
-                person.setName(fullName_input.getText());
-                person.setContact(contact_input.getText());
-                person.setDateOfBirth(dob_input.getValue());
-                person.setPassword(password_PasswordTextField.getPassword());
-                OwnerDAO dao = new OwnerDAO();
-                boolean isUpdated = dao.update(person);
-                if (isUpdated) {
+            Owner person = selectedPerson.get();
+            person.setName(fullName_input.getText());
+            person.setContact(contact_input.getText());
+            person.setDateOfBirth(dob_input.getValue());
+            person.setPassword(password_PasswordTextField.getPassword());
+            OwnerDAO dao = new OwnerDAO();
+            boolean isUpdated = dao.update(person);
+            if (isUpdated) {
                     personObservableList.set(personObservableList.indexOf(person), person);
                     System.out.println("Updated owner");
                 } else System.out.println("Cannot update owner");
-                clearTextField();
-            }
+            clearTextField();
+        }
 
 
     }
