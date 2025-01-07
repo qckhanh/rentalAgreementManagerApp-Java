@@ -10,8 +10,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
+import org.hibernate.Session;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
@@ -209,6 +211,14 @@ public class RenterManagerController implements Initializable {
         if(dob_input.getValue() == null) return;
     }
 
+    private void warmUp(){
+        try (Session session = DatabaseUtil.getSession()){
+            session.createNativeQuery("SELECT 1").getSingleResult();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void addToDB() {
         RenterDAO renterDAO = new RenterDAO();
         Renter renter = new Renter();
@@ -217,6 +227,7 @@ public class RenterManagerController implements Initializable {
         renter.setContact(contact_input.getText());
         renter.setDateOfBirth(dob_input.getValue());
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this renter?")) return;
+        warmUp();
         boolean isAdded = renterDAO.add(renter);
         if(isAdded){
             renterObservableList.add(renter);

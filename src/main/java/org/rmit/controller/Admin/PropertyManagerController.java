@@ -1,15 +1,15 @@
 package org.rmit.controller.Admin;
 
 import atlantafx.base.layout.DeckPane;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import net.synedra.validatorfx.Validator;
+import org.hibernate.Session;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
@@ -19,6 +19,7 @@ import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.*;
+import org.rmit.model.Property.Property;
 
 import java.net.URL;
 import java.util.List;
@@ -56,6 +57,7 @@ public class PropertyManagerController implements Initializable {
     public TextField propertyType;
     public ComboBox<PropertyType> propertyType_comboBox;
     public ComboBox<PropertyStatus> propertyStatus_comboBox;
+    public StringProperty squareMeters = new SimpleStringProperty();
 
     private Label noneLabel = new Label();
     private Validator validatorCP = new Validator();
@@ -145,16 +147,16 @@ public class PropertyManagerController implements Initializable {
                 .immediateClear();
 
 
-        validatorCP.createCheck()
-                .dependsOn("infor3", infor3_comboBox.valueProperty())
-                .withMethod(context -> {
-                    String input = context.get("infor3");
-                    if (!InputValidator.isValidSquareMeters(input, noneLabel)) {
-                        context.error("Square Meters must be a valid number");
-                    }
-                })
-                .decorates(infor3_comboBox)
-                .immediateClear();
+//        validatorCP.createCheck()
+//                .dependsOn("infor3", squareMeters)
+//                .withMethod(context -> {
+//                    String input = context.get("infor3");
+//                    if (!InputValidator.isValidSquareMeters(input, noneLabel)) {
+//                        context.error("Square Meters must be a valid number");
+//                    }
+//                })
+//                .decorates(infor3_comboBox)
+//                .immediateClear();
     }
 
     private void validateInputRP() {
@@ -261,14 +263,26 @@ public class PropertyManagerController implements Initializable {
         prev_btn.setOnAction(e -> prevImage());
         next_btn.setOnAction(e -> nextImage());
         addToDB_btn.setOnAction(e -> {
-            if (validatorCP.validate() || validatorRP.validate()) addToDB();
+            if ((validatorCP.validate() && isValidSquareMeters()) || validatorRP.validate()) addToDB();
             clearTextFilled();
         });
 
         addToDB_btn.setVisible(false);
     }
 
+    private boolean isValidSquareMeters() {
+        try {
+            double value = Double.parseDouble(infor3_comboBox.getValue().toString());
+            return value > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private void setUpTableBehavior(){
+//        infor3_comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+//            squareMeters.set(newValue.toString());
+//        });
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
@@ -570,6 +584,18 @@ public class PropertyManagerController implements Initializable {
         Host_tableView.getItems().clear();
     }
 
+    private void warmUp() throws InterruptedException {
+        DatabaseUtil.getSession();
+        System.out.println("Session created");
+        Thread.sleep(1000);
+        try (Session session = DatabaseUtil.getSession()) {
+            session.createNativeQuery("SELECT 1").getSingleResult();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addToDB() {
         if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.NONE)) System.out.println("Cannot add");
         if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)){
@@ -585,6 +611,11 @@ public class PropertyManagerController implements Initializable {
 
             if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to add this property?")) return;
             CommercialPropertyDAO dao = new CommercialPropertyDAO();
+            try {
+                warmUp();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
