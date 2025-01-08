@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.UIDecorator;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.InputValidator;
@@ -262,6 +263,7 @@ public class PaymentManagerController implements Initializable {
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this payment?")) return;
 
         PaymentDAO paymentDAO = new PaymentDAO();
+        DatabaseUtil.warmUp();
         boolean isUpdated = paymentDAO.update(payment);
 
         if(isUpdated){

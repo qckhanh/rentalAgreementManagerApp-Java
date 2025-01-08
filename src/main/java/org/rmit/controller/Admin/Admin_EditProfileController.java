@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
@@ -167,6 +168,7 @@ public class Admin_EditProfileController implements Initializable {
         currentUser.setDateOfBirth(newDOB_input.getValue());
         currentUser.setPassword(newPassword_input.getText());
         if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
+        DatabaseUtil.warmUp();
         dao.update((Admin) currentUser);
 
         // Reset fields and button:

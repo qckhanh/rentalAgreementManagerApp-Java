@@ -586,6 +586,7 @@ public class PropertyManagerController implements Initializable {
         else{
             dao = new ResidentialPropertyDAO();
         }
+        DatabaseUtil.warmUp();
         boolean isDeleted = dao.delete(property);
         if(isDeleted){
             propertyList.remove(property);
@@ -630,7 +631,7 @@ public class PropertyManagerController implements Initializable {
             residentialProperty.setPetAllowed(Boolean.parseBoolean(infor3_comboBox.getValue().toString()));
             residentialProperty.setHasGarden(Boolean.parseBoolean(infor4_comboBox.getValue().toString()));
         }
-
+        DatabaseUtil.warmUp();
         boolean isUpdated = dao.update(property);
         if(isUpdated){
             propertyList.set(propertyList.indexOf(property), property);
@@ -689,6 +690,7 @@ public class PropertyManagerController implements Initializable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            DatabaseUtil.warmUp();
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
@@ -715,6 +717,7 @@ public class PropertyManagerController implements Initializable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            DatabaseUtil.warmUp();
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
