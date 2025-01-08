@@ -82,13 +82,30 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
         int attempt = 0;
         while (attempt < MAX_ATTEMPTS) {
             attempt++;
+//            delete from host_rentalagreement where rentalagreements_agreementid = 1002;
+//            delete from payment where agreement_id = 1002;
+//            delete from rental_agreement_subtenants where agreement_id = 1002;
+//            delete from rentalagreement where agreementid = 1002;
             try (Session session = DatabaseUtil.getSession()) {
                 Transaction transaction = DatabaseUtil.getTransaction(session);
-                session.delete(rentalAgreement);
-                DatabaseUtil.clearAll(session);
+                String deleteHostRentalAgreementQuery = "DELETE FROM host_rentalagreement WHERE rentalagreements_agreementid = :agreementId";
+                session.createNativeQuery(deleteHostRentalAgreementQuery)
+                        .setParameter("agreementId", rentalAgreement.getAgreementId())
+                        .executeUpdate();
+                String deletePaymentQuery = "DELETE FROM payment WHERE agreement_id = :agreementId";
+                session.createNativeQuery(deletePaymentQuery)
+                        .setParameter("agreementId", rentalAgreement.getAgreementId())
+                        .executeUpdate();
+                String deleteRentalAgreementSubtenantsQuery = "DELETE FROM rental_agreement_subtenants WHERE agreement_id = :agreementId";
+                session.createNativeQuery(deleteRentalAgreementSubtenantsQuery)
+                        .setParameter("agreementId", rentalAgreement.getAgreementId())
+                        .executeUpdate();
+                String deleteRentalAgreementQuery = "DELETE FROM rentalagreement WHERE agreementid = :agreementId";
+                session.createNativeQuery(deleteRentalAgreementQuery)
+                        .setParameter("agreementId", rentalAgreement.getAgreementId())
+                        .executeUpdate();
                 transaction.commit();
-                DatabaseUtil.shutdown(session);
-                return true; // Return if successful
+                return true;
             } catch (Exception e) {
                 System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
 
