@@ -110,12 +110,14 @@ public class Owner_UpdatePropertiesController implements Initializable {
         else if (selectedProperty.get() instanceof ResidentialProperty) {
             propertyGarden_chbox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
             propertyPet_chBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
-            propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-            propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-
-            // Add listeners to update total number of bedrooms and rooms
-            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+            propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> {
+                checkChanges();
+                updateTotalNumbersOfRooms();
+            });
+            propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> {
+                checkChanges();
+                updateTotalNumbersOfRooms();
+            });
         }
 
         setDisable(true);
@@ -643,7 +645,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         currentImageIndex = 0;
     }
 
-    private void updateTotalNumbers() {
+    private void updateTotalNumbersOfRooms() {
         try {
             totalNumberBedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
         } catch (NumberFormatException e) {
