@@ -489,7 +489,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
 
 
-
     // IT MIGHT BE HERE
     private void checkChanges() {
         boolean changed = false;
@@ -521,6 +520,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 changed = true;
             }
         }
+
         if (selectedProperty.get() instanceof ResidentialProperty) {
             if (!propertyGarden_chbox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isHasGardenProperty()) {
                 changed = true;
@@ -535,22 +535,16 @@ public class Owner_UpdatePropertiesController implements Initializable {
 //                changed = true;
 //            }
 
-            try {
-                int bedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
-                if (bedrooms != ((ResidentialProperty) selectedProperty.get()).getTotalBedroom()) {
-                    changed = true;
-                }
-            } catch (NumberFormatException e) {
-                changed = false; // Handle invalid number format
+            // Check if the total number of bedrooms and rooms have changed
+            if (totalNumberBedrooms != ((ResidentialProperty) selectedProperty.get()).getTotalBedroom()) {
+                System.out.println("Total Bedrooms: " + totalNumberBedrooms);
+                System.out.println("Property Bedrooms: " + ((ResidentialProperty) selectedProperty.get()).getTotalBedroom());
+                changed = true;
             }
-
-            try {
-                int rooms = Integer.parseInt(propertyRooms_txtf.getText());
-                if (rooms != ((ResidentialProperty) selectedProperty.get()).getTotalRoom()) {
-                    changed = true;
-                }
-            } catch (NumberFormatException e) {
-                changed = true; // Handle invalid number format
+            if (totalNumberRooms != ((ResidentialProperty) selectedProperty.get()).getTotalRoom()) {
+                System.out.println("Total Rooms: " + totalNumberRooms);
+                System.out.println("Property Rooms: " + ((ResidentialProperty) selectedProperty.get()).getTotalRoom());
+                changed = true;
             }
         }
 
@@ -607,7 +601,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyBedrooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
             propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalRoom()));
         }
-
     }
 
     private void enableCommercialFields() {
