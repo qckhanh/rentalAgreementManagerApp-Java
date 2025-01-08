@@ -1,14 +1,16 @@
 package org.rmit.controller.Admin;
 
 import atlantafx.base.layout.DeckPane;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import net.synedra.validatorfx.Validator;
+import org.hibernate.Session;
+import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Helper.InputValidator;
 import org.hibernate.Session;
 import org.rmit.Helper.DatabaseUtil;
 import javafx.scene.image.ImageView;
@@ -16,11 +18,13 @@ import org.rmit.Helper.ImageUtils;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
+import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.*;
+import org.rmit.model.Property.Property;
 
 import java.net.URL;
 import java.util.List;
@@ -56,6 +60,15 @@ public class PropertyManagerController implements Initializable {
     public TextField propertyType;
     public ComboBox<PropertyType> propertyType_comboBox;
     public ComboBox<PropertyStatus> propertyStatus_comboBox;
+    public StringProperty squareMeters = new SimpleStringProperty();
+
+    private Label noneLabel = new Label();
+    private Validator validatorCP = new Validator();
+    private Validator validatorRP = new Validator();
+
+    private int totalNumberBedrooms = 0;
+    private int totalNumberRooms = 0;
+
     public int currentImageIndex = 0;
 
     public Button prevImg_btn;
@@ -63,24 +76,283 @@ public class PropertyManagerController implements Initializable {
     public ImageView imageView_propertyImg;
     public Button nextImg_btn;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUpTableBehavior();
         setOnActionButton();
         setUpTableView();
+
+        validateInputCP();
+        validateInputRP();
+
+
+        addToDB_btn.disableProperty().bind(validatorCP.containsErrorsProperty().or(validatorRP.containsErrorsProperty()));
+
+        // Add listener to update the total number of bedrooms and rooms:
+        infor1_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+        infor2_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+    }
+
+    private void validateInputCP() {
+        validatorCP.createCheck()
+                .dependsOn("address", address_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("address");
+                    if (!InputValidator.NoCondition(input, noneLabel)) {
+                        context.error("Address must not be empty");
+                    }
+                })
+                .decorates(address_input)
+                .immediateClear();
+
+        validatorCP.createCheck()
+                .dependsOn("price", priceInput.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("price");
+                    if (!InputValidator.isValidPrice(input, noneLabel)) {
+                        context.error("Price must be a valid number");
+                    }
+                })
+                .decorates(priceInput)
+                .immediateClear();
+
+        validatorCP.createCheck()
+                .dependsOn("owner", owner_comboBox.valueProperty())
+                .withMethod(context -> {
+                    Owner input = context.get("owner");
+                    if (input == null) {
+                        noneLabel.setText("An Owner must be selected");
+                        context.error("An Owner must be selected");
+                    }
+                })
+                .decorates(owner_comboBox)
+                .immediateClear();
+
+        validatorCP.createCheck()
+                .dependsOn("status", status_comboBox.valueProperty())
+                .withMethod(context -> {
+                    PropertyStatus input = context.get("status");
+                    if (input == null) {
+                        noneLabel.setText("A Status must be selected");
+                        context.error("A Status must be selected");
+                    }
+                })
+                .decorates(status_comboBox)
+                .immediateClear();
+
+        validatorCP.createCheck()
+                .dependsOn("infor1", infor1_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("infor1");
+                    if (!InputValidator.NoCondition(input, noneLabel)) {
+                        context.error("Business Type must not be empty");
+                    }
+                })
+                .decorates(infor1_input)
+                .immediateClear();
+
+        validatorCP.createCheck()
+                .dependsOn("infor2", infor2_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("infor2");
+                    if (!InputValidator.isValidParkingSpaces(input, noneLabel)) {
+                        context.error("Parking Space must be a valid number");
+                    }
+                })
+                .decorates(infor2_input)
+                .immediateClear();
+
+
+        validatorCP.createCheck()
+                .dependsOn("infor3", infor3_comboBox.valueProperty())
+                .withMethod(context -> {
+                    String input = context.get("infor3");
+                    if (!isValidSquareMeters()) {
+                        context.error("Square Meters must be a valid number");
+                    }
+                })
+                .decorates(infor3_comboBox)
+                .immediateClear();
+    }
+
+    private void validateInputRP() {
+        validatorRP.createCheck()
+                .dependsOn("address", address_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("address");
+                    if (!InputValidator.NoCondition(input, noneLabel)) {
+                        context.error("Address must not be empty");
+                    }
+                })
+                .decorates(address_input)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("price", priceInput.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("price");
+                    if (!InputValidator.isValidPrice(input, noneLabel)) {
+                        context.error("Price must be a valid number");
+                    }
+                })
+                .decorates(priceInput)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("owner", owner_comboBox.valueProperty())
+                .withMethod(context -> {
+                    Owner input = context.get("owner");
+                    if (input == null) {
+                        noneLabel.setText("An Owner must be selected");
+                        context.error("An Owner must be selected");
+                    }
+                })
+                .decorates(owner_comboBox)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("status", status_comboBox.valueProperty())
+                .withMethod(context -> {
+                    PropertyStatus input = context.get("status");
+                    if (input == null) {
+                        System.out.println("Status: " + input);
+                        noneLabel.setText("A Status must be selected");
+                        context.error("A Status must be selected");
+                    }
+                })
+                .decorates(status_comboBox)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("infor1", infor1_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("infor1");
+                    if (!InputValidator.isValidRooms(input, noneLabel, totalNumberBedrooms)) {
+                        context.error("Rooms must be a valid number");
+                        System.out.println("Rooms: " + input);
+                        System.out.println("Validation Error: A room must be selected");
+
+                    }
+                })
+                .decorates(infor1_input)
+                .immediateClear();
+
+//        validatorRP.createCheck()
+//                .dependsOn("infor2", infor2_input.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("infor2");
+//                    if (!InputValidator.isValidBedrooms(input, noneLabel, totalNumberRooms)) {
+//                        context.error("Bedrooms must be a valid number");
+//                        System.out.println("Bedrooms: " + input);
+//                        System.out.println("Validation Error: Bedrooms must be a valid number");
+//                    }
+//                })
+//                .decorates(infor2_input)
+//                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("bed", infor2_input.textProperty())
+                .dependsOn("room", infor1_input.textProperty())
+                .withMethod(context -> {
+                    String bed = context.get("bed");
+                    String room = context.get("room");
+                    if(!InputValidator.isValidRoomsAndBedroom(room, bed)) {
+                        context.error("Bedrooms must be less than or equal to Rooms");
+                        System.out.println("Validation Error: Bedrooms must be less than or equal to Rooms");
+                    }
+                })
+                .decorates(infor2_input)
+                .decorates(infor1_input)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("infor3", infor3_comboBox.valueProperty())
+                .withMethod(context -> {
+                    Boolean input = context.get("infor3");
+                    if (input == null) {
+                        noneLabel.setText("Pets must be selected");
+                        context.error("Pets must be selected");
+                    }
+                })
+                .decorates(infor3_comboBox)
+                .immediateClear();
+
+        validatorRP.createCheck().dependsOn("infor4", infor4_comboBox.valueProperty())
+                .withMethod(context -> {
+                    Boolean input = context.get("infor4");
+                    if (input == null) {
+                        noneLabel.setText("Garden must be selected");
+                        context.error("Garden must be selected");
+                    }
+                })
+                .decorates(infor4_comboBox)
+                .immediateClear();
+    }
+
+    private void updateTotalNumbers() {
+        try {
+            totalNumberRooms = Integer.parseInt(infor1_input.getText());
+        } catch (NumberFormatException e) {
+            totalNumberRooms = 0;
+        }
+
+        try {
+            totalNumberBedrooms = Integer.parseInt(infor2_input.getText());
+        } catch (NumberFormatException e) {
+            totalNumberBedrooms = 0;
+        }
     }
 
     private void setOnActionButton(){
         create_btn.setOnAction(e -> createProperty());
         update_btn.setOnAction(e -> updateProperty());
         delete_btn.setOnAction(e -> deleteProperty());
+        prev_btn.setOnAction(e -> prevImage());
+        next_btn.setOnAction(e -> nextImage());
+        addToDB_btn.setOnAction(e -> {
+//            if (validatorCP.validate() || validatorRP.validate()) addToDB();
+            if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)) {
+                if (validatorCP.validate() && isValidSquareMeters()) addToDB();
+            } else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)) {
+                if (validatorRP.validate()) addToDB();
+            }
+            clearTextFilled();
+        });
+
         prevImg_btn.setOnAction(e -> prevImg_btn());
         nextImg_btn.setOnAction(e -> nextImg_btn());
         addToDB_btn.setOnAction(e -> addToDB());
         addToDB_btn.setVisible(false);
     }
 
+    private boolean isValidSquareMeters() {
+        try {
+            if (infor3_comboBox.getValue() == null) {
+                return false;
+            }
+
+            if (infor3_comboBox.getValue().toString().isEmpty()) {
+                return false;
+            }
+
+            double squareMeters = Double.parseDouble(infor3_comboBox.getValue().toString());
+
+            // Check if the number is positive
+            if (squareMeters <= 0) {
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
     private void setUpTableBehavior(){
+//        infor3_comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+//            squareMeters.set(newValue.toString());
+//        });
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
@@ -332,7 +604,7 @@ public class PropertyManagerController implements Initializable {
 
         Property property = selectedProperty.get();
         if(property == null) return;
-        if(!isTexfieldChanged(property)) return;
+        if(!isTexfieldChanged(property) && !(validatorRP.validate() || validatorCP.validate())) return;
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this property?")) return;
 
         DAOInterface dao;
@@ -360,6 +632,7 @@ public class PropertyManagerController implements Initializable {
             residentialProperty.setPetAllowed(Boolean.parseBoolean(infor3_comboBox.getValue().toString()));
             residentialProperty.setHasGarden(Boolean.parseBoolean(infor4_comboBox.getValue().toString()));
         }
+
         boolean isUpdated = dao.update(property);
         if(isUpdated){
             propertyList.set(propertyList.indexOf(property), property);
@@ -376,7 +649,7 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void createProperty() {
-        clearTextFiled();
+        clearTextFilled();
         setEditable(true);
         id_input.setText("Auto");
         addToDB_btn.setVisible(true);
@@ -426,7 +699,7 @@ public class PropertyManagerController implements Initializable {
             }
             else System.out.println("Failed to add");
         }
-        else{
+        else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)){
             ResidentialProperty newProperty = new ResidentialProperty();
             newProperty.setAddress(address_input.getText());
             newProperty.setPrice(Double.parseDouble(priceInput.getText()));
@@ -439,6 +712,11 @@ public class PropertyManagerController implements Initializable {
             newProperty.setHasGarden(Boolean.parseBoolean(infor4_comboBox.getValue().toString()));
             if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to add this property?")) return;
             ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
+            try {
+                warmUp();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
@@ -449,12 +727,12 @@ public class PropertyManagerController implements Initializable {
         }
     }
 
-    private void clearTextFiled(){
+    private void clearTextFilled(){
         id_input.clear();
         address_input.clear();
         priceInput.clear();
         owner_comboBox.setValue(null);
-        status_comboBox.setValue(null);
+        status_comboBox.setValue(PropertyStatus.AVAILABLE);
         infor1_input.clear();
         infor2_input.clear();
         infor3_comboBox.setValue(null);

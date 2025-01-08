@@ -10,9 +10,11 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.ModelCentral;
@@ -21,6 +23,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.Property;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -46,6 +49,9 @@ public class OwnerManagerController implements Initializable {
     private ObjectProperty<Owner> selectedPerson = new SimpleObjectProperty<>();
     List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
 
+    Label noneLabel = new Label();
+    Validator validator = new Validator();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         decor();
@@ -55,9 +61,14 @@ public class OwnerManagerController implements Initializable {
 //                Styles.ROUNDED
 //        );
         create_btn.setOnAction(e -> createNewPerson());
-        update_btn.setOnAction(e -> updatePerson());
+        update_btn.setOnAction(e -> {
+            updatePerson();
+        });
         delete_btn.setOnAction(e -> deletePerson());
-        addToDB_btn.setOnAction(e -> addToDB());
+        addToDB_btn.setOnAction(e -> {
+            if(validator.validate()) addToDB();
+            clearTextField();
+        });
         addToDB_btn.setVisible(false);
 
         persons_TableView.getColumns().addAll(
@@ -82,6 +93,71 @@ public class OwnerManagerController implements Initializable {
         });
         persons_TableView.setItems(personObservableList);
         loadData(owners);
+
+        validateInput();
+        addToDB_btn.disableProperty().bind(validator.containsErrorsProperty());
+    }
+
+    private void validateInput() {
+        validator.createCheck()
+                .dependsOn("fullName", fullName_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("fullName");
+                    if (!InputValidator.NoCondition(input, noneLabel)) {
+                        context.error("Full name must not be empty");
+                        System.out.println("Full name must not be empty");
+                    }
+                })
+                .decorates(fullName_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("contact", contact_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("contact");
+                    if (!InputValidator.isValidContact(input, noneLabel)) {
+                        context.error("Contact must be a valid email or phone number");
+                        System.out.println("Contact must be a valid email or phone number");
+                    }
+                })
+                .decorates(contact_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("dob", dob_input.valueProperty())
+                .withMethod(context -> {
+                    LocalDate input = context.get("dob");
+                    if (!InputValidator.isValidDateFormat(input, noneLabel)) {
+                        context.error("Date of birth must be a valid date before today");
+                        System.out.println("Date of birth must be a valid date before today");
+                    }
+                })
+                .decorates(dob_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("username", username_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("username");
+                    if (!InputValidator.isValidUsername(input, noneLabel)) {
+                        context.error("Username must be at least 6 characters");
+                        System.out.println("Username must be at least 6 characters");
+                    }
+                })
+                .decorates(username_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("password", password_PasswordTextField.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("password");
+                    if (!InputValidator.isValidPassword(input, noneLabel)) {
+                        context.error("Password must be at least 8 characters");
+                        System.out.println("Password must be at least 8 characters");
+                    }
+                })
+                .decorates(password_PasswordTextField)
+                .immediateClear();
     }
 
     private void deletePerson() {
@@ -105,8 +181,8 @@ public class OwnerManagerController implements Initializable {
     private void updatePerson() {
         boolean isEditable = fullName_input.isEditable();
         setEditableTextField(!isEditable);
-        if(isTextFieldChanged(selectedPerson.get())){
-            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this owner?")) return;
+        if(isTextFieldChanged(selectedPerson.get()) && validator.validate()){
+            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this owner?")) return;
             Owner person = selectedPerson.get();
             person.setName(fullName_input.getText());
             person.setContact(contact_input.getText());
@@ -114,12 +190,14 @@ public class OwnerManagerController implements Initializable {
             person.setPassword(password_PasswordTextField.getPassword());
             OwnerDAO dao = new OwnerDAO();
             boolean isUpdated = dao.update(person);
-            if(isUpdated){
-                personObservableList.set(personObservableList.indexOf(person), person);
-                System.out.println("Updated owner");
-            }
-            else System.out.println("Cannot update owner");
+            if (isUpdated) {
+                    personObservableList.set(personObservableList.indexOf(person), person);
+                    System.out.println("Updated owner");
+                } else System.out.println("Cannot update owner");
+            clearTextField();
         }
+
+
     }
 
     private void createNewPerson() {
@@ -128,6 +206,7 @@ public class OwnerManagerController implements Initializable {
         username_input.setEditable(true);
         addToDB_btn.setVisible(true);
         id_input.setText("AUTO");
+
         if(username_input.getText().isBlank()) return;
         if(fullName_input.getText().isBlank()) return;
         if(contact_input.getText().isBlank()) return;
@@ -135,19 +214,19 @@ public class OwnerManagerController implements Initializable {
     }
 
     private void addToDB() {
-        OwnerDAO ownerDAO = new OwnerDAO();
-        Owner person = new Owner();
-        person.setUsername(username_input.getText());
-        person.setName(fullName_input.getText());
-        person.setContact(contact_input.getText());
-        person.setDateOfBirth(dob_input.getValue());
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?")) return;
-        boolean isAdded = ownerDAO.add(person);
-        if(isAdded){
-            personObservableList.add(person);
-            System.out.println("Added Owner");
-        }
-        else System.out.println("Cannot add Owner");
+            OwnerDAO ownerDAO = new OwnerDAO();
+            Owner person = new Owner();
+            person.setUsername(username_input.getText());
+            person.setName(fullName_input.getText());
+            person.setContact(contact_input.getText());
+            person.setDateOfBirth(dob_input.getValue());
+            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?"))
+                return;
+            boolean isAdded = ownerDAO.add(person);
+            if (isAdded) {
+                personObservableList.add(person);
+                System.out.println("Added Owner");
+            } else System.out.println("Cannot add Owner");
     }
 
     private boolean isTextFieldChanged(Owner person){
@@ -250,4 +329,5 @@ public class OwnerManagerController implements Initializable {
     private void loadData(List<Owner> list) {
         personObservableList.setAll(list);
     }
+
 }
