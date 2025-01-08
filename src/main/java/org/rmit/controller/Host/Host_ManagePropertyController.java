@@ -1,14 +1,17 @@
 package org.rmit.controller.Host;
 
+import atlantafx.base.layout.DeckPane;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Request;
@@ -61,6 +64,12 @@ public class Host_ManagePropertyController implements Initializable {
     public Map<Integer, Property> propertyMap = new HashMap<>();
     public ComboBox<PropertyStatus> propertyStatusCbox;
     public Button saveChangesButton;
+    public Button prevImg_btn;
+    public Button nextImg_btn;
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
+    public ObjectProperty<List<byte[]>> selectedImage = new SimpleObjectProperty<>();
+    public int currentImageIndex = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,7 +77,8 @@ public class Host_ManagePropertyController implements Initializable {
         UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
 
         saveChangesButton.setDisable(true);
-
+        nextImg_btn.setOnAction(e -> nextImg_btn());
+        prevImg_btn.setOnAction(e -> prevImg_btn());
         search_btn.setOnAction(event -> searchProperty());
         search_input.setOnAction(event -> searchProperty());
         search_input.textProperty().addListener((o, old, neww) ->{
@@ -76,6 +86,7 @@ public class Host_ManagePropertyController implements Initializable {
         });
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
             showPropertyDetail(newValue);
             saveChangesButton.setDisable(true);
         });
@@ -261,8 +272,9 @@ public class Host_ManagePropertyController implements Initializable {
                 property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::residentalPropertyForSearching);
             }
         }
-
-        System.out.println("showPropertyDetail: "+property);
+        currentImageIndex = 0;
+        selectedImage.set(property.getImages());
+        if(selectedImage.get().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(currentImageIndex)));
         propertyMap.put(id, property);
         propertyID_input.setText(property.getId()+"");
         address_input.setText(property.getAddress());
@@ -289,5 +301,28 @@ public class Host_ManagePropertyController implements Initializable {
             gadern_input.setText(residentialProperty.isHasGarden()+"");
         }
 
+    }
+
+    private void prevImg_btn() {
+        if(selectedImage.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImage.get().size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(selectedImage.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImage.get().size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(position)));
     }
 }

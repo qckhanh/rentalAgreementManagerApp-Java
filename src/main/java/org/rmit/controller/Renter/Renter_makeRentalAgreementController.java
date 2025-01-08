@@ -1,14 +1,13 @@
 package org.rmit.controller.Renter;
 
+import atlantafx.base.layout.DeckPane;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
-import org.rmit.Helper.DateUtils;
-import org.rmit.Helper.EntityGraphUtils;
-import org.rmit.Helper.InputValidator;
-import org.rmit.Helper.NotificationUtils;
+import org.rmit.Helper.*;
 import org.rmit.Notification.Request;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.RenterDAO;
@@ -51,7 +50,13 @@ public class Renter_makeRentalAgreementController implements Initializable {
     public Label propertyOption_err;
     public Label hostOption_err;
     public Label periodOption_err;
+    public ObjectProperty<List<byte[]>> selectedImage = new SimpleObjectProperty<>();
+    public int currentImageIndex = 0;
 
+    public Button prevImg_btn;
+    public Button nextImg_btn;
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
     Validator validator = new Validator();
 
     @Override
@@ -76,6 +81,12 @@ public class Renter_makeRentalAgreementController implements Initializable {
         selectedProperty.addListener((observable, oldValue, newValue) -> {
             host_comboBox.getItems().clear();
             host_comboBox.getItems().addAll(newValue.getHosts());
+            selectedImage.set(selectedProperty.get().getImages());
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
+            currentImageIndex = 0;
+            if(selectedImage.get().size() != 0){
+                imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(0)));
+            }
         });
         rentalPeriod_comboBox.getItems().addAll(
                 RentalPeriod.DAILY,
@@ -320,5 +331,28 @@ public class Renter_makeRentalAgreementController implements Initializable {
         propertyOption_err.setText("");
         hostOption_err.setText("");
         periodOption_err.setText("");
+    }
+
+    private void prevImg_btn() {
+        if(selectedImage.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImage.get().size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(selectedImage.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImage.get().size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(position)));
     }
 }

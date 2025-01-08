@@ -29,9 +29,6 @@ public class PropertyManagerController implements Initializable {
     public Button create_btn;
     public Button update_btn;
     public Button delete_btn;
-    public Button prev_btn;
-    public DeckPane deckPane;
-    public Button next_btn;
     public TextField id_input;
     public TextField address_input;
     public TextField priceInput;
@@ -75,11 +72,9 @@ public class PropertyManagerController implements Initializable {
         create_btn.setOnAction(e -> createProperty());
         update_btn.setOnAction(e -> updateProperty());
         delete_btn.setOnAction(e -> deleteProperty());
-        prev_btn.setOnAction(e -> prevImage());
-        next_btn.setOnAction(e -> nextImage());
+        prevImg_btn.setOnAction(e -> prevImg_btn());
+        nextImg_btn.setOnAction(e -> nextImg_btn());
         addToDB_btn.setOnAction(e -> addToDB());
-
-
         addToDB_btn.setVisible(false);
     }
 
@@ -87,6 +82,7 @@ public class PropertyManagerController implements Initializable {
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
+            selectedImages.set(newValue.getImages());
         });
         List<Owner> list = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
         owner_comboBox.setItems(FXCollections.observableArrayList(list));
@@ -174,6 +170,10 @@ public class PropertyManagerController implements Initializable {
     private void showProperty() {
         if(selectedProperty.get() == null) return;
         setEditable(false);
+        if(selectedProperty.get().getImages().size() != 0){
+            selectedImages.set(selectedProperty.get().getImages());
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(0)));
+        }
         id_input.setText(selectedProperty.get().getId() + "");
         address_input.setText(selectedProperty.get().addressPropertyProperty().get());
         priceInput.setText(selectedProperty.get().pricePropertyProperty().get() + "");
@@ -293,12 +293,6 @@ public class PropertyManagerController implements Initializable {
             if(residentialProperty.hasGardenPropertyProperty().get() != Boolean.parseBoolean(infor4_comboBox.getValue().toString())) return true;
         }
         return false;
-    }
-
-    private void nextImage() {
-    }
-
-    private void prevImage() {
     }
 
     private void deleteProperty() {
