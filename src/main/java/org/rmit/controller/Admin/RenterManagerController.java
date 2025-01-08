@@ -169,6 +169,7 @@ public class RenterManagerController implements Initializable {
         }
         else {
             RenterDAO renterDAO = new RenterDAO();
+            DatabaseUtil.warmUp();
             boolean isDeleted = renterDAO.delete(renter);
             if(isDeleted){
                 renterObservableList.remove(renter);
@@ -190,6 +191,7 @@ public class RenterManagerController implements Initializable {
             renter.setDateOfBirth(dob_input.getValue());
             renter.setPassword(password_PasswordTextField.getPassword());
             RenterDAO renterDAO = new RenterDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdated = renterDAO.update(renter);
             if(isUpdated){
                 renterObservableList.set(renterObservableList.indexOf(renter), renter);
@@ -228,6 +230,7 @@ public class RenterManagerController implements Initializable {
         renter.setDateOfBirth(dob_input.getValue());
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this renter?")) return;
         warmUp();
+        DatabaseUtil.warmUp();
         boolean isAdded = renterDAO.add(renter);
         if(isAdded){
             renterObservableList.add(renter);

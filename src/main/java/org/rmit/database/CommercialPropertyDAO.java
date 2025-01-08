@@ -17,95 +17,167 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
 
     @Override
     public boolean add(CommercialProperty commercialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
-            session.merge(commercialProperty);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = session.beginTransaction();
+                session.merge(commercialProperty); // Merge the commercial property
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to add commercial property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean update(CommercialProperty commercialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
-            session.merge(commercialProperty);
-            //session.update(commercialProperty);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = session.beginTransaction();
+                session.merge(commercialProperty); // Merge the commercial property
+                // session.update(commercialProperty); // Alternative update method
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to update commercial property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean delete(CommercialProperty commercialProperty) {
-        try(Session session = DatabaseUtil.getSession()){
-            Transaction transaction = session.beginTransaction();
-            CommercialProperty obj = session.merge(commercialProperty);
-            session.delete(obj);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = session.beginTransaction();
+                CommercialProperty obj = session.merge(commercialProperty); // Merge the commercial property
+                session.delete(obj); // Delete the object
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to delete commercial property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        finally {
-            DatabaseUtil.shutdown(DatabaseUtil.getSession());
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public CommercialProperty get(int id, Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_BY_ID_HQL, "CommercialProperty");
-            CommercialProperty obj = session.createQuery(hql, CommercialProperty.class)
-                    .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
-                    .uniqueResult();
-            DatabaseUtil.shutdown(session);
-            return obj;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_BY_ID_HQL, "CommercialProperty");
+                CommercialProperty obj = session.createQuery(hql, CommercialProperty.class)
+                        .setParameter("id", id)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
+                        .uniqueResult();
+                DatabaseUtil.shutdown(session);
+                return obj; // Return the result if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to fetch commercial property.");
+                    return null; // Return null if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return null; // Fallback return (should not reach here)
     }
+
 
     @Override
     public List<CommercialProperty> getAll(Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_ALL_HQL, "CommercialProperty");
-            List<CommercialProperty> list = session.createQuery(hql, CommercialProperty.class)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
-                    .list();  // Fetch the list of Renters
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_ALL_HQL, "CommercialProperty");
+                List<CommercialProperty> list = session.createQuery(hql, CommercialProperty.class)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+                        .list();  // Fetch the list of CommercialProperties
 
-            DatabaseUtil.shutdown(session);
-            return list;
+                DatabaseUtil.shutdown(session);
+                return list; // Return the list if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to fetch commercial properties.");
+                    return Collections.emptyList(); // Return an empty list if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        return Collections.emptyList(); // Fallback return (should not reach here)
     }
+
 
 
     public EntityGraph<CommercialProperty> createEntityGraph(Session session) {

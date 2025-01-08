@@ -24,6 +24,8 @@ public abstract class DAOInterface<T>{
     protected final String GET_BY_ID_HQL = "SELECT t FROM %s t WHERE t.id = :id";
     protected final String VALIDATE_LOGIN_HQL = "from %s where (username = :input or contact = :input) and password = :password";
     protected final String SEARCH_PROPERTY = "SELECT t FROM %s t WHERE CAST(t.id as String) LIKE :keyword";
+    protected final int MAX_ATTEMPTS = 3;
+
 
     public abstract boolean add(T t);
     public abstract boolean update(T t);

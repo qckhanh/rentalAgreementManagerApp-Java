@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -81,6 +82,7 @@ public class AgreementManagerController implements Initializable {
             ra.setSubTenants(selectedSubRenters);
 
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdate = rentalAgreementDAO.update(ra);
             if(isUpdate){
                 rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
@@ -121,6 +123,7 @@ public class AgreementManagerController implements Initializable {
             ra.setSubTenants(selectedSubRenters);
 
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdate = rentalAgreementDAO.update(ra);
             if(isUpdate){
                 rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
@@ -418,9 +421,9 @@ public class AgreementManagerController implements Initializable {
 //        ra.setMainTenant(null);
 //        ra.setSubTenants(null);
 //        ra.setProperty(null);
-
+        DatabaseUtil.warmUp();
         rentalAgreementDAO.update(ra);
-
+        DatabaseUtil.warmUp();
         boolean isDelete = rentalAgreementDAO.delete(ra);
         if(isDelete){
             rentalAgreementsList.remove(ra);

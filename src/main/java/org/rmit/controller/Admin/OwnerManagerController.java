@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
@@ -168,6 +169,7 @@ public class OwnerManagerController implements Initializable {
         }
         else {
             OwnerDAO dao = new OwnerDAO();
+            DatabaseUtil.warmUp();
             boolean isDeleted = dao.delete(person);
             if(isDeleted){
                 personObservableList.remove(person);
@@ -189,6 +191,7 @@ public class OwnerManagerController implements Initializable {
             person.setDateOfBirth(dob_input.getValue());
             person.setPassword(password_PasswordTextField.getPassword());
             OwnerDAO dao = new OwnerDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdated = dao.update(person);
             if (isUpdated) {
                     personObservableList.set(personObservableList.indexOf(person), person);
@@ -222,6 +225,7 @@ public class OwnerManagerController implements Initializable {
             person.setDateOfBirth(dob_input.getValue());
             if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?"))
                 return;
+            DatabaseUtil.warmUp();
             boolean isAdded = ownerDAO.add(person);
             if (isAdded) {
                 personObservableList.add(person);

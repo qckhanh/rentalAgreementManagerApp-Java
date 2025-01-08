@@ -17,94 +17,164 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
 
     @Override
     public boolean add(ResidentialProperty residentialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.merge(residentialProperty);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.merge(residentialProperty); // Merge the residential property
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return true if the operation is successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to add residential property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean update(ResidentialProperty residentialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            //session.update(residentialProperty);
-            session.merge(residentialProperty);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.merge(residentialProperty); // Merge the residential property
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return true if the update is successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to update residential property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean delete(ResidentialProperty residentialProperty) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            ResidentialProperty obj = session.merge(residentialProperty);
-            session.delete(obj);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                ResidentialProperty obj = session.merge(residentialProperty); // Merge the residential property
+                session.delete(obj); // Delete the residential property
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                return true; // Return true if deletion is successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to delete residential property.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        finally {
-            DatabaseUtil.shutdown(DatabaseUtil.getSession());
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public ResidentialProperty get(int id, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_BY_ID_HQL, "ResidentialProperty");
-            ResidentialProperty obj = session.createQuery(hql, ResidentialProperty.class)
-                    .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
-                    .uniqueResult();
-            DatabaseUtil.shutdown(session);
-            return obj;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_BY_ID_HQL, "ResidentialProperty");
+                ResidentialProperty obj = session.createQuery(hql, ResidentialProperty.class)
+                        .setParameter("id", id)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
+                        .uniqueResult();
+                DatabaseUtil.shutdown(session);
+                return obj; // Return the object if retrieval is successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to fetch residential property.");
+                    return null; // Return null if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return null; // Fallback return (should not reach here)
     }
+
 
     @Override
     public List<ResidentialProperty> getAll(Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_ALL_HQL, "ResidentialProperty");
-            List<ResidentialProperty> list = session.createQuery(hql, ResidentialProperty.class)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
-                    .list();  // Fetch the list of Renters
-            DatabaseUtil.shutdown(session);
-            return list;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_ALL_HQL, "ResidentialProperty");
+                List<ResidentialProperty> list = session.createQuery(hql, ResidentialProperty.class)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+                        .list();  // Fetch the list of ResidentialProperties
+                DatabaseUtil.shutdown(session);
+                return list; // Return the list if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to fetch list of residential properties.");
+                    return Collections.emptyList(); // Return empty list if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        return Collections.emptyList(); // Fallback return (should not reach here)
     }
+
 
 
     public EntityGraph<ResidentialProperty> createEntityGraph(Session session) {

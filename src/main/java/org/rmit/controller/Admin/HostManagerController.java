@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
@@ -179,6 +180,7 @@ public class HostManagerController implements Initializable {
         }
         else {
             HostDAO dao = new HostDAO();
+            DatabaseUtil.warmUp();
             boolean isDeleted = dao.delete(person);
             if(isDeleted){
                 personObservableList.remove(person);
@@ -200,6 +202,7 @@ public class HostManagerController implements Initializable {
             person.setDateOfBirth(dob_input.getValue());
             person.setPassword(password_PasswordTextField.getPassword());
             HostDAO dao = new HostDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdated = dao.update(person);
             if(isUpdated){
                 personObservableList.set(personObservableList.indexOf(person), person);
@@ -229,6 +232,7 @@ public class HostManagerController implements Initializable {
         person.setContact(contact_input.getText());
         person.setDateOfBirth(dob_input.getValue());
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this host?")) return;
+        DatabaseUtil.warmUp();
         boolean isAdded = dao.add(person);
         if(isAdded){
             personObservableList.add(person);

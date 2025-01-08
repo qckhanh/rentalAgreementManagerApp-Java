@@ -116,12 +116,16 @@ public class Renter_NotificationController implements Initializable {
     }
 
     private void deleteNoti() {
-//        currentUser.get().getReceivedNotifications().clear();
-//        currentUser.get().getSentNotifications().clear();
-//        loadListView(getNoFilter());
-//        HostDAO hostDAO = new HostDAO();
-//        hostDAO.update(currentUser.get());
-//        System.out.println("Notification deleted");
+        //chua xoa tren ui
+        Notification notification = selectedNotificationProperty.get();
+        int id = Integer.parseInt(notification.getId() + "");
+        NotificationDAO notificationDAO = new NotificationDAO();
+        notificationDAO.delete(notification);
+        if (currentUser.get().getSentNotifications().contains(notification)) {
+            currentUser.get().getSentNotifications().remove(notification);
+        } else {
+            currentUser.get().getReceivedNotifications().remove(notification);
+        }
     }
 
     private void setButtonVisible(boolean visible){

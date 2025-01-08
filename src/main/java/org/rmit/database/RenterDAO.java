@@ -17,90 +17,164 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
 
     @Override
     public boolean add(Renter renter) {
-        try(Session session = DatabaseUtil.getSession()){
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.persist(renter);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.persist(renter);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to add renter.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean update(Renter renter) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.merge(renter);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.merge(renter);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to update renter.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean delete(Renter renter) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.delete(renter);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.delete(renter);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to delete renter.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public Renter get(int id, Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_BY_ID_HQL, "Renter");
-            Renter obj = session.createQuery(hql, Renter.class)
-                    .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))
-                    .uniqueResult();
-            DatabaseUtil.shutdown(session);
-            return obj;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_BY_ID_HQL, "Renter");
+                Renter obj = session.createQuery(hql, Renter.class)
+                        .setParameter("id", id)
+                        .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))
+                        .uniqueResult();
+                DatabaseUtil.shutdown(session);
+                return obj; // Return the object if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to get renter.");
+                    return null; // Return null if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
+        return null; // Fallback return (should not reach here)
     }
+
 
     @Override
     public List<Renter> getAll(Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_ALL_HQL, "Renter");
-            List<Renter> list = session.createQuery(hql, Renter.class)
-                    .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
-                    .list();  // Fetch the list of Renters
-            DatabaseUtil.shutdown(session);
-            return list;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_ALL_HQL, "Renter");
+                List<Renter> list = session.createQuery(hql, Renter.class)
+                        .setHint("jakarta.persistence.fetchgraph", sessionEntityGraphFunction.apply(session))  // Apply EntityGraph
+                        .list();  // Fetch the list of Renters
+                DatabaseUtil.shutdown(session);
+                return list; // Return the list if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to fetch renters.");
+                    return Collections.emptyList(); // Return empty list if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        return Collections.emptyList(); // Fallback return (should not reach here)
     }
+
 
     @Override
     public Renter validateLogin(String usernameOrContact, String password) {

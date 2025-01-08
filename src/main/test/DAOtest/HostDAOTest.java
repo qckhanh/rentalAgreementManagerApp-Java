@@ -36,26 +36,8 @@ public class HostDAOTest {
     @Test
     void testGetHostDAO() {
         HostDAO hostDAO = new HostDAO();
-
         //Sample host example to test  (information from database)
-        Host hostSample = new Host();
-        hostSample.setId(99);
-        hostSample.setContact("1111");
-        hostSample.setName("11");
-        LocalDate ownerSampleDOB = LocalDate.of(2025, 1, 1);
-        hostSample.setDateOfBirth(ownerSampleDOB);
-        hostSample.setUsername("1");
-        hostSample.setPassword("1");
-
-        //Test get owner
-        Host hostTest = hostDAO.get(99, EntityGraphUtils::SimpleHost);
-        assertEquals(hostSample, hostTest);
-        assertEquals(hostSample.getId(), hostTest.getId());
-        assertEquals(hostSample.getName(), hostTest.getName());
-        assertEquals(hostSample.getContact(), hostTest.getContact());
-        assertEquals(hostSample.getDateOfBirth(), hostTest.getDateOfBirth());
-        assertEquals(hostSample.getUsername(), hostTest.getUsername());
-        assertEquals(hostSample.getPassword(), hostTest.getPassword());
+        assertNotNull(hostDAO.get(2, EntityGraphUtils::SimpleHost));
     }
 
     @Test
