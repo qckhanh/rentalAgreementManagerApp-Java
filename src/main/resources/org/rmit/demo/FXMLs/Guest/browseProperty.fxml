@@ -12,8 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.rmit.controller.Guest.Guest_BrowsePropertyController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Guest.Guest_BrowsePropertyController">
     <children>
         <Label fx:id="welcomeLabel" layoutX="47.0" layoutY="31.0" prefHeight="59.0" prefWidth="306.0" text="Property Manager">
             <font>
@@ -21,12 +20,12 @@
             </font>
         </Label>
         <Line endX="201.24806213378906" layoutX="366.0" layoutY="374.0" rotate="90.0" startX="-100.0" />
-        <Label fx:id="welcomeLabel1" layoutX="550.0" layoutY="44.0" prefHeight="30.0" prefWidth="107.0" text="Preview">
+        <Label fx:id="welcomeLabel1" layoutX="572.0" layoutY="41.0" prefHeight="30.0" prefWidth="107.0" text="Preview">
             <font>
                 <Font name="System Bold" size="28.0" />
             </font>
         </Label>
-        <VBox alignment="TOP_CENTER" layoutX="445.0" layoutY="86.0" prefHeight="646.0" prefWidth="316.0" spacing="10.0">
+        <VBox alignment="TOP_CENTER" layoutX="446.0" layoutY="108.0" prefHeight="585.0" prefWidth="316.0" spacing="5.0">
          <children>
             <ImageView fitHeight="146.0" fitWidth="219.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -65,16 +64,6 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
                <children>
-                  <Label prefHeight="33.0" prefWidth="91.0" text="Owner">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="ownerName_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
-               <children>
                   <Label prefHeight="33.0" prefWidth="91.0" text="Status">
                      <font>
                         <Font size="14.0" />
@@ -91,16 +80,6 @@
                      </font>
                   </Label>
                   <TextField fx:id="propertyType_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
-               <children>
-                  <Label prefHeight="33.0" prefWidth="91.0" text="Agreement">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="totalAgremeent_input" editable="false" prefHeight="27.0" prefWidth="160.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="9.0" prefWidth="284.0" spacing="10.0">
@@ -177,7 +156,7 @@
         <VBox alignment="CENTER" layoutX="47.0" layoutY="149.0" prefHeight="585.0" prefWidth="338.0" spacing="5.0">
          <children>
             <ListView fx:id="property_listView" prefHeight="546.0" prefWidth="306.0" />
-            <Button fx:id="manageProperty_btn" mnemonicParsing="false" prefHeight="8.0" prefWidth="306.0" text="Edit">
+            <Button fx:id="manageProperty_btn" mnemonicParsing="false" prefHeight="29.0" prefWidth="343.0" text="Edit">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -187,7 +166,7 @@
       <HBox layoutX="55.0" layoutY="91.0" prefHeight="33.0" prefWidth="329.0">
          <children>
             <TextField fx:id="search_input" prefHeight="33.0" prefWidth="271.0" promptText="Search for Property ID or Address" />
-            <Button fx:id="search_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="54.0" text="Button" />
+            <Button fx:id="search_btn" mnemonicParsing="false" prefHeight="45.0" prefWidth="54.0" text="Button" />
          </children>
       </HBox>
     </children>

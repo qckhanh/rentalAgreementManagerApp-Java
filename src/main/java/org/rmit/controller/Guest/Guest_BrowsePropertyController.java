@@ -34,10 +34,8 @@ public class Guest_BrowsePropertyController implements Initializable {
     public TextField propertyID_input;
     public TextField address_input;
     public TextField price_input;
-    public TextField ownerName_input;
     public TextField statusProperty_input;
     public TextField propertyType_input;
-    public TextField totalAgremeent_input;
     public TextField bussinessType_input;
     public TextField parkingSlot_input;
     public TextField squareArea_input;
@@ -64,7 +62,7 @@ public class Guest_BrowsePropertyController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         UIDecorator.buttonIcon(search_btn, new FontIcon(Material2MZ.SEARCH));
-        UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
+        UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE(), "Select a property");
 
         search_btn.setOnAction(event -> searchProperty());
         search_input.setOnAction(event -> searchProperty());
@@ -83,7 +81,7 @@ public class Guest_BrowsePropertyController implements Initializable {
                 super.updateItem(property, empty);
                 if (empty || property == null) {
 //                    manageProperty_btn.setText("Select a property");
-                    UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
+                    UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE(), "Select a property");
                     setText(null);
                     setOnMouseClicked(null); // Remove click handler for empty cells
                 } else {
@@ -140,10 +138,8 @@ public class Guest_BrowsePropertyController implements Initializable {
         propertyID_input.setText("");
         address_input.setText("");
         price_input.setText("");
-        ownerName_input.setText("");
         statusProperty_input.setText("");
         propertyType_input.setText("");
-        totalAgremeent_input.setText("");
         clearDataCommercial();
         clearDataResidential();
     }
@@ -168,15 +164,15 @@ public class Guest_BrowsePropertyController implements Initializable {
             }
         }
 
-        System.out.println("showPropertyDetail: "+property);
+//        System.out.println("showPropertyDetail: "+property);
         propertyMap.put(id, property);
         propertyID_input.setText(property.getId()+"");
         address_input.setText(property.getAddress());
         price_input.setText(property.getPrice()+"");
-        ownerName_input.setText(property.getOwner().getName());
+//        ownerName_input.setText(property.getOwner().getName());
         statusProperty_input.setText(property.getStatus().toString());
         propertyType_input.setText(property.getType().toString());
-        totalAgremeent_input.setText(property.getAgreementList().size()+"");
+//        totalAgremeent_input.setText(property.getAgreementList().size()+"");
         if(property.getType().toString().equals("COMMERCIAL")){
             CommercialProperty commercialProperty = (CommercialProperty) property;
             bussinessType_input.setText(commercialProperty.getBusinessType());

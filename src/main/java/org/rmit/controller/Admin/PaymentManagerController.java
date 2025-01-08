@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.UIDecorator;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.PaymentDAO;
@@ -47,10 +48,17 @@ public class PaymentManagerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        savePayment_btn.setVisible(false);
         setupTableComboxBox();
         settingTableComboBox();
         setupActionButton();
         validateInput();
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setNormalButton(addPayment_btn, UIDecorator.ADD(), null);
+        UIDecorator.setSuccessButton(savePayment_btn, UIDecorator.SEND(), null);
     }
 
     private void validateInput() {
@@ -114,6 +122,7 @@ public class PaymentManagerController implements Initializable {
         );
         payments_tableView.setItems(paymentObservableList);
         payments_tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            savePayment_btn.setVisible(false);
             selectedPayment.set(newValue);
             showPaymentDetail(newValue);
         });
@@ -270,6 +279,7 @@ public class PaymentManagerController implements Initializable {
     private void addPayment() {
         clearPaymentDetail();
         setEditable(true);
+        savePayment_btn.setVisible(true);
         savePayment_btn.setVisible(true);
     }
 

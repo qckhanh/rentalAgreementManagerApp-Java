@@ -15,31 +15,35 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Renter.Renter_makeRentalAgreementController">
     <children>
-        <Label fx:id="welcomeLabel" layoutX="54.0" layoutY="30.0" prefHeight="59.0" prefWidth="391.0" text="Rental Agreement Manager">
+        <Label fx:id="welcomeLabel" layoutX="57.0" layoutY="14.0" prefHeight="59.0" prefWidth="391.0" text="Rental Agreement Manager">
             <font>
                 <Font name="System Bold" size="28.0" />
             </font>
         </Label>
-      <VBox layoutX="253.0" layoutY="89.0" prefHeight="658.0" prefWidth="333.0" spacing="10.0">
+      <VBox layoutX="190.0" layoutY="71.0" prefHeight="687.0" prefWidth="399.0" spacing="15.0">
          <children>
-            <Label prefHeight="31.0" prefWidth="95.0" text="Property">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
             <HBox prefHeight="36.0" prefWidth="321.0">
                <children>
-                  <TextField fx:id="propertySearch_input" prefHeight="35.0" prefWidth="279.0" promptText="Search for Property ID or Address" />
+                  <TextField fx:id="propertySearch_input" prefHeight="35.0" prefWidth="347.0" promptText="Search for Property ID or Address" />
                   <Button fx:id="searchProperty_btn" mnemonicParsing="false" prefHeight="54.0" prefWidth="52.0" text="S" />
                </children>
             </HBox>
-            <ComboBox fx:id="property_ComboBox" prefHeight="35.0" prefWidth="331.0" />
-            <HBox alignment="CENTER" prefHeight="157.0" prefWidth="366.0" spacing="10.0">
+            <HBox>
+               <children>
+                  <Label prefHeight="31.0" prefWidth="95.0" text="Property">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="property_ComboBox" prefHeight="35.0" prefWidth="331.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="143.0" prefWidth="378.0" spacing="10.0">
                <children>
                   <Button fx:id="prevImg_btn" mnemonicParsing="false" prefHeight="37.0" prefWidth="63.0" text="prev" />
-                  <DeckPane fx:id="imageShow_deckPane" prefHeight="150.0" prefWidth="233.0">
+                  <DeckPane fx:id="imageShow_deckPane" prefHeight="133.0" prefWidth="178.0">
                      <children>
-                        <ImageView fx:id="imageView_propertyImg" fitHeight="148.0" fitWidth="237.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="imageView_propertyImg" fitHeight="148.0" fitWidth="206.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../Image/rmit.jpeg" />
                            </image>
@@ -49,50 +53,66 @@
                   <Button fx:id="nextImg_btn" mnemonicParsing="false" prefHeight="34.0" prefWidth="61.0" text="next" />
                </children>
             </HBox>
-            <Label prefHeight="31.0" prefWidth="95.0" text="Owner">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <TextField fx:id="owner_input" prefHeight="40.0" prefWidth="321.0" />
-            <Label prefHeight="31.0" prefWidth="95.0" text="Host">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="host_comboBox" prefHeight="35.0" prefWidth="319.0" />
-            <Label prefHeight="31.0" prefWidth="95.0" text="Period">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="rentalPeriod_comboBox" prefHeight="35.0" prefWidth="319.0" />
-            <Label prefHeight="31.0" prefWidth="116.0" text="Sub-renters">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <HBox prefHeight="36.0" prefWidth="321.0">
+            <HBox>
                <children>
-                  <TextField fx:id="subRenterSearch_input" prefHeight="35.0" prefWidth="279.0" promptText="Search for Property ID or Address" />
-                  <Button fx:id="searchRenter_btn" mnemonicParsing="false" prefHeight="34.0" prefWidth="47.0" text="S" />
+                  <Label prefHeight="31.0" prefWidth="95.0" text="Owner">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="owner_input" prefHeight="40.0" prefWidth="321.0" />
                </children>
             </HBox>
-            <ListView fx:id="subRenter_listView" prefHeight="128.0" prefWidth="321.0" />
-            <Button fx:id="submit_btn" mnemonicParsing="false" prefHeight="42.0" prefWidth="321.0" text="Button" />
+            <HBox>
+               <children>
+                  <Label prefHeight="31.0" prefWidth="95.0" text="Host">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="host_comboBox" prefHeight="35.0" prefWidth="319.0" />
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label prefHeight="31.0" prefWidth="95.0" text="Period">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="rentalPeriod_comboBox" prefHeight="35.0" prefWidth="319.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="36.0" prefWidth="321.0">
+               <children>
+                  <TextField fx:id="subRenterSearch_input" prefHeight="35.0" prefWidth="345.0" promptText="Search for Renter ID or Name" />
+                  <Button fx:id="searchRenter_btn" mnemonicParsing="false" prefHeight="34.0" prefWidth="54.0" text="S" />
+               </children>
+            </HBox>
+            <VBox>
+               <children>
+                  <Label prefHeight="31.0" prefWidth="116.0" text="Sub-renters">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <ListView fx:id="subRenter_listView" prefHeight="128.0" prefWidth="321.0" />
+               </children>
+            </VBox>
+            <Button fx:id="submit_btn" mnemonicParsing="false" prefHeight="35.0" prefWidth="399.0" text="Button" />
          </children>
       </VBox>
-      <Label fx:id="propertyOption_err" layoutX="605.0" layoutY="183.0" text="Address must not be empty" textFill="RED">
+      <Label fx:id="propertyOption_err" layoutX="605.0" layoutY="119.0" text="Address must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="hostOption_err" layoutX="605.0" layoutY="358.0" text="Address must not be empty" textFill="RED">
+      <Label fx:id="hostOption_err" layoutX="605.0" layoutY="366.0" text="Address must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="periodOption_err" layoutX="605.0" layoutY="446.0" text="Address must not be empty" textFill="RED">
+      <Label fx:id="periodOption_err" layoutX="605.0" layoutY="488.0" text="Address must not be empty" textFill="RED">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>

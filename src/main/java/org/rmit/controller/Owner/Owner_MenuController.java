@@ -47,12 +47,12 @@ public class Owner_MenuController implements Initializable {
     }
 
     private void decor(){
-        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
-        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
-        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
-        UIDecorator.setNormalButton(propertiesManager_btn, UIDecorator.PROPERTY, "Properties Manager");
-        UIDecorator.setNormalButton(hostManager_btn, UIDecorator.OTHER_PERSON, "Host Manager");
-        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION, "Notifications");
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER(), "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE(), "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT(), "Log Out");
+        UIDecorator.setNormalButton(propertiesManager_btn, UIDecorator.PROPERTY(), "Properties Manager");
+        UIDecorator.setNormalButton(hostManager_btn, UIDecorator.OTHER_PERSON(), "Host Manager");
+        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION(), "Notifications");
     }
 
     private void setActionButton(){

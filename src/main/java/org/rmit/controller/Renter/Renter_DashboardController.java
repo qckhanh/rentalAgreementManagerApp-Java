@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Persons.Owner;
@@ -55,7 +56,11 @@ public class Renter_DashboardController implements Initializable {
         agreementsNumber.setText(String.valueOf(((Renter) Session.getInstance().getCurrentUser()).getAgreementList().size()));
         paymentsNumber.setText(String.valueOf(((Renter) Session.getInstance().getCurrentUser()).getPayments().size()));
         refreshButton.setOnAction(e -> refreshData());
+        decor();
+    }
 
+    private void decor(){
+       UIDecorator.setNormalButton(refreshButton, UIDecorator.REFRESH(), null);
     }
 
     private void refreshData() {

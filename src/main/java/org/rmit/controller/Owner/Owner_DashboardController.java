@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.ModelCentral;
@@ -52,7 +53,11 @@ public class Owner_DashboardController implements Initializable {
         propertiesValueLabel.setText(String.valueOf(((Owner) Session.getInstance().getCurrentUser()).getPropertiesOwned().size()));
         hostsValueLabel.setText(String.valueOf(((Owner) Session.getInstance().getCurrentUser()).getHosts().size()));
         refreshButton.setOnAction(e -> refreshData());
+        decor();
+    }
 
+    private void decor(){
+        UIDecorator.setNormalButton(refreshButton, UIDecorator.REFRESH(), null);
     }
 
     private void refreshData() {

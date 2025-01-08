@@ -47,13 +47,13 @@ public class Host_MenuController implements Initializable {
         decor();
     }
     private void decor(){
-        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
-        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
-        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
-        UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY, "Payment Manager");
-        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON, "Cooperating Owner");
-        UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL, "Agreement Manager");
-        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION, "Notification");
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER(), "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE(), "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT(), "Log Out");
+        UIDecorator.setNormalButton(propertyManager_btn, UIDecorator.PROPERTY(), "Property Manager");
+        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.OTHER_PERSON(), "Cooperating Owner");
+        UIDecorator.setNormalButton(agreement_btn, UIDecorator.RENTAL(), "Agreement Manager");
+        UIDecorator.setNormalButton(notifications_btn, UIDecorator.NOTIFICATION(), "Notification");
     }
 
     private void setActionButton(){

@@ -6,6 +6,7 @@ module module_name {
     requires org.mockito;
     requires net.synedra.validatorfx;
     requires javafx.controls;
+
     requires org.testfx;
     requires org.testfx.junit5;
 

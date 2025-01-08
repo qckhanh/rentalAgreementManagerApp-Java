@@ -246,10 +246,11 @@ public class RenterManagerController implements Initializable {
     }
 
     private void decor(){
-        UIDecorator.setDangerButton(delete_btn, UIDecorator.DELETE, null);
-        UIDecorator.setSuccessButton(create_btn, new FontIcon(Feather.PLUS_CIRCLE), null);
-        UIDecorator.setSuccessButton(addToDB_btn, new FontIcon(Feather.PLUS_CIRCLE), "Save");
-        UIDecorator.setNormalButton(update_btn, UIDecorator.EDIT, null);
+        UIDecorator.setDangerButton(delete_btn, UIDecorator.DELETE(), null);
+        UIDecorator.setSuccessButton(create_btn, UIDecorator.ADD(), null);
+        UIDecorator.setSuccessButton(addToDB_btn, UIDecorator.ADD(), "Save");
+        UIDecorator.setNormalButton(update_btn, UIDecorator.EDIT(), null);
+        UIDecorator.setSuccessButton(addToDB_btn, UIDecorator.SEND(), null);
     }
 
     private void clearTextField() {

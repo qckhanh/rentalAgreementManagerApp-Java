@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import org.rmit.Helper.DateUtils;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
@@ -106,6 +107,12 @@ public class Owner_NotificationController implements Initializable {
         loadListView(getNoFilter());
         approve_btn.setOnAction(e -> approve());
         deny_btn.setOnAction(e -> deny());
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setSuccessButton(approve_btn, UIDecorator.APPROVE(), "Approve");
+        UIDecorator.setDangerButton(deny_btn, UIDecorator.DENY(), "Deny");
     }
 
     private int getIDFromDraftObject(String draftObject) {

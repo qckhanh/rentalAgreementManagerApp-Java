@@ -12,6 +12,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
@@ -82,6 +83,11 @@ public class Admin_DashboardController implements Initializable {
         refreshAdminDashBoard.setOnMouseExited(event -> {
             refreshAdminDashBoard.setStyle(""); // Reset to default style
         });
+        decor();
+    }
+
+    private void decor(){
+       UIDecorator.setNormalButton(refreshAdminDashBoard, UIDecorator.REFRESH(), null);
     }
 
 

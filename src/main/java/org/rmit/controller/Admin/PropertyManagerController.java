@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.rmit.Helper.DatabaseUtil;
 import javafx.scene.image.ImageView;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -82,16 +83,22 @@ public class PropertyManagerController implements Initializable {
         setUpTableBehavior();
         setOnActionButton();
         setUpTableView();
-
         validateInputCP();
         validateInputRP();
-
-
         addToDB_btn.disableProperty().bind(validatorCP.containsErrorsProperty().or(validatorRP.containsErrorsProperty()));
 
         // Add listener to update the total number of bedrooms and rooms:
         infor1_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         infor2_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setDangerButton(delete_btn, UIDecorator.DELETE(), null);
+        UIDecorator.setDangerButton(update_btn, UIDecorator.EDIT(), null);
+        UIDecorator.setDangerButton(create_btn, UIDecorator.ADD(), null);
+        UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
+        UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
     }
 
     private void validateInputCP() {
@@ -238,18 +245,6 @@ public class PropertyManagerController implements Initializable {
                 .decorates(infor1_input)
                 .immediateClear();
 
-//        validatorRP.createCheck()
-//                .dependsOn("infor2", infor2_input.textProperty())
-//                .withMethod(context -> {
-//                    String input = context.get("infor2");
-//                    if (!InputValidator.isValidBedrooms(input, noneLabel, totalNumberRooms)) {
-//                        context.error("Bedrooms must be a valid number");
-//                        System.out.println("Bedrooms: " + input);
-//                        System.out.println("Validation Error: Bedrooms must be a valid number");
-//                    }
-//                })
-//                .decorates(infor2_input)
-//                .immediateClear();
 
         validatorRP.createCheck()
                 .dependsOn("bed", infor2_input.textProperty())
@@ -350,9 +345,7 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void setUpTableBehavior(){
-//        infor3_comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            squareMeters.set(newValue.toString());
-//        });
+
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
@@ -408,9 +401,6 @@ public class PropertyManagerController implements Initializable {
                 create_btn.setVisible(false);
             }
         });
-
-
-
     }
 
     private void setUpInfor(Property property){
