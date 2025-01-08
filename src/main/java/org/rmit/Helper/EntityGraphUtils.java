@@ -76,6 +76,7 @@ public class EntityGraphUtils {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
         entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username");
+        entityGraph.addSubgraph("agreementList");
         return entityGraph;
     }
 
