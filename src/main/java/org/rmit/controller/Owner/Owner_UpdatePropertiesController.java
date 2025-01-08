@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.ImageUtils;
@@ -20,6 +21,7 @@ import org.rmit.model.Property.Property;
 import org.rmit.model.Property.PropertyStatus;
 import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,7 +47,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public TextField propertyBedrooms_txtf;
     public TextField propertyRooms_txtf;
     public Button updateProperty_btn;
-    public Button btn;
     public Label address_err;
     public Label price_err;
     public Label status_err;
@@ -61,6 +62,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Button nextImg_btn;
     public Button addImage_btn;
     public Button clearImage_btn;
+    public AnchorPane anchorPane;
     Validator validator = new Validator();
 
     private int totalNumberBedrooms = 0;
@@ -68,12 +70,11 @@ public class Owner_UpdatePropertiesController implements Initializable {
     private List<byte[]> images = new ArrayList<>();
     private int currentImageIndex = 0;
 
-
     public Owner_UpdatePropertiesController() {
     }
 
-    //Illegal attempt to associate a collection with two open sessions: FIXED
-    public static void setSelectedProperty(Property property) {
+    public static void setSelectedProperty(Property property) {       // need optimization
+//         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Property selected");
         int id = Integer.parseInt(property.getId() + "");
         if(property instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
@@ -136,7 +137,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
         UIDecorator.setNormalButton(addImage_btn, UIDecorator.ADD(), null);
         UIDecorator.setNormalButton(clearImage_btn, UIDecorator.DELETE(), null);
-        UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.PREVIOUS(), "Back");
+        UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.BACK_PREVIOUS_PAGE(), null);
         UIDecorator.setNormalButton(updateProperty_btn, UIDecorator.SEND(), "Update");
     }
 
@@ -282,11 +283,10 @@ public class Owner_UpdatePropertiesController implements Initializable {
     private void updateProperty() {
         if (updateProperty_btn.getText().equals("Save")) {
             if (!validator.validate()){
-                System.out.println("not valid");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in the form correctly");
                 return;
             }
-            boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
-            if (confirmed) saveChanges();
+            if(ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes")) saveChanges();
         }
         else {
             setDisable(false);
@@ -311,14 +311,20 @@ public class Owner_UpdatePropertiesController implements Initializable {
             ((ResidentialProperty) selectedProperty.get()).setTotalBedroom(Integer.parseInt(propertyBedrooms_txtf.getText()));
             ((ResidentialProperty) selectedProperty.get()).setTotalRoom(Integer.parseInt(propertyRooms_txtf.getText()));
         }
-        System.out.println("Error here");
+        boolean isUpdated = false;
         if (selectedProperty.get() instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            cpDAO.update((CommercialProperty) selectedProperty.get());
+            isUpdated = cpDAO.update((CommercialProperty) selectedProperty.get());
         }
         else if (selectedProperty.get() instanceof ResidentialProperty) {
             ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            rpDAO.update((ResidentialProperty) selectedProperty.get());
+            isUpdated = rpDAO.update((ResidentialProperty) selectedProperty.get());
+        }
+        if(isUpdated) {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
+        }
+        else {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
         }
         setDisable(true);
         updateProperty_btn.setText("Edit");
@@ -419,7 +425,12 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void updateFormFields(Property property) {
         images.clear();
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
         images.addAll(property.getImages());
+        if(images.size() > 0) {
+            currentImageIndex = 0;
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(0)));
+        }
         propertyAddress_txtf.setText(property.getAddress());
         propertyPrice_txtf.setText(String.valueOf(property.getPrice()));
         propertyStatus_cbox.getItems().addAll(PropertyStatus.values());
@@ -435,6 +446,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyBedrooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
             propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
         }
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Information loaded");
 
     }
 
@@ -508,20 +520,26 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
 
     private void addImage() {
-        if(images.size() >= 3) System.out.println("Exception: Image limit reached");
+        if(images.size() >= 3) {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Maximum 3 images allowed");
+        }
         else {
             String path = ImageUtils.openFileChooseDialog();
             if (path != ImageUtils.DEFAULT_IMAGE) {
                 images.add(ImageUtils.getByte(path));
                 currentImageIndex = images.size() - 1;
                 imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(currentImageIndex)));
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
+            }
+            else{
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No image selected. Image size must be less than 1MB");
             }
         }
     }
 
     private void prevImg_btn() {
         if(images.size() == 0){
-            System.out.println("Exception: No images to display");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = images.size();
@@ -532,7 +550,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void nextImg_btn() {
         if(images.size() == 0){
-            System.out.println("Exception: No images to display");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = images.size();
@@ -543,7 +561,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
     private void clearSelectedImage() {
         images.clear();
-        imageView_propertyImg.setImage(null);
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
     }
 
     boolean isDifferent(List<byte[] > a, List<byte[]> b) {

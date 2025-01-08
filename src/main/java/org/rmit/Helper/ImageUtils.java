@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.rmit.model.ModelCentral;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -63,7 +64,9 @@ public class ImageUtils {
         fileChooser.setTitle("Choose an image");
         File file = fileChooser.showOpenDialog(stage);
         if(file == null) return DEFAULT_IMAGE;
-        if(file.length() > MAX_IMAGE_SIZE) return DEFAULT_IMAGE;
+        if(file.length() > MAX_IMAGE_SIZE){
+            return DEFAULT_IMAGE;
+        }
 
         return file.getAbsolutePath();
     }

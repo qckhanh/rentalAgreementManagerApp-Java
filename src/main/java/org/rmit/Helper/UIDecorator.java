@@ -110,13 +110,8 @@ public class UIDecorator {
         textField.pseudoClassStateChanged(Styles.STATE_DANGER, true);
     }
 
-    public static FontIcon DANGER() {
-        return new FontIcon(Feather.TRASH);
-    }
 
-    public static FontIcon SUCCESS() {
-        return new FontIcon(Feather.CHECK_CIRCLE);
-    }
+
 
     public static FontIcon EDIT() {
         return new FontIcon(Feather.EDIT);
@@ -224,4 +219,21 @@ public class UIDecorator {
     public static FontIcon USER_ROLE(){
         return new FontIcon(Material2RoundMZ.SUPERVISED_USER_CIRCLE);
     }
+
+    public static FontIcon FAIL(){
+        return new FontIcon(Feather.X_CIRCLE);
+    }
+
+    public static FontIcon SUCCESS() {
+        return new FontIcon(Feather.CHECK_CIRCLE);
+    }
+
+    public static FontIcon WARNING() {
+        return new FontIcon(Feather.ALERT_TRIANGLE);
+    }
+
+    public static FontIcon BACK_PREVIOUS_PAGE() {
+        return new FontIcon(Feather.CHEVRON_LEFT);
+    }
+
 }

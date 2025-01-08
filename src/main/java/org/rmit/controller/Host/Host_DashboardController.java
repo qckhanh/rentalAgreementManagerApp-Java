@@ -12,12 +12,15 @@ import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.rmit.Helper.UIDecorator;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
@@ -34,6 +37,7 @@ public class Host_DashboardController implements Initializable {
     @FXML
     public PieChart piechart;
     public ObservableList<PieChart.Data> pieChartData;
+    public AnchorPane anchorPane;
     Set<Property> manageProperties = ((Host)currentUser.get()).getPropertiesManaged();
     @FXML
     private CategoryAxis xAxis;
@@ -82,6 +86,7 @@ public class Host_DashboardController implements Initializable {
         // Update BarChart data
         barChart.getData().clear();
         setBarChart();
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data has been updated successfully!");
     }
 
     /* Main function to set the graphs  on the dashboard */

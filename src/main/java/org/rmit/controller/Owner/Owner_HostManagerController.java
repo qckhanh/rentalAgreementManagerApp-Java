@@ -4,14 +4,17 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
@@ -33,6 +36,7 @@ public class Owner_HostManagerController implements Initializable {
 
     public ObjectProperty<Person> currentPerson = Session.getInstance().currentUserProperty();
     public ObjectProperty<Set<Host>> hosts = ((Owner) currentPerson.get()).hostsPropertyProperty();
+    public AnchorPane anchorPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,10 +70,13 @@ public class Owner_HostManagerController implements Initializable {
 
     private void searchHost() {
         if (search_input.getText().isBlank()) return;
+        search_btn.setDisable(true);
         HostDAO hostDAO = new HostDAO();
         List<Host> lists = hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost);
         Set<Host> hostSet = new HashSet<>(lists);
         loadHost(hostSet);
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, lists.size() + " host(s) found");
+        search_btn.setDisable(false);
     }
 
     private void loadHost(Set<Host> h) {
@@ -86,6 +93,7 @@ public class Owner_HostManagerController implements Initializable {
 
     private void showDetails(Host h) {
         if (h == null)  return;
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
         int id = Integer.parseInt(h.getId()+"");
         if (hostMap.containsKey(id)) {
             h = hostMap.get(id);
@@ -95,7 +103,7 @@ public class Owner_HostManagerController implements Initializable {
             h = hostDAO.get(id, EntityGraphUtils::hostForSearching);
             hostMap.put(id, h);
         }
-
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host details loaded");
         D_input.setText(h.getId()+"");
         username_input.setText(h.getUsername());
         fullName_input.setText(h.getName());
