@@ -23,7 +23,7 @@
         <Line endX="201.24806213378906" layoutX="366.0" layoutY="374.0" rotate="90.0" startX="-100.0" />
         <VBox alignment="TOP_CENTER" layoutX="445.0" layoutY="92.0" prefHeight="631.0" prefWidth="323.0" spacing="20.0">
          <children>
-            <ImageView fitHeight="183.0" fitWidth="219.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="avatarOwner_imageView" fitHeight="216.0" fitWidth="248.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../Image/rmit.jpeg" />
                </image>
