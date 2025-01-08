@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import net.synedra.validatorfx.Validator;
+import org.rmit.Helper.InputValidator;
 import org.rmit.database.PaymentDAO;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.PaymentMethod;
@@ -16,6 +18,7 @@ import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -39,16 +42,68 @@ public class PaymentManagerController implements Initializable {
     private ObjectProperty<Payment> selectedPayment = new SimpleObjectProperty<>();
     List<Payment> paymentList = ModelCentral.getInstance().getAdminViewFactory().getAllPayment();
 
+    private Validator validator = new Validator();
+    Label noneLabel = new Label();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setupTableComboxBox();
         settingTableComboBox();
         setupActionButton();
+        validateInput();
+    }
+
+    private void validateInput() {
+        validator.createCheck()
+                .dependsOn("amount", amount_input.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("amount");
+                    if (!InputValidator.isValidPrice(input, noneLabel)) {
+                        context.error("Amount must be a valid number greater than zero");
+                    }
+                })
+                .decorates(amount_input)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("date", paymentDate_datePicker.valueProperty())
+                .withMethod(context -> {
+                    LocalDate input = context.get("date");
+                    if (!InputValidator.isValidDateFormat(input, noneLabel)) {
+                        context.error("Date must be a valid date before today");
+                    }
+                })
+                .decorates(paymentDate_datePicker)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("paymentMethod", paymentMethod_comboBox.valueProperty())
+                .withMethod(context -> {
+                    PaymentMethod input = context.get("paymentMethod");
+                    if (input == null) {
+                        context.error("Payment method must be selected");
+                    }
+                })
+                .decorates(paymentMethod_comboBox)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("agreement", agreement_comboBox.valueProperty())
+                .withMethod(context -> {
+                    RentalAgreement input = context.get("agreement");
+                    if (input == null) {
+                        context.error("Agreement must be selected");
+                    }
+                })
+                .decorates(agreement_comboBox)
+                .immediateClear();
     }
     
     private void setupActionButton() {
         addPayment_btn.setOnAction(e -> addPayment());
-        savePayment_btn.setOnAction(e -> saveToDB());
+        savePayment_btn.setOnAction(e -> {
+            if (validator.validate()) saveToDB();
+        });
     }
 
     private void setupTableComboxBox(){
@@ -183,7 +238,6 @@ public class PaymentManagerController implements Initializable {
         });
 
     }
-
 
     private void saveToDB() {
         if(!isChanged(new Payment())) return;

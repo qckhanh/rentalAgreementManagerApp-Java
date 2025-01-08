@@ -14,6 +14,7 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
+import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
@@ -63,8 +64,8 @@ public class PropertyManagerController implements Initializable {
     private Validator validatorCP = new Validator();
     private Validator validatorRP = new Validator();
 
-    private int totalNumberRooms = 0;
     private int totalNumberBedrooms = 0;
+    private int totalNumberRooms = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -74,7 +75,13 @@ public class PropertyManagerController implements Initializable {
 
         validateInputCP();
         validateInputRP();
+
+
         addToDB_btn.disableProperty().bind(validatorCP.containsErrorsProperty().or(validatorRP.containsErrorsProperty()));
+
+        // Add listener to update the total number of bedrooms and rooms:
+        infor1_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
+        infor2_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
     }
 
     private void validateInputCP() {
@@ -147,23 +154,19 @@ public class PropertyManagerController implements Initializable {
                 .immediateClear();
 
 
-//        validatorCP.createCheck()
-//                .dependsOn("infor3", squareMeters)
-//                .withMethod(context -> {
-//                    String input = context.get("infor3");
-//                    if (!InputValidator.isValidSquareMeters(input, noneLabel)) {
-//                        context.error("Square Meters must be a valid number");
-//                    }
-//                })
-//                .decorates(infor3_comboBox)
-//                .immediateClear();
+        validatorCP.createCheck()
+                .dependsOn("infor3", infor3_comboBox.valueProperty())
+                .withMethod(context -> {
+                    String input = context.get("infor3");
+                    if (!isValidSquareMeters()) {
+                        context.error("Square Meters must be a valid number");
+                    }
+                })
+                .decorates(infor3_comboBox)
+                .immediateClear();
     }
 
     private void validateInputRP() {
-        // Add listeners to update total number of bedrooms and rooms
-        infor1_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-        infor2_input.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-
         validatorRP.createCheck()
                 .dependsOn("address", address_input.textProperty())
                 .withMethod(context -> {
@@ -203,6 +206,7 @@ public class PropertyManagerController implements Initializable {
                 .withMethod(context -> {
                     PropertyStatus input = context.get("status");
                     if (input == null) {
+                        System.out.println("Status: " + input);
                         noneLabel.setText("A Status must be selected");
                         context.error("A Status must be selected");
                     }
@@ -216,26 +220,46 @@ public class PropertyManagerController implements Initializable {
                     String input = context.get("infor1");
                     if (!InputValidator.isValidRooms(input, noneLabel, totalNumberBedrooms)) {
                         context.error("Rooms must be a valid number");
+                        System.out.println("Rooms: " + input);
+                        System.out.println("Validation Error: A room must be selected");
+
                     }
                 })
                 .decorates(infor1_input)
                 .immediateClear();
 
+//        validatorRP.createCheck()
+//                .dependsOn("infor2", infor2_input.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("infor2");
+//                    if (!InputValidator.isValidBedrooms(input, noneLabel, totalNumberRooms)) {
+//                        context.error("Bedrooms must be a valid number");
+//                        System.out.println("Bedrooms: " + input);
+//                        System.out.println("Validation Error: Bedrooms must be a valid number");
+//                    }
+//                })
+//                .decorates(infor2_input)
+//                .immediateClear();
+
         validatorRP.createCheck()
-                .dependsOn("infor2", infor2_input.textProperty())
+                .dependsOn("bed", infor2_input.textProperty())
+                .dependsOn("room", infor1_input.textProperty())
                 .withMethod(context -> {
-                    String input = context.get("infor2");
-                    if (!InputValidator.isValidBedrooms(input, noneLabel, totalNumberRooms)) {
-                        context.error("Bedrooms must be a valid number");
+                    String bed = context.get("bed");
+                    String room = context.get("room");
+                    if(!InputValidator.isValidRoomsAndBedroom(room, bed)) {
+                        context.error("Bedrooms must be less than or equal to Rooms");
+                        System.out.println("Validation Error: Bedrooms must be less than or equal to Rooms");
                     }
                 })
                 .decorates(infor2_input)
+                .decorates(infor1_input)
                 .immediateClear();
 
         validatorRP.createCheck()
                 .dependsOn("infor3", infor3_comboBox.valueProperty())
                 .withMethod(context -> {
-                    String input = context.get("infor3");
+                    Boolean input = context.get("infor3");
                     if (input == null) {
                         noneLabel.setText("Pets must be selected");
                         context.error("Pets must be selected");
@@ -246,7 +270,7 @@ public class PropertyManagerController implements Initializable {
 
         validatorRP.createCheck().dependsOn("infor4", infor4_comboBox.valueProperty())
                 .withMethod(context -> {
-                    String input = context.get("infor4");
+                    Boolean input = context.get("infor4");
                     if (input == null) {
                         noneLabel.setText("Garden must be selected");
                         context.error("Garden must be selected");
@@ -256,6 +280,20 @@ public class PropertyManagerController implements Initializable {
                 .immediateClear();
     }
 
+    private void updateTotalNumbers() {
+        try {
+            totalNumberRooms = Integer.parseInt(infor1_input.getText());
+        } catch (NumberFormatException e) {
+            totalNumberRooms = 0;
+        }
+
+        try {
+            totalNumberBedrooms = Integer.parseInt(infor2_input.getText());
+        } catch (NumberFormatException e) {
+            totalNumberBedrooms = 0;
+        }
+    }
+
     private void setOnActionButton(){
         create_btn.setOnAction(e -> createProperty());
         update_btn.setOnAction(e -> updateProperty());
@@ -263,7 +301,12 @@ public class PropertyManagerController implements Initializable {
         prev_btn.setOnAction(e -> prevImage());
         next_btn.setOnAction(e -> nextImage());
         addToDB_btn.setOnAction(e -> {
-            if ((validatorCP.validate() && isValidSquareMeters()) || validatorRP.validate()) addToDB();
+//            if (validatorCP.validate() || validatorRP.validate()) addToDB();
+            if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)) {
+                if (validatorCP.validate() && isValidSquareMeters()) addToDB();
+            } else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)) {
+                if (validatorRP.validate()) addToDB();
+            }
             clearTextFilled();
         });
 
@@ -272,11 +315,25 @@ public class PropertyManagerController implements Initializable {
 
     private boolean isValidSquareMeters() {
         try {
-            double value = Double.parseDouble(infor3_comboBox.getValue().toString());
-            return value > 0;
+            if (infor3_comboBox.getValue() == null) {
+                return false;
+            }
+
+            if (infor3_comboBox.getValue().toString().isEmpty()) {
+                return false;
+            }
+
+            double squareMeters = Double.parseDouble(infor3_comboBox.getValue().toString());
+
+            // Check if the number is positive
+            if (squareMeters <= 0) {
+                return false;
+            }
+
         } catch (NumberFormatException e) {
             return false;
         }
+        return true;
     }
 
     private void setUpTableBehavior(){
@@ -559,6 +616,7 @@ public class PropertyManagerController implements Initializable {
             residentialProperty.setPetAllowed(Boolean.parseBoolean(infor3_comboBox.getValue().toString()));
             residentialProperty.setHasGarden(Boolean.parseBoolean(infor4_comboBox.getValue().toString()));
         }
+
         boolean isUpdated = dao.update(property);
         if(isUpdated){
             propertyList.set(propertyList.indexOf(property), property);
@@ -624,7 +682,7 @@ public class PropertyManagerController implements Initializable {
             }
             else System.out.println("Failed to add");
         }
-        else{
+        else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)){
             ResidentialProperty newProperty = new ResidentialProperty();
             newProperty.setAddress(address_input.getText());
             newProperty.setPrice(Double.parseDouble(priceInput.getText()));
@@ -637,6 +695,11 @@ public class PropertyManagerController implements Initializable {
             newProperty.setHasGarden(Boolean.parseBoolean(infor4_comboBox.getValue().toString()));
             if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to add this property?")) return;
             ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
+            try {
+                warmUp();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
@@ -652,7 +715,7 @@ public class PropertyManagerController implements Initializable {
         address_input.clear();
         priceInput.clear();
         owner_comboBox.setValue(null);
-        status_comboBox.setValue(null);
+        status_comboBox.setValue(PropertyStatus.AVAILABLE);
         infor1_input.clear();
         infor2_input.clear();
         infor3_comboBox.setValue(null);
@@ -684,23 +747,5 @@ public class PropertyManagerController implements Initializable {
             }
         });
         return column;
-    }
-
-    private void updateTotalNumbers() {
-        try {
-            totalNumberBedrooms = Integer.parseInt(infor2_input.getText());
-        } catch (NumberFormatException e) {
-            totalNumberBedrooms = 0; // Default to 0 if input is invalid
-        }
-
-        try {
-            totalNumberRooms = Integer.parseInt(infor1_input.getText());
-        } catch (NumberFormatException e) {
-            totalNumberRooms = 0; // Default to 0 if input is invalid
-        }
-
-        // Optionally, you can update some UI elements or perform other actions based on the new totals
-        System.out.println("Total Bedrooms: " + totalNumberBedrooms);
-        System.out.println("Total Rooms: " + totalNumberRooms);
     }
 }
