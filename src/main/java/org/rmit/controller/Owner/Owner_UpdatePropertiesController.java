@@ -61,7 +61,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Button nextImg_btn;
     public Button addImage_btn;
     public Button clearImage_btn;
-    Validator validator = new Validator();
+    Validator validatorCP = new Validator();
+    Validator validatorRP = new Validator();
 
     private int totalNumberBedrooms = 0;
     private int totalNumberRooms = 0;
@@ -84,12 +85,12 @@ public class Owner_UpdatePropertiesController implements Initializable {
             property = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
 
         }
+
         selectedProperty.set(property);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         returnTableView_btn.setOnAction(e-> {
             ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
         });
@@ -100,6 +101,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         propertyAddress_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
         propertyPrice_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
         propertyStatus_cbox.valueProperty().addListener(((observableValue, propertyStatus, t1) -> checkChanges()));
+
         if (selectedProperty.get() instanceof CommercialProperty) {
             propertyBtype_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
             propertySquareMeters_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
@@ -110,27 +112,41 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyPet_chBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
             propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
             propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
+
             // Add listeners to update total number of bedrooms and rooms
             propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
             propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         }
+
         setDisable(true);
 
         updateProperty_btn.setText("Edit");
         updateProperty_btn.setDisable(false);
-        updateProperty_btn.setOnAction(e-> updateProperty());
+        updateProperty_btn.setOnAction(e-> {
+            if (selectedProperty.get() instanceof CommercialProperty && validatorCP.validate()) updateProperty();
+            else if (selectedProperty.get() instanceof ResidentialProperty && validatorRP.validate()) updateProperty();
+        });
+
         nextImg_btn.setOnAction(e -> nextImg_btn());
         prevImg_btn.setOnAction(e -> prevImg_btn());
         clearImage_btn.setOnAction(e -> clearSelectedImage());
         addImage_btn.setOnAction(e -> addImage());
 
-
-
         addListener();
         resetErrorLabels();
-        validateInput();
+        validateInputCP();
+        validateInputRP();
         decor();
+
+//        if (selectedProperty.get() instanceof CommercialProperty) {
+//            updateProperty_btn.disableProperty().bind(validatorCP.containsErrorsProperty());
+//        }
+//
+//        else if (selectedProperty.get() instanceof ResidentialProperty) {
+//            updateProperty_btn.disableProperty().bind(validatorRP.containsErrorsProperty());
+//        }
     }
+
     private void decor(){
         UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
@@ -140,8 +156,103 @@ public class Owner_UpdatePropertiesController implements Initializable {
         UIDecorator.setNormalButton(updateProperty_btn, UIDecorator.SEND(), "Update");
     }
 
-    private void validateInput() {
-        validator.createCheck()
+//    private void validateInput() {
+//        validator.createCheck()
+//                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyAddress");
+//                    if (!InputValidator.NoCondition(input, address_err)) {
+//                        context.error("Address must not be empty");
+//                    }
+//                })
+//                .decorates(propertyAddress_txtf)
+//                .immediateClear();
+//
+//        validator.createCheck()
+//                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyPrice");
+//                    if (!InputValidator.isValidPrice(input, price_err)) {
+//                        context.error("Price must be a valid number");
+//                    }
+//                })
+//                .decorates(propertyPrice_txtf)
+//                .immediateClear();
+//
+//        validator.createCheck()
+//                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
+//                .withMethod(context -> {
+//                    PropertyStatus input = context.get("propertyStatus");
+//                    if (input == null) {
+//                        context.error("A Status must be selected");
+//                        status_err.setText("A Status must be selected");
+//                    }
+//                })
+//                .decorates(propertyStatus_cbox)
+//                .immediateClear();
+//
+//        if (selectedProperty.get() instanceof CommercialProperty) {
+//            validator.createCheck()
+//                    .dependsOn("propertyBtype", propertyBtype_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyBtype");
+//                        if (!InputValidator.NoCondition(input, businessType_err)) {
+//                            context.error("BusinessType must not be empty");
+//                        }
+//                    })
+//                    .decorates(propertyBtype_txtf)
+//                    .immediateClear();
+//
+//            validator.createCheck()
+//                    .dependsOn("propertySquareMeters", propertySquareMeters_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertySquareMeters");
+//                        if (!InputValidator.isValidSquareMeters(input, squareMeters_err)) {
+//                            context.error("Square meters must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertySquareMeters_txtf)
+//                    .immediateClear();
+//
+//            validator.createCheck()
+//                    .dependsOn("propertyPSpaces", propertyPSpaces_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyPSpaces");
+//                        if (!InputValidator.isValidParkingSpaces(input, parkingSpace_err)) {
+//                            context.error("Parking spaces must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyPSpaces_txtf)
+//                    .immediateClear();
+//        } else if (selectedProperty.get() instanceof ResidentialProperty) {
+//            validator.createCheck()
+//                    .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyBedrooms");
+//                        if (!InputValidator.isValidBedrooms(input, bedroom_err, totalNumberRooms)) {
+//                            context.error("Bedrooms must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyBedrooms_txtf)
+//                    .immediateClear();
+//
+//            validator.createCheck()
+//                    .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyRooms");
+//                        if (!InputValidator.isValidRooms(input, room_err, totalNumberBedrooms)) {
+//                            context.error("Rooms must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyRooms_txtf)
+//                    .immediateClear();
+//        }
+//
+////        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
+//    }
+
+    private void validateInputCP(){
+        validatorCP.createCheck()
                 .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
                 .withMethod(context -> {
                     String input = context.get("propertyAddress");
@@ -152,7 +263,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .decorates(propertyAddress_txtf)
                 .immediateClear();
 
-        validator.createCheck()
+        validatorCP.createCheck()
                 .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
                 .withMethod(context -> {
                     String input = context.get("propertyPrice");
@@ -163,7 +274,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .decorates(propertyPrice_txtf)
                 .immediateClear();
 
-        validator.createCheck()
+        validatorCP.createCheck()
                 .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
                 .withMethod(context -> {
                     PropertyStatus input = context.get("propertyStatus");
@@ -176,7 +287,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .immediateClear();
 
         if (selectedProperty.get() instanceof CommercialProperty) {
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertyBtype", propertyBtype_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyBtype");
@@ -187,7 +298,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertyBtype_txtf)
                     .immediateClear();
 
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertySquareMeters", propertySquareMeters_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertySquareMeters");
@@ -198,7 +309,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertySquareMeters_txtf)
                     .immediateClear();
 
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertyPSpaces", propertyPSpaces_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyPSpaces");
@@ -208,8 +319,48 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     })
                     .decorates(propertyPSpaces_txtf)
                     .immediateClear();
-        } else if (selectedProperty.get() instanceof ResidentialProperty) {
-            validator.createCheck()
+        }
+        updateProperty_btn.disableProperty().bind(validatorCP.containsErrorsProperty());
+    }
+
+    private void validateInputRP(){
+        validatorRP.createCheck()
+                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyAddress");
+                    if (!InputValidator.NoCondition(input, address_err)) {
+                        context.error("Address must not be empty");
+                    }
+                })
+                .decorates(propertyAddress_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyPrice");
+                    if (!InputValidator.isValidPrice(input, price_err)) {
+                        context.error("Price must be a valid number");
+                    }
+                })
+                .decorates(propertyPrice_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
+                .withMethod(context -> {
+                    PropertyStatus input = context.get("propertyStatus");
+                    if (input == null) {
+                        context.error("A Status must be selected");
+                        status_err.setText("A Status must be selected");
+                    }
+                })
+                .decorates(propertyStatus_cbox)
+                .immediateClear();
+
+        if (selectedProperty.get() instanceof ResidentialProperty) {
+
+            validatorRP.createCheck()
                     .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyBedrooms");
@@ -220,7 +371,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertyBedrooms_txtf)
                     .immediateClear();
 
-            validator.createCheck()
+            validatorRP.createCheck()
                     .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyRooms");
@@ -231,8 +382,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertyRooms_txtf)
                     .immediateClear();
         }
-
-//        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
+        updateProperty_btn.disableProperty().bind(validatorRP.containsErrorsProperty());
     }
 
     private void addListener() {
@@ -261,7 +411,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 if (!newValue.equals(oldValue)) parkingSpace_err.setText("");
                 checkChanges();
             });
-        } else if (selectedProperty.get() instanceof ResidentialProperty) {
+        }
+        else if (selectedProperty.get() instanceof ResidentialProperty) {
             propertyGarden_chbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!Objects.equals(oldValue, newValue)) checkChanges();
             });
@@ -281,10 +432,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void updateProperty() {
         if (updateProperty_btn.getText().equals("Save")) {
-            if (!validator.validate()){
-                System.out.println("not valid");
-                return;
-            }
             boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
             if (confirmed) saveChanges();
         }
@@ -341,17 +488,24 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
     }
 
+
+
+    // IT MIGHT BE HERE
     private void checkChanges() {
         boolean changed = false;
+
         if (!propertyAddress_txtf.getText().equals(selectedProperty.get().getAddress())) {
             changed = true;
         }
+
         if (!propertyPrice_txtf.getText().equals(String.valueOf(selectedProperty.get().getPrice()))) {
             changed = true;
         }
+
         if (!propertyStatus_cbox.getValue().equals(selectedProperty.get().getStatus())) {
             changed = true;
         }
+
         if(isDifferent(images, selectedProperty.get().getImages())) {
             changed = true;
         }
@@ -374,11 +528,29 @@ public class Owner_UpdatePropertiesController implements Initializable {
             if (!propertyPet_chBox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isIsPetAllowedProperty()) {
                 changed = true;
             }
-            if (!propertyBedrooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalBedroom()))) {
-                changed = true;
+//            if (!propertyBedrooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalBedroom()))) {
+//                changed = true;
+//            }
+//            if (!propertyRooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalRoom()))) {
+//                changed = true;
+//            }
+
+            try {
+                int bedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
+                if (bedrooms != ((ResidentialProperty) selectedProperty.get()).getTotalBedroom()) {
+                    changed = true;
+                }
+            } catch (NumberFormatException e) {
+                changed = false; // Handle invalid number format
             }
-            if (!propertyRooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalRoom()))) {
-                changed = true;
+
+            try {
+                int rooms = Integer.parseInt(propertyRooms_txtf.getText());
+                if (rooms != ((ResidentialProperty) selectedProperty.get()).getTotalRoom()) {
+                    changed = true;
+                }
+            } catch (NumberFormatException e) {
+                changed = true; // Handle invalid number format
             }
         }
 
@@ -433,7 +605,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyGarden_chbox.setSelected(((ResidentialProperty) property).isHasGardenProperty());
             propertyPet_chBox.setSelected(((ResidentialProperty) property).isIsPetAllowedProperty());
             propertyBedrooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
-            propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
+            propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalRoom()));
         }
 
     }
@@ -541,6 +713,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         currentImageIndex = position;
         imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(position)));
     }
+
     private void clearSelectedImage() {
         images.clear();
         imageView_propertyImg.setImage(null);

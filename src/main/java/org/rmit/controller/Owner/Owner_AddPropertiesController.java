@@ -151,7 +151,7 @@ public class Owner_AddPropertiesController implements Initializable {
         resetErrorLabels();
         decor();
     }
-    
+
     private void decor(){
         UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);

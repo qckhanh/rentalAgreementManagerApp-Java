@@ -245,7 +245,7 @@ public class InputValidator {
 
         // Check if input is a number
         try {
-            double parkingSpaces = Double.parseDouble(input);
+            int parkingSpaces = Integer.parseInt(input);
 
             // Check if the number is positive
             if (parkingSpaces <= 0) {
