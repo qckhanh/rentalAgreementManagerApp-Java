@@ -250,9 +250,6 @@ public class RentalAgreement {
 
     @Override
     public String toString() {
-        return "RentalAgreement{" +
-                "contractDate=" + contractDate +
-                ", agreementId=" + agreementId +
-                '}';
+        return "ID - " + agreementId;
     }
 }

@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.hibernate.Session;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -375,6 +377,18 @@ public class PropertyManagerController implements Initializable {
         Host_tableView.getItems().clear();
     }
 
+    private void warmUp() throws InterruptedException {
+        DatabaseUtil.getSession();
+        System.out.println("Session created");
+        Thread.sleep(1000);
+        try (Session session = DatabaseUtil.getSession()) {
+            session.createNativeQuery("SELECT 1").getSingleResult();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addToDB() {
         if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.NONE)) System.out.println("Cannot add");
         if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)){
@@ -389,7 +403,13 @@ public class PropertyManagerController implements Initializable {
             newProperty.setSquareMeters(Double.parseDouble(infor3_comboBox.getValue().toString()));
 
             if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to add this property?")) return;
+
             CommercialPropertyDAO dao = new CommercialPropertyDAO();
+            try {
+                warmUp();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             boolean isAdded = dao.add(newProperty);
             if(isAdded){
                 propertyList.add(newProperty);
