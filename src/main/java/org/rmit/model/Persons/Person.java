@@ -230,14 +230,7 @@ public abstract class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "idProperty=" + idProperty.get() +
-                ", nameProperty=" + nameProperty.get() +
-                ", dateOfBirthProperty=" + dateOfBirthProperty.get() +
-                ", contactProperty=" + contactProperty.get() +
-                ", usernameProperty=" + usernameProperty.get() +
-                ", passwordProperty=" + passwordProperty.get() +
-                '}';
+        return "ID - " + id;
     }
 
 }

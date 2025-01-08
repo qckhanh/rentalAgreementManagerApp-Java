@@ -96,14 +96,7 @@ public class CommercialProperty extends Property {
 
     @Override
     public String toString() {
-        return super.toString() +  "CommercialProperty{" +
-                "businessType='" + businessTypeProperty.getValue() + '\'' +
-                ", totalParkingSpace=" + totalParkingSpaceProperty.getValue() +
-                ", squareMeters=" + squareMetersProperty.getValue() +
-                ", businessType=" + businessTypeProperty.getValue() +
-                ", totalParkingSpace=" + totalParkingSpaceProperty.getValue() +
-                ", squareMeters=" + squareMetersProperty.getValue() +
-                '}';
+        return "ID - " + super.getId();
     }
 }
 

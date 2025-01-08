@@ -123,11 +123,6 @@ public class ResidentialProperty extends Property {
 
     @Override
     public String toString() {
-        return  super.toString() +  "ResidentialProperty{" +
-                "totalRoom=" + totalRoomProperty.getValue() +
-                ", totalBedroom=" + totalBedroomProperty.getValue() +
-                ", isPetAllowed=" + isPetAllowedProperty.getValue() +
-                ", hasGarden=" + hasGardenProperty.getValue() +
-                '}';
+        return  "ID - " + super.getId();
     }
 }
