@@ -1,6 +1,7 @@
 package org.rmit.Helper;
 
 
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
@@ -27,6 +28,10 @@ public class InputValidator {
         return isValid;
     }
     public static boolean isValidPassword(String s, Label password_err) {
+        if (s == null) {
+            setLabelError(password_err, RED, "Password must not be empty");
+            return false;
+        }
         boolean isValid = s.length() >= 8;
         if(!isValid) setLabelError(password_err, RED, "Password must be at least 8 characters");
         return isValid;
@@ -197,6 +202,37 @@ public class InputValidator {
         return true;
     }
 
+    public static boolean isValidSquareMetersAdmin(ComboBox<String> input, Label squareMetersErr) {
+        try {
+            if (input.getValue() == null) {
+                squareMetersErr.setText("Field must not be empty");
+                squareMetersErr.setTextFill(RED);
+                return false;
+            }
+
+            if (input.getValue().isEmpty()) {
+                squareMetersErr.setText("Field must not be empty");
+                squareMetersErr.setTextFill(RED);
+                return false;
+            }
+
+            double squareMeters = Double.parseDouble(input.getValue());
+
+            // Check if the number is positive
+            if (squareMeters <= 0) {
+                squareMetersErr.setText("Square meters must be positive");
+                squareMetersErr.setTextFill(RED);
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            squareMetersErr.setText("Input must be a number");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+        return true;
+    }
+
 //    public static boolean isValidBedrooms(String input, Label bedroomErr) {
 //        // Check if the input is empty
 //        if (input.isEmpty()) {
@@ -317,5 +353,17 @@ public class InputValidator {
         }
 
         return true;
+    }
+
+    public static boolean isValidRoomsAndBedroom(String rooms, String bedroom){
+        try{
+            int room = Integer.parseInt(rooms);
+            int bed = Integer.parseInt(bedroom);
+            if(room <= 0 || bed <= 0) return false;
+            return room >= bed;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 }
