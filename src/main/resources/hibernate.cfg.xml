@@ -10,12 +10,15 @@
                 <property name="hibernate.connection.url">
                     jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
                 </property>
-                <property name="hibernate.connection.username">
-                    postgres.qzrobawhuhlydmxxhcjo
-                </property>
-                <property name="hibernate.connection.password">
-                    11022005
-                </property>
+<!--                <property name="hibernate.connection.username">-->
+<!--                    postgres.qzrobawhuhlydmxxhcjo-->
+<!--                </property>-->
+<!--                <property name="hibernate.connection.password">-->
+<!--                    11022005-->
+<!--                </property>-->
+
+
+
 
 <!--                        <property name="hibernate.connection.username">-->
 <!--                            postgres.hfjwcjkrtorqkbulvain-->
@@ -27,15 +30,16 @@
         <property name="hibernate.c3p0.testConnectionOnCheckout">true</property>
         <property name="hibernate.c3p0.testConnectionOnCheckin">true</property>
 
-<!--        &lt;!&ndash;  TEST  &ndash;&gt;-->
+        <!--  TEST  -->
+<!--        jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres?user=postgres.aiokillxlvyccqihaifm&password=[YOUR-PASSWORD]-->
 <!--        <property name="hibernate.connection.url">-->
 <!--            jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres-->
 <!--        </property>-->
 <!--        <property name="hibernate.connection.username">-->
-<!--            postgres.qzrobawhuhlydmxxhcjo-->
+<!--            postgres.aiokillxlvyccqihaifm-->
 <!--        </property>-->
 <!--        <property name="hibernate.connection.password">-->
-<!--            11022005-->
+<!--            4MfBMAZCviJd5Zx7-->
 <!--        </property>-->
 
 

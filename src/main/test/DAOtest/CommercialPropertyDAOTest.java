@@ -48,7 +48,8 @@ public class CommercialPropertyDAOTest {
 
     @Test
     void testGetCommercialPropertyDAO() {
-        assertTrue(new CommercialPropertyDAO().get(12, EntityGraphUtils::SimpleCommercialPropertyFull) != null);
+        //id taken directly from the database
+        assertNotNull(new CommercialPropertyDAO().get(12, EntityGraphUtils::SimpleCommercialPropertyFull));
     }
 
     @Test

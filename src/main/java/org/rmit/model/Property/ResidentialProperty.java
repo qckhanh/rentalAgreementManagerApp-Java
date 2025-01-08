@@ -44,6 +44,8 @@ public class ResidentialProperty extends Property {
         super.idProperty.setValue(super.getId());
         super.hostsProperty.setValue(super.getHosts());
         super.agreementListProperty.setValue(super.getAgreementList());
+        super.imagesProperty.setValue(super.getImages());
+
 
         this.totalRoomProperty.setValue(this.totalRoom);
         this.totalBedroomProperty.setValue(this.totalBedroom);
@@ -121,11 +123,6 @@ public class ResidentialProperty extends Property {
 
     @Override
     public String toString() {
-        return  super.toString() +  "ResidentialProperty{" +
-                "totalRoom=" + totalRoomProperty.getValue() +
-                ", totalBedroom=" + totalBedroomProperty.getValue() +
-                ", isPetAllowed=" + isPetAllowedProperty.getValue() +
-                ", hasGarden=" + hasGardenProperty.getValue() +
-                '}';
+        return  "ID - " + super.getId();
     }
 }

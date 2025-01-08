@@ -1,9 +1,12 @@
 package org.rmit.controller.Owner;
 
+import atlantafx.base.layout.DeckPane;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
@@ -15,6 +18,8 @@ import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Owner_AddPropertiesController implements Initializable {
@@ -33,6 +38,7 @@ public class Owner_AddPropertiesController implements Initializable {
     public TextField propertyRooms_txtf;
     public Button addProperty_btn;
     public Button returnTableView_btn;
+
     public Label address_err;
     public Label price_err;
     public Label status_err;
@@ -42,11 +48,22 @@ public class Owner_AddPropertiesController implements Initializable {
     public Label bedroom_err;
     public Label room_err;
 
+    public Button prevImg_btn;
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
+    public Button nextImg_btn;
+    public Button addImage_btn;
+    public Button clearSelectedImage;
+
     Validator validatorCP = new Validator();
     Validator validatorRP = new Validator();
 
     private int totalNumberBedrooms = 0;
     private int totalNumberRooms = 0;
+
+    private int currentImageIndex = 0;
+    private int totalImages = 0;
+    private List<byte[]> selectedImages = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -73,8 +90,14 @@ public class Owner_AddPropertiesController implements Initializable {
                 validatorRP.clear();
                 validateInputRP();
             }
+
+
             returnTableView_btn.setOnAction(e -> returnTableView());
             addProperty_btn.setOnAction(e -> addProperty());
+            nextImg_btn.setOnAction(e -> nextImg_btn());
+            prevImg_btn.setOnAction(e -> prevImg_btn());
+            addImage_btn.setOnAction(e -> addImage());
+            clearSelectedImage.setOnAction(e -> clearSelectedImage());
         });
 
         typeOfProperty_choiceBox.setValue(PropertyType.COMMERCIAL);
@@ -97,6 +120,8 @@ public class Owner_AddPropertiesController implements Initializable {
 
         resetErrorLabels();
     }
+
+
 
     private void validateInputCP() {
         validatorCP.createCheck()
@@ -290,6 +315,9 @@ public class Owner_AddPropertiesController implements Initializable {
                     dao = new CommercialPropertyDAO();
                     CommercialProperty cp = new CommercialProperty();
                     CommercialPropertyFactory(cp);
+                    for(byte[] img : selectedImages) {
+                        cp.addImages(img);
+                    }
                     boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
                     if (confirmed) {
                         if (dao.add(cp)) System.out.println("added");
@@ -301,6 +329,9 @@ public class Owner_AddPropertiesController implements Initializable {
                     System.out.println("DEBUG-G: Residential");
                     dao = new ResidentialPropertyDAO();
                     ResidentialProperty rp = new ResidentialProperty();
+                    for(byte[] img : selectedImages) {
+                        rp.addImages(img);
+                    }
                     boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
                     ResidentialPropertyFactory(rp);
                     if (confirmed) {
@@ -361,5 +392,46 @@ public class Owner_AddPropertiesController implements Initializable {
         parkingSpace_err.setText("");
         bedroom_err.setText("");
         room_err.setText("");
+    }
+
+    private void addImage() {
+        if(selectedImages.size() >= 3) System.out.println("Exception: Image limit reached");
+        else {
+            String path = ImageUtils.openFileChooseDialog();
+            if (path != ImageUtils.DEFAULT_IMAGE) {
+                selectedImages.add(ImageUtils.getByte(path));
+                totalImages = selectedImages.size();
+                currentImageIndex = totalImages - 1;
+                imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(currentImageIndex)));
+                totalImages++;
+            }
+        }
+    }
+
+    private void prevImg_btn() {
+        if(selectedImages.size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(selectedImages.size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(position)));
+    }
+    private void clearSelectedImage() {
+        selectedImages.clear();
+        imageView_propertyImg.setImage(null);
     }
 }

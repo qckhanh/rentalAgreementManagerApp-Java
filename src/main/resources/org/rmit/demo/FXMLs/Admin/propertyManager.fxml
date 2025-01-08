@@ -8,6 +8,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -30,11 +32,19 @@
                     <children>
                         <VBox prefHeight="1000.0" prefWidth="371.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                        <HBox alignment="CENTER" prefHeight="162.0" prefWidth="331.0">
+                        <HBox alignment="CENTER" prefHeight="184.0" prefWidth="361.0" spacing="10.0">
                            <children>
-                              <Button fx:id="prev_btn" mnemonicParsing="false" text="prev" />
-                              <DeckPane fx:id="deckPane" prefHeight="149.0" prefWidth="249.0" />
-                              <Button fx:id="next_btn" mnemonicParsing="false" text="next" />
+                              <Button fx:id="prevImg_btn" mnemonicParsing="false" prefHeight="41.0" prefWidth="34.0" text="prev" />
+                              <DeckPane fx:id="imageShow_deckPane" prefHeight="150.0" prefWidth="233.0">
+                                 <children>
+                                    <ImageView fx:id="imageView_propertyImg" fitHeight="166.0" fitWidth="242.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../Image/rmit.jpeg" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </DeckPane>
+                              <Button fx:id="nextImg_btn" mnemonicParsing="false" prefHeight="34.0" prefWidth="61.0" text="next" />
                            </children>
                         </HBox>
                         <HBox prefHeight="31.0" prefWidth="341.0">

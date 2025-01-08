@@ -6,7 +6,9 @@ import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Agreement.RentalAgreement;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -38,6 +40,12 @@ public abstract class Property {
     @OneToMany(mappedBy = "property")
     private Set<RentalAgreement> agreementList = new HashSet<>();
 
+    @ElementCollection
+    @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id"))
+    @Column(name = "image", nullable = true)
+    @Lob
+    private List<byte[]> images= new ArrayList<>();
+
     // JavaFX Properties (for binding)
     @Transient
     protected ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>();
@@ -55,6 +63,8 @@ public abstract class Property {
     protected ObjectProperty<Set<Host>> hostsProperty = new SimpleObjectProperty<>();
     @Transient
     protected ObjectProperty<Set<RentalAgreement>> agreementListProperty = new SimpleObjectProperty<>();
+    @Transient
+    protected ObjectProperty<List<byte[]>> imagesProperty = new SimpleObjectProperty<>();
 
     // Constructor
     public Property() {
@@ -212,6 +222,33 @@ public abstract class Property {
 
     public ObjectProperty<Set<RentalAgreement>> agreementListPropertyProperty() {
         return agreementListProperty;
+    }
+
+    public List<byte[]> getImages() {
+        return images;
+    }
+
+    public void setImages(List<byte[]> images) {
+        this.images = images;
+    }
+
+    public List<byte[]> getImagesProperty() {
+        return imagesProperty.get();
+    }
+
+    public ObjectProperty<List<byte[]>> imagesPropertyProperty() {
+        return imagesProperty;
+    }
+
+    public void setImagesProperty(List<byte[]> imagesProperty) {
+        this.imagesProperty.set(imagesProperty);
+    }
+
+    public boolean addImages(byte[] img){
+        if(images.size() >= 3) return false;
+        images.add(img);
+        imagesProperty.set(images);
+        return true;
     }
 
     @Override

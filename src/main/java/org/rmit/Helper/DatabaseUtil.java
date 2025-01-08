@@ -21,8 +21,6 @@ public class DatabaseUtil {
         }
     }
 
-
-
     public static Session getSession() {
         if(sessionFactory == null) {
             sessionFactory = buildSessionFactory();
