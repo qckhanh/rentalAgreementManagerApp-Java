@@ -196,7 +196,6 @@ public class InputValidator {
         // Check if input is a number
         try {
             double squareMeters = Double.parseDouble(input);
-
             // Check if the number is positive
             if (squareMeters <= 0) {
                 squareMetersErr.setText("Square meters must be positive");
@@ -213,19 +212,30 @@ public class InputValidator {
         return true;
     }
 
+//    public static boolean isValidParkingSpaces(String input, Label parkingSpaceErr) {
+//        // Check if input is a number
+//        if (!isValidInteger(input, parkingSpaceErr)) {
+//            return false;
+//        }
+//
+//        // Check if the number is positive
+//        if (Integer.parseInt(input) <= 0) {
+//            parkingSpaceErr.setText("Parking spaces must be positive");
+//            parkingSpaceErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        // Check if the input is empty
+//        if (input.isEmpty()) {
+//            parkingSpaceErr.setText("Field must not be empty");
+//            parkingSpaceErr.setTextFill(RED);
+//            return false;
+//        }
+//
+//        return true;
+//    }
+
     public static boolean isValidParkingSpaces(String input, Label parkingSpaceErr) {
-        // Check if input is a number
-        if (!isValidInteger(input, parkingSpaceErr)) {
-            return false;
-        }
-
-        // Check if the number is positive
-        if (Integer.parseInt(input) <= 0) {
-            parkingSpaceErr.setText("Parking spaces must be positive");
-            parkingSpaceErr.setTextFill(RED);
-            return false;
-        }
-
         // Check if the input is empty
         if (input.isEmpty()) {
             parkingSpaceErr.setText("Field must not be empty");
@@ -233,39 +243,56 @@ public class InputValidator {
             return false;
         }
 
-        return true;
-    }
-
-    public static boolean isValidSquareMetersAdmin(ComboBox<String> input, Label squareMetersErr) {
+        // Check if input is a number
         try {
-            if (input.getValue() == null) {
-                squareMetersErr.setText("Field must not be empty");
-                squareMetersErr.setTextFill(RED);
-                return false;
-            }
-
-            if (input.getValue().isEmpty()) {
-                squareMetersErr.setText("Field must not be empty");
-                squareMetersErr.setTextFill(RED);
-                return false;
-            }
-
-            double squareMeters = Double.parseDouble(input.getValue());
+            double parkingSpaces = Double.parseDouble(input);
 
             // Check if the number is positive
-            if (squareMeters <= 0) {
-                squareMetersErr.setText("Square meters must be positive");
-                squareMetersErr.setTextFill(RED);
+            if (parkingSpaces <= 0) {
+                parkingSpaceErr.setText("Parking spaces must be positive");
+                parkingSpaceErr.setTextFill(RED);
                 return false;
             }
 
         } catch (NumberFormatException e) {
-            squareMetersErr.setText("Input must be a number");
-            squareMetersErr.setTextFill(RED);
+            parkingSpaceErr.setText("Input must be a number");
+            parkingSpaceErr.setTextFill(RED);
             return false;
         }
+
         return true;
     }
+
+//    public static boolean isValidSquareMetersAdmin(ComboBox<String> input, Label squareMetersErr) {
+//        try {
+//            if (input.getValue() == null) {
+//                squareMetersErr.setText("Field must not be empty");
+//                squareMetersErr.setTextFill(RED);
+//                return false;
+//            }
+//
+//            if (input.getValue().isEmpty()) {
+//                squareMetersErr.setText("Field must not be empty");
+//                squareMetersErr.setTextFill(RED);
+//                return false;
+//            }
+//
+//            double squareMeters = Double.parseDouble(input.getValue());
+//
+//            // Check if the number is positive
+//            if (squareMeters <= 0) {
+//                squareMetersErr.setText("Square meters must be positive");
+//                squareMetersErr.setTextFill(RED);
+//                return false;
+//            }
+//
+//        } catch (NumberFormatException e) {
+//            squareMetersErr.setText("Input must be a number");
+//            squareMetersErr.setTextFill(RED);
+//            return false;
+//        }
+//        return true;
+//    }
 
 //    public static boolean isValidBedrooms(String input, Label bedroomErr) {
 //        // Check if the input is empty
