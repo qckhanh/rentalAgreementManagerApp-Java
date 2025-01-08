@@ -3,6 +3,7 @@ package org.rmit.controller.Renter;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -15,6 +16,7 @@ import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -39,6 +41,8 @@ public class Renter_EditProfileController implements Initializable {
     public Label contact_err;
     public Label dob_err;
     public Label password_err;
+    public boolean isAvatarChange = true;
+    public AnchorPane anchorPane;
 
     Person currentUser = Session.getInstance().getCurrentUser();
 
@@ -167,13 +171,20 @@ public class Renter_EditProfileController implements Initializable {
                     saveChanges();
                 }
             }
+            else{
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            }
         } else {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
             setDisableAll(false);
         }
     }
 
     private void updateAvatar() {
         SELECTED_PATH = ImageUtils.openFileChooseDialog();
+        if(SELECTED_PATH == ImageUtils.DEFAULT_IMAGE){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
+        }
         avatar_ImageView.setImage(ImageUtils.imageFromPath(SELECTED_PATH));
     }
 
@@ -188,10 +199,13 @@ public class Renter_EditProfileController implements Initializable {
         currentUser.setPassword(newPassword_input.getText());
         if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
 
-        dao.update((Renter)currentUser);
-
-        // Reset fields and button
-        setDisableAll(true);
+         boolean isUpdated =  dao.update((Renter)currentUser);
+         if(isUpdated){
+             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
+         } else {
+             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
+         }
+         setDisableAll(true);
         edit_btn.setText("Edit");
         edit_btn.setDisable(false);
     }

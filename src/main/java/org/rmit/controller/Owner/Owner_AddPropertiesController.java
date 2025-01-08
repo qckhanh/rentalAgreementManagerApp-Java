@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
@@ -17,6 +18,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ public class Owner_AddPropertiesController implements Initializable {
     public Button nextImg_btn;
     public Button addImage_btn;
     public Button clearSelectedImage;
+    public AnchorPane anchorPane;
 
     Validator validatorCP = new Validator();
     Validator validatorRP = new Validator();
@@ -69,6 +72,11 @@ public class Owner_AddPropertiesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         typeOfProperty_choiceBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
+            selectedImages.clear();
+            currentImageIndex = 0;
+            totalImages = 0;
+
             if (newValue == PropertyType.COMMERCIAL) {
                 System.out.println("DEBUG: Commercial");
                 clearData();
@@ -91,7 +99,6 @@ public class Owner_AddPropertiesController implements Initializable {
                 validatorRP.clear();
                 validateInputRP();
             }
-
 
             returnTableView_btn.setOnAction(e -> returnTableView());
             addProperty_btn.setOnAction(e -> addProperty());
@@ -127,7 +134,7 @@ public class Owner_AddPropertiesController implements Initializable {
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
         UIDecorator.setNormalButton(addImage_btn, UIDecorator.ADD(), null);
         UIDecorator.setNormalButton(clearSelectedImage, UIDecorator.DELETE(), null);
-        UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.PREVIOUS(), "Back");
+        UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.BACK_PREVIOUS_PAGE(), null);
         UIDecorator.setNormalButton(addProperty_btn, UIDecorator.SEND(), "Add new roperty");
     }
 
@@ -316,37 +323,32 @@ public class Owner_AddPropertiesController implements Initializable {
 
     private void addProperty() {
             DAOInterface dao = null;
-            System.out.println("DEBUG-G: Add Property " + typeOfProperty_choiceBox.getValue()); // Debugging
             if (typeOfProperty_choiceBox.getValue() == PropertyType.COMMERCIAL) {
-                System.out.println("DEBUG-G: Commercial");
-                if (validatorCP.validate()) {
-                    dao = new CommercialPropertyDAO();
-                    CommercialProperty cp = new CommercialProperty();
-                    CommercialPropertyFactory(cp);
-                    for(byte[] img : selectedImages) {
-                        cp.addImages(img);
-                    }
-                    boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
-                    if (confirmed) {
-                        if (dao.add(cp)) System.out.println("added");
-                        else System.out.println("Nope!");
-                    }
+                if (!validatorCP.validate()){
+                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                    return;
                 }
+                if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
+                dao = new CommercialPropertyDAO();
+                CommercialProperty cp = new CommercialProperty();
+                CommercialPropertyFactory(cp);
+                for(byte[] img : selectedImages) cp.addImages(img);
+
+                if (dao.add(cp)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
+                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+
             } else if (typeOfProperty_choiceBox.getValue() == PropertyType.RESIDENTIAL) {
-                if (validatorRP.validate()) {
-                    System.out.println("DEBUG-G: Residential");
-                    dao = new ResidentialPropertyDAO();
-                    ResidentialProperty rp = new ResidentialProperty();
-                    for(byte[] img : selectedImages) {
-                        rp.addImages(img);
-                    }
-                    boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?");
-                    ResidentialPropertyFactory(rp);
-                    if (confirmed) {
-                        if (dao.add(rp)) System.out.println("added");
-                        else System.out.println("Nope!!");
-                    }
+                if (!validatorRP.validate()){
+                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                    return;
                 }
+                if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
+                dao = new ResidentialPropertyDAO();
+                ResidentialProperty rp = new ResidentialProperty();
+                for(byte[] img : selectedImages) rp.addImages(img);
+                ResidentialPropertyFactory(rp);
+                if (dao.add(rp)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
+                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
             }
     }
 
@@ -403,22 +405,33 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void addImage() {
-        if(selectedImages.size() >= 3) System.out.println("Exception: Image limit reached");
+        if(selectedImages.size() >= 3) {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                    NOTIFICATION_TYPE.WARNING,
+                    anchorPane,
+                    "Maximum 3 images allowed"
+            );
+        }
         else {
             String path = ImageUtils.openFileChooseDialog();
-            if (path != ImageUtils.DEFAULT_IMAGE) {
+            if (!path.equals(ImageUtils.DEFAULT_IMAGE)) {
                 selectedImages.add(ImageUtils.getByte(path));
                 totalImages = selectedImages.size();
                 currentImageIndex = totalImages - 1;
                 imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(currentImageIndex)));
                 totalImages++;
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
+
+            }
+            else {
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must < 1MB");
             }
         }
     }
 
     private void prevImg_btn() {
         if(selectedImages.size() == 0){
-            System.out.println("Exception: No images to display");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImages.size();
@@ -429,7 +442,7 @@ public class Owner_AddPropertiesController implements Initializable {
 
     private void nextImg_btn() {
         if(selectedImages.size() == 0){
-            System.out.println("Exception: No images to display");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImages.size();
@@ -440,6 +453,6 @@ public class Owner_AddPropertiesController implements Initializable {
     }
     private void clearSelectedImage() {
         selectedImages.clear();
-        imageView_propertyImg.setImage(null);
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
     }
 }

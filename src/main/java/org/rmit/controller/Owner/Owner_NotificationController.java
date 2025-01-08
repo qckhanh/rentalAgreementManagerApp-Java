@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.DateUtils;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
@@ -12,6 +13,7 @@ import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
@@ -21,6 +23,7 @@ import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -49,6 +52,8 @@ public class Owner_NotificationController implements Initializable {
     public ObjectProperty<NOTI_TYPE_FILTER> notiTypeProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Owner> currentUser = new SimpleObjectProperty<>((Owner) Session.getInstance().getCurrentUser());
+    public AnchorPane anchorPane;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         roleFilter_comboBox.getItems().addAll(
@@ -93,7 +98,6 @@ public class Owner_NotificationController implements Initializable {
             notifications = filterByType(notifications, newValue);
             notifications = filterByRole(notifications, roleFilterProperty.get());
             loadListView(notifications);
-            System.out.println("Type filter changed");
         });
 
         roleFilterProperty.addListener((observable, oldValue, newValue) -> {
@@ -101,7 +105,6 @@ public class Owner_NotificationController implements Initializable {
             notifications = filterByType(notifications, notiTypeProperty.get());
             notifications = filterByRole(notifications, newValue);
             loadListView(notifications);
-            System.out.println("Role filter changed");
         });
 
         loadListView(getNoFilter());
@@ -115,10 +118,6 @@ public class Owner_NotificationController implements Initializable {
         UIDecorator.setDangerButton(deny_btn, UIDecorator.DENY(), "Deny");
     }
 
-    private int getIDFromDraftObject(String draftObject) {
-        String[] parts = draftObject.split(" ");
-        return Integer.parseInt(parts[parts.length - 1]);
-    }
 
     private void deny() {
         Request request = (Request) selectedNotificationProperty.get();
@@ -136,27 +135,33 @@ public class Owner_NotificationController implements Initializable {
         );
         currentUser.get().sentNotification(notification);
         OwnerDAO ownerDAO = new OwnerDAO();
-        ownerDAO.update(currentUser.get());
-        System.out.println("Request denied and notification sent");
-    }
-
-    public void sentNotification(String message, Person sender, Person receiver){
-        Notification notification = new NormalNotification();
-        notification.setContent(message);
-        notification.setSender(sender);
-        notification.addReceiver(receiver);
-        notification.setTimestamp(DateUtils.formatDate(LocalDate.now()));
-        sender.sentNotification(notification);
+        boolean isUpdated =  ownerDAO.update(currentUser.get());
+        if(isUpdated){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                    NOTIFICATION_TYPE.SUCCESS,
+                    anchorPane,
+                    "Notification successfully sent");
+        }
+        else{
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                    NOTIFICATION_TYPE.ERROR,
+                    anchorPane,
+                    "Notification failed to send. Please try again"
+            );
+        }
     }
 
 
     private void approve() {
         Request request = (Request) selectedNotificationProperty.get();
         if(request.isAllApproved() == true){
-            System.out.println("All approved");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                    NOTIFICATION_TYPE.WARNING,
+                    anchorPane,
+                    "This request has already replied. Cannot reply again"
+            );
             return;
         }
-
         currentUser.get().acceptRequest(request);
         int draftID = NotificationUtils.getDraftID(request.getDraftObject());
         String draftType = NotificationUtils.getDraftType(request.getDraftObject());
@@ -177,13 +182,22 @@ public class Owner_NotificationController implements Initializable {
             }
 
             if(property == null){
-                System.out.println("Property not found");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                        NOTIFICATION_TYPE.ERROR,
+                        anchorPane,
+                        "Cannot found property with ID: " + draftID + ". Cannot approve request"
+                );
+                deny();
                 return;
             }
             host.addProperty(property);
             boolean isUpadated = hostDAO.update(host);
             if(!isUpadated){
-                System.out.println("Host not updated");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                        NOTIFICATION_TYPE.ERROR,
+                        anchorPane,
+                        "Fail to add property to host. Please try again"
+                );
                 return;
             }
             String header = String.format(
@@ -206,45 +220,23 @@ public class Owner_NotificationController implements Initializable {
                     content
             );
             currentUser.get().sentNotification(notification);
-            ownerDAO.update(currentUser.get());
-            System.out.println("Property added and notification sent");
+            boolean isSent =  ownerDAO.update(currentUser.get());
+            if(isSent){
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                        NOTIFICATION_TYPE.SUCCESS,
+                        anchorPane,
+                        "Notification successfully sent"
+                );
+            }
+            else{
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                        NOTIFICATION_TYPE.ERROR,
+                        anchorPane,
+                        "Notification failed to send. Please try again"
+                );
+            }
         }
 
-//        if(draftObject.startsWith("PROPERTY")){
-//            System.out.println("This is a property request");
-//            int propertyID = getIDFromDraftObject(draftObject);
-//
-//            Property property = null;
-//            DAOInterface propertyDAO = new CommercialPropertyDAO();
-//            property = (CommercialProperty)propertyDAO.get(propertyID);
-//            if(property == null){
-//                propertyDAO = new ResidentialPropertyDAO();
-//                property = (ResidentialProperty)propertyDAO.get(propertyID);
-//            }
-//            if(property == null){
-//                System.out.println("Property not found");
-//                return;
-//            }
-//            HostDAO hostDAO = new HostDAO();
-//            OwnerDAO ownerDAO = new OwnerDAO();
-//            Host host = (Host) hostDAO.get(Integer.parseInt(request.getSender().getId() + ""));
-//            host.addProperty(property);
-//            if(hostDAO.update(host)){
-//                System.out.println("Host updated and property added");
-//                sentNotification(
-//                        "Your request to add property " + property.getId() + " | Address: " + property.getAddress() + " has been approved",
-//                        currentUser.get(),
-//                        request.getSender()
-//                );
-//                hostDAO.update(host);
-//                ownerDAO.update(currentUser.get());
-//                System.out.println("Notification sent and saved");
-//            }
-//            else{
-//                System.out.println("Host not updated");
-//            }
-//
-//        }
     }
 
     private void setButtonVisible(boolean visible){
@@ -294,6 +286,5 @@ public class Owner_NotificationController implements Initializable {
         sender_label.setText(notification.getSender().namePropertyProperty().get());
         receiver_label.setText("You and " + notification.getTotalReceivers() + " others");
         timestamp_label.setText(notification.getTimestamp());
-
     }
 }

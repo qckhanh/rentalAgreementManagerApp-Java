@@ -5,15 +5,18 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 import org.rmit.database.RenterDAO;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -30,6 +33,7 @@ public class Renter_DashboardController implements Initializable {
     public Label dateShow;
     public Label agreementsNumber;
     public Label paymentsNumber;
+    public AnchorPane anchorPane;
 
     private ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
     private ObservableList<Notification> notificationObservableList = FXCollections.observableArrayList();
@@ -69,6 +73,7 @@ public class Renter_DashboardController implements Initializable {
         Renter renter = renterDAO.get(id, EntityGraphUtils::SimpleRenterFull);
         agreementsNumber.setText(String.valueOf(renter.getAgreementList().size()));
         paymentsNumber.setText(String.valueOf(renter.getPayments().size()));
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Date now up to date");
     }
 
     private TableColumn<Notification, ?> createColumn(String columnName, String propertyName) {

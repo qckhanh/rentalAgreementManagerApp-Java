@@ -2,19 +2,22 @@ package org.rmit.view.Start;
 
 import atlantafx.base.controls.Notification;
 import atlantafx.base.theme.Styles;
+import atlantafx.base.util.Animations;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.controller.Start.InitController;
-import org.rmit.model.ModelCentral;
 import org.rmit.model.Session;
 
 public class StartViewFactory {
@@ -105,32 +108,76 @@ public class StartViewFactory {
             return alert.getResult().equals(yesBtn);
     }
 
-    public void showNotification(String message){
-//        var success = new Notification(
-//                message,
-//                new FontIcon(Material2OutlinedAL.HELP_OUTLINE)
-//        );
+    public void pushNotification(NOTIFICATION_TYPE type, Pane pane, String message){
+        if (pane.getChildren().size() > 0) {
+            for (Node node : pane.getChildren()) {
+                if (node instanceof Notification) {
+                    pane.getChildren().remove(node);
+                    break;
+                }
+            }
+        }
+        
+        FontIcon icon = null;
+        String style = null;
 
-        var basicTtp = new Tooltip("FAKER.harryPotter().spell()");
-        basicTtp.setHideDelay(Duration.seconds(3));
+        if(type == NOTIFICATION_TYPE.SUCCESS){
+            icon = new FontIcon(Material2OutlinedAL.CHECK_CIRCLE);
+            style = Styles.SUCCESS;
+        } else if (type == NOTIFICATION_TYPE.ERROR){
+            icon = UIDecorator.FAIL();
+            style = Styles.DANGER;
+        } else if (type == NOTIFICATION_TYPE.INFO){
+            icon = UIDecorator.INFO();
+            style = Styles.ACCENT;
+        }
+        else if (type == NOTIFICATION_TYPE.WARNING){
+            icon = UIDecorator.WARNING();
+            style = Styles.WARNING;
+        }
+        
 
-        var basicLbl = new Label("Basic");
-        basicLbl.setTooltip(basicTtp);
+        Notification notification = new Notification(
+                message,
+                icon
+        );
+        notification.getStyleClass().addAll(
+                style, Styles.ELEVATED_1
+        );
 
-        var longTtp = new Tooltip("ABC");
-        longTtp.setHideDelay(Duration.seconds(3));
-        longTtp.setPrefWidth(200);
-        longTtp.setWrapText(true);
+        notification.setPrefHeight(Region.USE_PREF_SIZE);
+        notification.setMaxHeight(Region.USE_PREF_SIZE);
+//        StackPane.setAlignment(notification, Pos.BOTTOM_LEFT);
 
-        var longLbl = new Label("Long Text");
-        longLbl.setTooltip(longTtp);
+        notification.setLayoutY(10); // 10px from the top
+        notification.setLayoutX(pane.getWidth() - notification.getPrefWidth() - 10); // 10px from the right
+
+        // Listen to the width and height changes of the pane
+        pane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            notification.setLayoutX(pane.getWidth() - notification.getPrefWidth() - 10); // Recalculate X position
+        });
+
+        pane.heightProperty().addListener((obs, oldVal, newVal) -> {
+            notification.setLayoutY(pane.getHeight() - notification.getPrefHeight() - 10); // Recalculate Y position
+        });
+
+        StackPane.setMargin(notification, new Insets(10, 10, 0, 0));
+
+        Button btn = new Button("Show");
+
+        notification.setOnClose(e -> {
+            Timeline out = Animations.slideOutUp(notification, Duration.millis(300));
+            out.setOnFinished(f -> pane.getChildren().remove(notification));
+            out.playFromStart();
+        });
 
 
+        Timeline in = Animations.slideInDown(notification, Duration.millis(250));
+        if (!pane.getChildren().contains(notification)) {
+            pane.getChildren().add(notification);
+        }
+        in.playFromStart();
 
-
-        Stage stage = new Stage();
-        stage.setScene(new Scene(new VBox(longLbl)));
-        stage.show();
     }
 
     public void logOut(Button btn){

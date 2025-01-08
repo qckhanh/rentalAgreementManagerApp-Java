@@ -3,6 +3,7 @@ package org.rmit.controller.Start;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.HostDAO;
@@ -14,6 +15,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.view.Start.ACCOUNT_TYPE;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable {
+
     public TextField fullName_input;
     public PasswordField password_input;
     public Button submitRegister_btn;
@@ -37,10 +40,9 @@ public class RegisterController implements Initializable {
     public Label dob_err;
     public Label password_err;
     public Label repass_err;
+    public AnchorPane anchorPane;
 
     Validator validator = new Validator();
-
-
     int registerAttempt = 0;
     int MAX_ATTEMPT = 4;
 
@@ -166,15 +168,20 @@ public class RegisterController implements Initializable {
             System.out.println("Too many attempts");
             return;
         }
-        if(!validator.validate()) return; // if there is an invalid input, return
+        if(!validator.validate()){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            return;
+        }
 
         if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.RENTER){
             RenterDAO userDAO = new RenterDAO() ;
             Renter newUser = new Renter();
             UserFactory(newUser);
-            if(userDAO.add(newUser)) System.out.println("Renter Registered");
+            if(userDAO.add(newUser)){
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
+            }
             else{
-                System.out.println("Renter Registration Failed. Trying again");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
             }
@@ -183,25 +190,22 @@ public class RegisterController implements Initializable {
             HostDAO userDAO = new HostDAO();
             Host newUser = new Host();
             UserFactory(newUser);
-            if(userDAO.add(newUser)) System.out.println("Host Registered");
+            if(userDAO.add(newUser)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
             else{
-                System.out.println("Renter Registration Failed. Trying again");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
-
-
             }
         }
         else if(typeOfUser_choiceBox.getValue() == ACCOUNT_TYPE.OWNER){
             OwnerDAO userDAO = new OwnerDAO();
             Owner newUser = new Owner();
             UserFactory(newUser);
-            if(userDAO.add(newUser)) System.out.println("Owner Registered");
+            if(userDAO.add(newUser)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
             else{
-                System.out.println("Renter Registration Failed. Trying again");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
-
             }
         }
 
