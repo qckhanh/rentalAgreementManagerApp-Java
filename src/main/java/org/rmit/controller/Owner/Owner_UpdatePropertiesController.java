@@ -139,14 +139,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
         validateInputCP();
         validateInputRP();
         decor();
-
-//        if (selectedProperty.get() instanceof CommercialProperty) {
-//            updateProperty_btn.disableProperty().bind(validatorCP.containsErrorsProperty());
-//        }
-//
-//        else if (selectedProperty.get() instanceof ResidentialProperty) {
-//            updateProperty_btn.disableProperty().bind(validatorRP.containsErrorsProperty());
-//        }
     }
 
     private void decor(){
@@ -483,13 +475,13 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 updateFormFields(newValue);
             }
         });
+
         // Update form fields initially if selectedProperty is not null
         if (selectedProperty.get() != null) {
             clearData();
             updateFormFields(selectedProperty.get());
         }
     }
-
 
     // IT MIGHT BE HERE
     private void checkChanges() {
@@ -721,4 +713,5 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
         return false;
     }
+
 }
