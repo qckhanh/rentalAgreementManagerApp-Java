@@ -1,31 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.layout.DeckPane?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Owner.Owner_UpdatePropertiesController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Owner.Owner_UpdatePropertiesController">
    <children>
-      <VBox alignment="CENTER" layoutX="194.0" layoutY="30.0" prefHeight="708.0" prefWidth="636.0" spacing="5.0">
-         <Button fx:id="returnTableView_btn" mnemonicParsing="false" text="Back" />
-         <Button fx:id="btn" mnemonicParsing="false" text="Button" />
-         <Label fx:id="updateProperty_label" alignment="CENTER" prefHeight="40.0" prefWidth="245.0" stylesheets="@../../Style/Start/register.css" text="Update a property">
-            <font>
-               <Font name="System Bold" size="28.0" />
-            </font>
-         </Label>
-         <GridPane prefHeight="547.0" prefWidth="483.0">
+      <VBox alignment="TOP_CENTER" layoutX="237.0" layoutY="89.0" prefHeight="589.0" prefWidth="616.0" spacing="5.0">
+         <HBox alignment="CENTER" prefHeight="161.0" prefWidth="567.0" spacing="10.0">
+            <children>
+               <HBox alignment="CENTER" prefHeight="179.0" prefWidth="399.0" spacing="10.0">
+                  <children>
+                     <Button fx:id="prevImg_btn" mnemonicParsing="false" prefHeight="37.0" prefWidth="44.0" text="prev" />
+                     <DeckPane fx:id="imageShow_deckPane" prefHeight="150.0" prefWidth="233.0">
+                        <children>
+                           <ImageView fx:id="imageView_propertyImg" fitHeight="189.0" fitWidth="277.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../../Image/rmit.jpeg" />
+                              </image>
+                           </ImageView>
+                        </children>
+                     </DeckPane>
+                     <Button fx:id="nextImg_btn" mnemonicParsing="false" prefHeight="38.0" prefWidth="48.0" text="next" />
+                  </children>
+               </HBox>
+               <Button fx:id="addImage_btn" mnemonicParsing="false" prefHeight="37.0" prefWidth="43.0" text="add" />
+               <Button fx:id="clearImage_btn" mnemonicParsing="false" prefHeight="37.0" prefWidth="43.0" text="Clear" />
+            </children>
+         </HBox>
+         <GridPane prefHeight="405.0" prefWidth="583.0">
             <columnConstraints>
-               <ColumnConstraints hgrow="SOMETIMES" maxWidth="182.00006103515625" minWidth="10.0" prefWidth="155.3333740234375" />
-               <ColumnConstraints hgrow="SOMETIMES" maxWidth="292.0" minWidth="10.0" prefWidth="276.6666259765625" />
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="196.6666259765625" minWidth="10.0" prefWidth="118.99995930989584" />
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="292.0" minWidth="10.0" prefWidth="239.0" />
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="292.0" minWidth="10.0" prefWidth="237.66666666666669" />
             </columnConstraints>
             <rowConstraints>
                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -42,101 +63,132 @@
             <children>
                <Label text="Address">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyAddress_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" />
+               <TextField fx:id="propertyAddress_txtf" prefHeight="30.0" prefWidth="239.0" GridPane.columnIndex="1" />
                <Label text="Price" GridPane.rowIndex="1">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyPrice_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               <TextField fx:id="propertyPrice_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                <Label text="Status" GridPane.rowIndex="2">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <ComboBox fx:id="propertyStatus_cbox" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+               <ComboBox fx:id="propertyStatus_cbox" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                <Label text="BusinessType" GridPane.rowIndex="3">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyBtype_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               <TextField fx:id="propertyBtype_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                <Label text="Square meters" GridPane.rowIndex="4">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertySquareMeters_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+               <TextField fx:id="propertySquareMeters_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                <Label text="Parking spaces" GridPane.rowIndex="5">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyPSpaces_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               <TextField fx:id="propertyPSpaces_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                <Label text="Garden?" GridPane.rowIndex="6">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <CheckBox fx:id="propertyGarden_chbox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+               <CheckBox fx:id="propertyGarden_chbox" mnemonicParsing="false" prefHeight="30.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                <Label text="Pet?" GridPane.rowIndex="7">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <CheckBox fx:id="propertyPet_chBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+               <CheckBox fx:id="propertyPet_chBox" mnemonicParsing="false" prefHeight="30.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                <Label text="Bedrooms" GridPane.rowIndex="8">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyBedrooms_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+               <TextField fx:id="propertyBedrooms_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                <Label text="Rooms" GridPane.rowIndex="9">
                   <font>
-                     <Font name="System Bold" size="22.0" />
+                     <Font name="System Bold" size="15.0" />
                   </font></Label>
-               <TextField fx:id="propertyRooms_txtf" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+               <TextField fx:id="propertyRooms_txtf" prefHeight="30.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+               <Label fx:id="address_err" text="Address must not be empty" textFill="RED" GridPane.columnIndex="2">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="price_err" text="Price must not be empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="status_err" text="A Status must be selected" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="businessType_err" text="BusinessType field must not be empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="squareMeters_err" text="Square meters must not be empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="parkingSpace_err" text="Parking Spaces must not be left empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="bedroom_err" text="Number of bedrooms must not be empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
+               <Label fx:id="room_err" text="Number of rooms must not be empty" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                  <font>
+                     <Font name="System Italic" size="12.0" />
+                  </font>
+                  <padding>
+                     <Insets left="10.0" />
+                  </padding>
+               </Label>
             </children>
          </GridPane>
-         <Button fx:id="updateProperty_btn" mnemonicParsing="false" prefHeight="61.0" prefWidth="427.0" text="Update property">
-            <font>
-               <Font name="System Bold" size="25.0" />
-            </font>
-         </Button>
       </VBox>
-      <Label fx:id="address_err" layoutX="768.0" layoutY="155.0" text="Address must not be empty" textFill="RED">
+      <Button fx:id="returnTableView_btn" layoutX="99.0" layoutY="45.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="51.0" text="Back" />
+      <Button fx:id="updateProperty_btn" layoutX="375.0" layoutY="694.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="227.0" text="Update">
          <font>
-            <Font name="System Italic" size="12.0" />
+            <Font name="System Bold" size="25.0" />
+         </font>
+      </Button>
+      <Label fx:id="updateProperty_label" alignment="CENTER" layoutX="275.0" layoutY="25.0" prefHeight="40.0" prefWidth="427.0" stylesheets="@../../Style/Start/register.css" text="Update property's information">
+         <font>
+            <Font name="System Bold" size="28.0" />
          </font>
       </Label>
-      <Label fx:id="price_err" layoutX="768.0" layoutY="208.0" text="Price must not be empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="status_err" layoutX="768.0" layoutY="258.0" text="A Status must be selected" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="businessType_err" layoutX="764.0" layoutY="311.0" text="BusinessType field must not be empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="squareMeters_err" layoutX="764.0" layoutY="367.0" text="Square meters must not be empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="parkingSpace_err" layoutX="764.0" layoutY="425.0" text="Parking Spaces must not be left empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="bedroom_err" layoutX="764.0" layoutY="579.0" text="Number of bedrooms must not be empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
-      <Label fx:id="room_err" layoutX="764.0" layoutY="633.0" text="Number of rooms must not be empty" textFill="RED">
-         <font>
-            <Font name="System Italic" size="12.0" />
-         </font>
-      </Label>
+      <Line endX="100.0" layoutX="501.0" layoutY="74.0" startX="-100.0" />
    </children>
 </AnchorPane>

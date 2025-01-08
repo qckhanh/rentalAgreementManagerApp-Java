@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -27,9 +29,6 @@ public class PropertyManagerController implements Initializable {
     public Button create_btn;
     public Button update_btn;
     public Button delete_btn;
-    public Button prev_btn;
-    public DeckPane deckPane;
-    public Button next_btn;
     public TextField id_input;
     public TextField address_input;
     public TextField priceInput;
@@ -51,9 +50,16 @@ public class PropertyManagerController implements Initializable {
     public List<Property> propertyList = ModelCentral.getInstance().getAdminViewFactory().getAllProperty();
     public ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
+    public ObjectProperty<List<byte[]>> selectedImages = new SimpleObjectProperty<>();
     public TextField propertyType;
     public ComboBox<PropertyType> propertyType_comboBox;
     public ComboBox<PropertyStatus> propertyStatus_comboBox;
+    public int currentImageIndex = 0;
+
+    public Button prevImg_btn;
+    public DeckPane imageShow_deckPane;
+    public ImageView imageView_propertyImg;
+    public Button nextImg_btn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,10 +72,9 @@ public class PropertyManagerController implements Initializable {
         create_btn.setOnAction(e -> createProperty());
         update_btn.setOnAction(e -> updateProperty());
         delete_btn.setOnAction(e -> deleteProperty());
-        prev_btn.setOnAction(e -> prevImage());
-        next_btn.setOnAction(e -> nextImage());
+        prevImg_btn.setOnAction(e -> prevImg_btn());
+        nextImg_btn.setOnAction(e -> nextImg_btn());
         addToDB_btn.setOnAction(e -> addToDB());
-
         addToDB_btn.setVisible(false);
     }
 
@@ -77,6 +82,7 @@ public class PropertyManagerController implements Initializable {
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
+            selectedImages.set(newValue.getImages());
         });
         List<Owner> list = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
         owner_comboBox.setItems(FXCollections.observableArrayList(list));
@@ -106,7 +112,11 @@ public class PropertyManagerController implements Initializable {
 
 
         selectedProperty.addListener((observable, oldValue, newValue) -> {
+            if(newValue == null) return;
             setUpInfor(newValue);
+            currentImageIndex = 0;
+            if(newValue.getImages().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(newValue.getImages().get(0)));
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
         });
         propertyType_comboBox.getSelectionModel().selectedItemProperty().addListener((o, old, neww) -> {
             if(neww.equals(PropertyType.COMMERCIAL)){
@@ -160,6 +170,10 @@ public class PropertyManagerController implements Initializable {
     private void showProperty() {
         if(selectedProperty.get() == null) return;
         setEditable(false);
+        if(selectedProperty.get().getImages().size() != 0){
+            selectedImages.set(selectedProperty.get().getImages());
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(0)));
+        }
         id_input.setText(selectedProperty.get().getId() + "");
         address_input.setText(selectedProperty.get().addressPropertyProperty().get());
         priceInput.setText(selectedProperty.get().pricePropertyProperty().get() + "");
@@ -279,12 +293,6 @@ public class PropertyManagerController implements Initializable {
             if(residentialProperty.hasGardenPropertyProperty().get() != Boolean.parseBoolean(infor4_comboBox.getValue().toString())) return true;
         }
         return false;
-    }
-
-    private void nextImage() {
-    }
-
-    private void prevImage() {
     }
 
     private void deleteProperty() {
@@ -458,5 +466,28 @@ public class PropertyManagerController implements Initializable {
             }
         });
         return column;
+    }
+
+    private void prevImg_btn() {
+        if(selectedImages.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.get().size();
+        int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
+    }
+
+    private void nextImg_btn() {
+        if(selectedImages.get().size() == 0){
+            System.out.println("Exception: No images to display");
+            return;
+        }
+        int selectedImagesSize = selectedImages.get().size();
+
+        int position = (currentImageIndex  + 1) % selectedImagesSize;
+        currentImageIndex = position;
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
     }
 }

@@ -34,6 +34,7 @@ public class CommercialProperty extends Property {
         super.idProperty.setValue(super.getId());
         super.hostsProperty.setValue(super.getHosts());
         super.agreementListProperty.setValue(super.getAgreementList());
+        super.imagesProperty.setValue(super.getImages());
 
         this.businessTypeProperty.setValue(this.businessType);
         this.totalParkingSpaceProperty.setValue(this.totalParkingSpace);

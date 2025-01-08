@@ -4,7 +4,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -30,6 +32,7 @@ public class Host_ManageOwnerController implements Initializable {
     public TextField search_input;
     public Button search_btn;
     public Map<Integer, Owner> ownerMap = new HashMap<>();
+    public ImageView avatarOwner_imageView;
 
     public ObjectProperty<Person> currentPerson = Session.getInstance().currentUserProperty();
     public ObjectProperty<Set<Owner>> owners = ((Host)currentPerson.get()).cooperatingOwnersPropertyProperty();
@@ -42,7 +45,10 @@ public class Host_ManageOwnerController implements Initializable {
         search_input.textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.isBlank()) loadOwner(owners.get());
         });
-        host_tableView.setOnMouseClicked(e -> showDetails(host_tableView.getSelectionModel().getSelectedItem()));
+        host_tableView.setOnMouseClicked(e ->{
+            avatarOwner_imageView.setImage(ImageUtils.byteToImage(null));
+            showDetails(host_tableView.getSelectionModel().getSelectedItem());
+        });
         host_tableView.getColumns().addAll(
                 newColumn("ID", "id"),
                 newColumn("Full Name", "name")
@@ -103,6 +109,7 @@ public class Host_ManageOwnerController implements Initializable {
         dob_input.setText(owner.getDateOfBirth().toString());
         managingProperty_listView.getItems().clear();
         managingProperty_listView.getItems().addAll(owner.getPropertiesOwned());
+        avatarOwner_imageView.setImage(ImageUtils.byteToImage(owner.getProfileAvatar()));
     }
 
 }
