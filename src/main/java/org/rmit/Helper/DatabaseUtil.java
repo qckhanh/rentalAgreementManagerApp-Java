@@ -46,27 +46,45 @@ public class DatabaseUtil {
     }
 
     public static void warmUp() {
+        int maxRetries = 10;
+        int attempt = 0;
+
         System.out.println("Warming up the database...");
-        try (org.hibernate.Session session = DatabaseUtil.getSession()) {
-            // Run a simple query to check if the database is responsive
-            session.clear();
-            session.flush();
-            session.beginTransaction();
-            session.createNativeQuery("SELECT 1").getSingleResult();  // Simple query to test connection
-            session.getTransaction().commit();  // Commit to confirm transaction is successful
 
-            // Add a 1-second delay
-            Thread.sleep(1000);
+        while (attempt < maxRetries) {
+            attempt++;
+            try (org.hibernate.Session session = DatabaseUtil.getSession()) {
+                // Run a simple query to check if the database is responsive
+                session.beginTransaction();
+                session.createNativeQuery("SELECT 1").getSingleResult(); // Simple query to test connection
+                session.getTransaction().commit(); // Commit to confirm transaction is successful
 
-            System.out.println("Database connection is ready.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Warm-up was interrupted", e);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Database connection failed during warm-up", e);
+                // Add a 1-second delay
+                Thread.sleep(1000);
+
+                System.out.println("Database connection is ready.");
+                return; // Exit if successful
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Warm-up was interrupted", e);
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e.getMessage());
+
+                if (attempt == maxRetries) {
+                    throw new RuntimeException("Database connection failed after " + maxRetries + " attempts.", e);
+                }
+
+                // Optional: Add a short delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay before retry
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Warm-up retry was interrupted", ie);
+                }
+            }
         }
     }
+
 
     public static Session getCurrentSession() {
         return currentSession;

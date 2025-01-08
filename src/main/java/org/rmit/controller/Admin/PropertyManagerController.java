@@ -353,6 +353,7 @@ public class PropertyManagerController implements Initializable {
 //            }
 //        });
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) return;
             selectedProperty.set(newValue);
             showProperty();
             selectedImages.set(newValue.getImages());
@@ -729,7 +730,7 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void clearTextFilled(){
-        id_input.clear();
+        //id_input.clear();
         address_input.clear();
         priceInput.clear();
         owner_comboBox.setValue(null);

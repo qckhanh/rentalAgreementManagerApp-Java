@@ -15,92 +15,167 @@ import java.util.List;
 import java.util.function.Function;
 
 public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Owner> {
+
     @Override
     public boolean add(Owner owner) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
-            session.persist(owner);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = session.beginTransaction();
+                session.persist(owner);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to add owner.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error in adding owner: " + e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean update(Owner owner) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.merge(owner);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.merge(owner);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to update owner.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public boolean delete(Owner owner) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.delete(owner);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.delete(owner);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to delete owner.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error in deleting owner: " + e.getMessage());
-            return false;
-        }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public Owner get(int id, Function<Session, EntityGraph<Owner>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_BY_ID_HQL, "Owner");
-            Owner obj = session.createQuery(hql, Owner.class)
-                    .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
-                    .uniqueResult();
-            DatabaseUtil.shutdown(session);
-            return obj;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_BY_ID_HQL, "Owner");
+                Owner obj = session.createQuery(hql, Owner.class)
+                        .setParameter("id", id)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
+                        .uniqueResult();
+                DatabaseUtil.shutdown(session);
+                return obj; // Return the result if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to get owner.");
+                    return null; // Return null if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return null; // Fallback return (should not reach here)
     }
+
 
     @Override
     public List<Owner> getAll(Function<Session, EntityGraph<Owner>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_ALL_HQL, "Owner");
-            List<Owner> list = session.createQuery(hql, Owner.class)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
-                    .list();  // Fetch the list of Renters
-            DatabaseUtil.shutdown(session);
-            return list;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_ALL_HQL, "Owner");
+                List<Owner> list = session.createQuery(hql, Owner.class)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+                        .list();  // Fetch the list of Owners
+                DatabaseUtil.shutdown(session);
+                return list; // Return the list if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to get all owners.");
+                    return Collections.emptyList(); // Return an empty list if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        return Collections.emptyList(); // Fallback return (should not reach here)
     }
+
 
     @Override
     public Owner validateLogin(String usernameOrContact, String password) {
@@ -163,6 +238,5 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         }
         return result;
     }
-
 
 }

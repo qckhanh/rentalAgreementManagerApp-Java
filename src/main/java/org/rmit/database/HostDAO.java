@@ -17,92 +17,170 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
 
     @Override
     public boolean add(Host host) {
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
 
-        try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = DatabaseUtil.getTransaction(session);
+                session.persist(host);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
 
-            Transaction transaction = DatabaseUtil.getTransaction(session);
-            session.persist(host);
-            DatabaseUtil.clearAll(session);
-            transaction.commit();
-            DatabaseUtil.shutdown(session);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error: " + e);
-            return false;
+                return true; // Return if successful
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to add host.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1 second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        return false; //Lets pray we dont reach here!
     }
+
 
     @Override
     public boolean update(Host host) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                Transaction transaction = session.beginTransaction();
 
-            session.merge(host);
-            DatabaseUtil.clearAll(session);
+                session.merge(host);
+                DatabaseUtil.clearAll(session);
 
-            session.getTransaction().commit();
-            DatabaseUtil.shutdown(session);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-            return false;
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to update host.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        return false; // Fallback return (should not reach here)
     }
 
     @Override
     public boolean delete(Host host) {
-        try {
-            Session session = DatabaseUtil.getSession();
-            Transaction transaction = session.beginTransaction();
-            session.delete(host);
-            DatabaseUtil.clearAll(session);
-            session.getTransaction().commit();
-            DatabaseUtil.shutdown(session);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-            return false;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+
+                Transaction transaction = session.beginTransaction();
+                session.delete(host);
+                DatabaseUtil.clearAll(session);
+                transaction.commit();
+                DatabaseUtil.shutdown(session);
+
+                return true; // Return if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to delete host.");
+                    return false; // Return false if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        return false; // Fallback return (should not reach here)
     }
+
 
     @Override
     public Host get(int id, Function<Session, EntityGraph<Host>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
-            String hql = String.format(GET_BY_ID_HQL, "Host");
-            Host obj = session.createQuery(hql, Host.class)
-                    .setParameter("id", id)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
-                    .uniqueResult();
-            DatabaseUtil.shutdown(session);
-            return obj;
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_BY_ID_HQL, "Host");
+                Host obj = session.createQuery(hql, Host.class)
+                        .setParameter("id", id)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
+                        .uniqueResult();
+                DatabaseUtil.shutdown(session);
+                return obj; // Return the result if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
+
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to get host.");
+                    return null; // Return null if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return null; // lets pray we dont reach here!
     }
+
 
     @Override
     public List<Host> getAll(Function<Session, EntityGraph<Host>> entityGraphFunction) {
-        try{
-            Session session = DatabaseUtil.getSession();
+        int attempt = 0;
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            try (Session session = DatabaseUtil.getSession()) {
+                String hql = String.format(GET_ALL_HQL, "Host");
+                List<Host> list = session.createQuery(hql, Host.class)
+                        .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+                        .list();  // Fetch the list of Hosts
+                DatabaseUtil.shutdown(session);
+                return list; // Return the list if successful
+            } catch (Exception e) {
+                System.out.println("Attempt " + attempt + " failed: " + e);
 
-            String hql = String.format(GET_ALL_HQL, "Host");
-            List<Host> list = session.createQuery(hql, Host.class)
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
-                    .list();  // Fetch the list of Renters
-            DatabaseUtil.shutdown(session);
-            return list;
+                if (attempt == MAX_ATTEMPTS) {
+                    System.out.println("Max retries reached. Unable to get all hosts.");
+                    return Collections.emptyList(); // Return an empty list if all retries fail
+                }
+
+                // Optional: Add a delay before retrying
+                try {
+                    Thread.sleep(1000); // 1-second delay
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        return Collections.emptyList(); // Fallback return (should not reach here)
     }
+
 
     // Custom Exception class
     public class DatabaseException extends Exception {
