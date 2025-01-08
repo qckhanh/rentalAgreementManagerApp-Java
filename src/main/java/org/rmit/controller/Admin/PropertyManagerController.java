@@ -303,8 +303,6 @@ public class PropertyManagerController implements Initializable {
         create_btn.setOnAction(e -> createProperty());
         update_btn.setOnAction(e -> updateProperty());
         delete_btn.setOnAction(e -> deleteProperty());
-        prev_btn.setOnAction(e -> prevImage());
-        next_btn.setOnAction(e -> nextImage());
         addToDB_btn.setOnAction(e -> {
 //            if (validatorCP.validate() || validatorRP.validate()) addToDB();
             if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)) {
@@ -317,7 +315,6 @@ public class PropertyManagerController implements Initializable {
 
         prevImg_btn.setOnAction(e -> prevImg_btn());
         nextImg_btn.setOnAction(e -> nextImg_btn());
-        addToDB_btn.setOnAction(e -> addToDB());
         addToDB_btn.setVisible(false);
     }
 
@@ -345,7 +342,16 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void setUpTableBehavior(){
-
+        propertyType_comboBox.setValue(PropertyType.NONE);
+//        propertyType_comboBox.getSelectionModel().selectedItemProperty().addListener((o, old, neww) -> {
+//            if(neww.equals(PropertyType.NONE)){
+//                addToDB_btn.setVisible(false);
+//                create_btn.setVisible(false);
+//            }
+//            else{
+//                create_btn.setVisible(true);
+//            }
+//        });
         property_Tableview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedProperty.set(newValue);
             showProperty();
@@ -390,11 +396,13 @@ public class PropertyManagerController implements Initializable {
                 setUpInfor(new CommercialProperty());
                 propertyType.setText("Commercial");
                 create_btn.setVisible(true);
+                addToDB_btn.setVisible(false);
             }
             else if(neww.equals(PropertyType.RESIDENTIAL)){
                 setUpInfor(new ResidentialProperty());
                 propertyType.setText("Residential");
                 create_btn.setVisible(true);
+                addToDB_btn.setVisible(false);
             }
             else{
                 addToDB_btn.setVisible(false);

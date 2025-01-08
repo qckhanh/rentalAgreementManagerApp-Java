@@ -8,6 +8,7 @@ import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -95,8 +96,9 @@ public class PaymentDAO extends DAOInterface<Payment> {
             return list;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 

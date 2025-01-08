@@ -8,6 +8,7 @@ import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.RentalAgreement;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -93,8 +94,9 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
             return list;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 

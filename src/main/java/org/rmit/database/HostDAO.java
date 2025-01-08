@@ -98,8 +98,9 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
             return list;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 

@@ -96,8 +96,9 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
             return list;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 
