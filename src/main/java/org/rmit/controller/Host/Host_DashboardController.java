@@ -13,6 +13,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
 import javafx.util.Duration;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
@@ -65,6 +66,11 @@ public class Host_DashboardController implements Initializable {
         refreshHostDashBoard.setOnMouseExited(event -> {
             refreshHostDashBoard.setStyle(""); // Reset to default style
         });
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setNormalButton(refreshHostDashBoard, UIDecorator.REFRESH(), null);
     }
 
     private void updateData() {

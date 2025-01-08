@@ -53,7 +53,7 @@ public class Guest_BrowseUserController implements Initializable {
     }
 
     private void decor(){
-        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH);
+        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH());
     }
 
     private void searchOwner() {

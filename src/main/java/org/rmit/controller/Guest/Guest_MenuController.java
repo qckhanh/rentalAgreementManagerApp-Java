@@ -37,12 +37,12 @@ public class Guest_MenuController implements Initializable {
     }
 
     private void decor(){
-        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
-        UIDecorator.setNormalButton(signUp_btn, UIDecorator.REGISTER, "Sign Up");
-        UIDecorator.setNormalButton(rentalManager_btn, UIDecorator.RENTAL, "Rental Manager");
-        UIDecorator.setNormalButton(browseUser_btn, UIDecorator.OTHER_PERSON, "Browse User");
-        UIDecorator.setNormalButton(browseProperty_btn, UIDecorator.PROPERTY, "Browse Property");
-        UIDecorator.setNormalButton(logOut_btn, UIDecorator.LOG_OUT, "Log Out");
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER(), "Dashboard");
+        UIDecorator.setNormalButton(signUp_btn, UIDecorator.REGISTER(), "Sign Up");
+        UIDecorator.setNormalButton(rentalManager_btn, UIDecorator.RENTAL(), "Rental Manager");
+        UIDecorator.setNormalButton(browseUser_btn, UIDecorator.OTHER_PERSON(), "Browse User");
+        UIDecorator.setNormalButton(browseProperty_btn, UIDecorator.PROPERTY(), "Browse Property");
+        UIDecorator.setNormalButton(logOut_btn, UIDecorator.LOG_OUT(), "Log Out");
     }
 
     private void browseProperty() {

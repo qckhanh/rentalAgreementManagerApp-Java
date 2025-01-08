@@ -50,7 +50,7 @@ public class Renter_NotificationController implements Initializable {
         approve_btn.setOnAction(e -> approveRequest());
         deny_btn.setOnAction(e -> denyRequest());
 
-        UIDecorator.setDangerButton(deleteNoti_btn, UIDecorator.DELETE, null);
+        UIDecorator.setDangerButton(deleteNoti_btn, UIDecorator.DELETE(), null);
         deleteNoti_btn.setOnAction(e -> deleteNoti());
         roleFilter_comboBox.getItems().addAll(
                 SENDER,

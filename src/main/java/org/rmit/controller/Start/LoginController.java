@@ -50,8 +50,8 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        UIDecorator.setNormalButton(signIn_btn, UIDecorator.LOG_IN, "Sign In");
-        UIDecorator.setNormalButton(guest_btn, UIDecorator.GUEST, "Login as Guest");
+        UIDecorator.setNormalButton(signIn_btn, UIDecorator.LOG_IN(), "Sign In");
+        UIDecorator.setNormalButton(guest_btn, UIDecorator.GUEST(), "Login as Guest");
 
         username_err.setText("");
         password_err.setText("");

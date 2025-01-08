@@ -194,9 +194,10 @@ public class Owner_PropertiesManagerController implements Initializable {
     }
 
     private void decor(){
-        UIDecorator.setSuccessButton(addPropertyButton, UIDecorator.ADD, null);
+        UIDecorator.setSuccessButton(addPropertyButton, UIDecorator.ADD(), null);
         UIDecorator.setNormalButton(updatePropertyButton, new FontIcon(Feather.EDIT), null);
-        UIDecorator.setDangerButton(deletePropertyButton, UIDecorator.DELETE, null);
+        UIDecorator.setDangerButton(deletePropertyButton, UIDecorator.DELETE(), null);
+        UIDecorator.setNormalButton(refresh, UIDecorator.REFRESH(), null);
     }
 
     private void deleteProperty(){

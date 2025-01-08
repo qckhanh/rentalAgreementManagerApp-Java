@@ -65,6 +65,8 @@ public class Renter_makeRentalAgreementController implements Initializable {
         removeRenter.setOnAction(e -> removeSubRenter());
         submit_btn.setOnAction(e -> submitRA());
         searchProperty_btn.setOnAction(e -> searchProperty());
+        propertySearch_input.setOnAction(e -> searchProperty());
+        subRenterSearch_input.setOnAction(e -> searchRenter());
         searchRenter_btn.setOnAction(e -> searchRenter());
         property_ComboBox.setOnAction(e -> {
             selectedProperty.set(property_ComboBox.getSelectionModel().getSelectedItem());
@@ -108,6 +110,17 @@ public class Renter_makeRentalAgreementController implements Initializable {
 
         resetErrorLabels();
         validateInput();
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setSuccessButton(submit_btn, UIDecorator.SEND(), "Submit");
+        UIDecorator.setNormalButton(searchProperty_btn, UIDecorator.SEARCH(), null);
+        UIDecorator.setNormalButton(searchRenter_btn, UIDecorator.SEARCH(), null);
+        UIDecorator.setNormalButton(addRenter, UIDecorator.ADD(), null);
+        UIDecorator.setDangerButton(removeRenter, UIDecorator.DELETE(), null);
+        UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
+        UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
     }
 
     private void validateInput() {

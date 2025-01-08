@@ -36,7 +36,7 @@ public class Owner_HostManagerController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH);
+        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH());
         search_btn.setOnAction(e->searchHost());
         search_input.setOnAction(e->searchHost());
         search_input.textProperty().addListener((observableValue, s, t1) -> {

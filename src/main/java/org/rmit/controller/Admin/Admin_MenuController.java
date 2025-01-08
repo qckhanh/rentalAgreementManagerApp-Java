@@ -65,13 +65,19 @@ public class Admin_MenuController implements Initializable {
         hostManager_btn.setOnAction(e -> manageHost());
         ownerManager_btn.setOnAction(e -> manageOwner());
         paymentManager_btn.setOnAction(e -> managePayment());
-        adminManager_btn.setOnAction(e -> manageAdmin());
         property_manager.setOnAction(e -> manageProperty());
     }
 
     private void decor(){
-        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER, "Dashboard");
-        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE, "Edit Profile");
+        UIDecorator.setNormalButton(dashboard_btn, UIDecorator.USER(), "Dashboard");
+        UIDecorator.setNormalButton(editProfile_btn, UIDecorator.PROFILE(), "Edit Profile");
+        UIDecorator.setDangerButton(logOut_btn, UIDecorator.LOG_OUT(), "Log Out");
+        UIDecorator.setNormalButton(renterManager_btn, UIDecorator.USER_ROLE(), "Renter Manager");
+        UIDecorator.setNormalButton(hostManager_btn, UIDecorator.USER_ROLE(), "Host Manager");
+        UIDecorator.setNormalButton(ownerManager_btn, UIDecorator.USER_ROLE(), "Owner Manager");
+        UIDecorator.setNormalButton(property_manager, UIDecorator.PROPERTY(), "Property Manager");
+        UIDecorator.setNormalButton(paymentManager_btn, UIDecorator.PAYMENT(), "Payment Manager");
+        UIDecorator.setNormalButton(agreementManager_btn, UIDecorator.RENTAL(), "Agreement Manager");
     }
 
     private void manageProperty() {
@@ -84,13 +90,7 @@ public class Admin_MenuController implements Initializable {
     }
 
     private void openDashboard(){
-        // Write your code here:
         ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
-        // Call the update data function in the dashboard controller
-//        AnchorPane anchorPane = ModelCentral.getInstance().getAdminViewFactory().getAdmin_dashboardView();
-//        Admin_DashboardController controller = ModelCentral.getInstance().getAdminViewFactory().getAdminDashboardController();
-//        controller.updateData();
-
     }
 
     private void logOut(){

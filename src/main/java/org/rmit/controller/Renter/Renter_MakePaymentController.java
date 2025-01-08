@@ -48,6 +48,8 @@ public class Renter_MakePaymentController implements Initializable {
 
             mainRenter_input.setDisable(true);
             property_input.setDisable(true);
+            amount_input.setEditable(false);
+
 
             mainRenter_input.setText(Session.getInstance().getCurrentUser().getName());
             Session.getInstance().getCurrentUser().namePropertyProperty().addListener((observable, oldValue, newValue) ->

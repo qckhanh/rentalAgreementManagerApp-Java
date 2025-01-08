@@ -73,8 +73,9 @@ public class Host_ManagePropertyController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        UIDecorator.buttonIcon(search_btn, new FontIcon(Material2MZ.SEARCH));
-        UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
+
+        decor();
+
 
         saveChangesButton.setDisable(true);
         nextImg_btn.setOnAction(e -> nextImg_btn());
@@ -110,7 +111,7 @@ public class Host_ManagePropertyController implements Initializable {
             protected void updateItem(Property property, boolean empty) {
                 super.updateItem(property, empty);
                 if (empty || property == null) {
-                    UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE, "Select a property");
+                    UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE(), "Select a property");
                     setText(null);
                     setOnMouseClicked(null); // Remove click handler for empty cells
                 } else {
@@ -131,6 +132,7 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void saveChanges() {
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
         selectedProperty.get().setStatus(propertyStatusCbox.getValue());
         System.out.println(selectedProperty.get().getStatus());
         Property selected = selectedProperty.get();
@@ -145,7 +147,11 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void decor(){
-
+        UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
+        UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
+        UIDecorator.buttonIcon(search_btn, UIDecorator.SEARCH());
+        UIDecorator.setNormalButton(manageProperty_btn, UIDecorator.MANAGE(), "Select a property");
+        UIDecorator.setDangerButton(saveChangesButton, UIDecorator.SEND(), "Save Changes");
     }
 
     private void searchProperty() {
@@ -246,12 +252,12 @@ public class Host_ManagePropertyController implements Initializable {
         for(Property p: managedProperties.get()){
             if(p.getId() == property.getId()){
 //                manageProperty_btn.setText("Unmanage");
-                UIDecorator.setDangerButton(manageProperty_btn, UIDecorator.DELETE, "Unmanaged");
+                UIDecorator.setDangerButton(manageProperty_btn, UIDecorator.DELETE(), "Unmanaged");
                 manageProperty_btn.setOnAction(event -> unmanageProperty(property));
                 return;
             }
         }
-        UIDecorator.setSuccessButton(manageProperty_btn, UIDecorator.ADD, "Request Manage");
+        UIDecorator.setSuccessButton(manageProperty_btn, UIDecorator.ADD(), "Request Manage");
         manageProperty_btn.setOnAction(event -> requestManageProperty(Integer.parseInt(property.getId() + "")));
     }
 

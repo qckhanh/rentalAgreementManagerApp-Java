@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -119,9 +120,16 @@ public class Owner_AddPropertiesController implements Initializable {
         propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
 
         resetErrorLabels();
+        decor();
     }
-
-
+    private void decor(){
+        UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
+        UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
+        UIDecorator.setNormalButton(addImage_btn, UIDecorator.ADD(), null);
+        UIDecorator.setNormalButton(clearSelectedImage, UIDecorator.DELETE(), null);
+        UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.PREVIOUS(), "Back");
+        UIDecorator.setNormalButton(addProperty_btn, UIDecorator.SEND(), "Add new roperty");
+    }
 
     private void validateInputCP() {
         validatorCP.createCheck()

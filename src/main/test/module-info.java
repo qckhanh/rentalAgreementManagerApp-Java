@@ -7,7 +7,7 @@ module module_name {
     requires net.synedra.validatorfx;
     requires javafx.controls;
 
-    exports InputValidatorTest to org.mockito, org.junit.platform.commons;
+//    exports InputValidatorTest to org.mockito, org.junit.platform.commons;
 
     exports DAOtest to org.junit.platform.commons;
     opens DAOtest to org.junit.platform.commons;

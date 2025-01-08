@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
@@ -66,6 +67,15 @@ public class PropertyManagerController implements Initializable {
         setUpTableBehavior();
         setOnActionButton();
         setUpTableView();
+        decor();
+    }
+
+    private void decor(){
+        UIDecorator.setDangerButton(delete_btn, UIDecorator.DELETE(), null);
+        UIDecorator.setDangerButton(update_btn, UIDecorator.EDIT(), null);
+        UIDecorator.setDangerButton(create_btn, UIDecorator.ADD(), null);
+        UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
+        UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
     }
 
     private void setOnActionButton(){
@@ -134,9 +144,6 @@ public class PropertyManagerController implements Initializable {
                 create_btn.setVisible(false);
             }
         });
-
-
-
     }
 
     private void setUpInfor(Property property){

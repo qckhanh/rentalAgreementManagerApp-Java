@@ -76,7 +76,7 @@ public class Admin_EditProfileController implements Initializable {
 
     private void decorElement(){
         UIDecorator.setDangerButton(edit_btn, new FontIcon(Feather.EDIT), "Edit");
-        UIDecorator.buttonIcon(avatarUpdate_btn, EDIT);
+        UIDecorator.buttonIcon(avatarUpdate_btn, UIDecorator.EDIT());
     }
 
     private void validateInput() {
