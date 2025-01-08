@@ -4,10 +4,18 @@ package org.rmit.Helper;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import org.rmit.database.AdminDAO;
+import org.rmit.database.DAOInterface;
+import org.rmit.model.ModelCentral;
+import org.rmit.model.Persons.Admin;
+import org.rmit.model.Persons.Host;
+import org.rmit.model.Persons.Owner;
+import org.rmit.model.Persons.Renter;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static java.lang.Double.parseDouble;
@@ -23,9 +31,35 @@ public class InputValidator {
     }
     //checker
     public static boolean isValidUsername(String username, Label username_err) {
-        boolean isValid = username.length() >= 6;
-        if(!isValid) setLabelError(username_err, RED, "Username must be at least 6 characters");
-        return isValid;
+        if (username == null) {
+            setLabelError(username_err, RED, "Username must not be empty");
+            return false;
+        }
+        else if (username.isEmpty()) {
+            setLabelError(username_err, RED, "Username must not be empty");
+            return false;
+        }
+        else if (username.length() < 6) {
+            setLabelError(username_err, RED, "Username must be at least 6 characters");
+            return false;
+        }
+        else if (!DAOInterface.isValidUsername(Admin.class, username)) {
+            setLabelError(username_err, RED, "Username already exists");
+            return false;
+        }
+        else if (!DAOInterface.isValidUsername(Renter.class, username)) {
+            setLabelError(username_err, RED, "Username already exists");
+            return false;
+        }
+        else if (!DAOInterface.isValidUsername(Host.class, username)) {
+            setLabelError(username_err, RED, "Username already exists");
+            return false;
+        }
+        else if (!DAOInterface.isValidUsername(Owner.class, username)) {
+            setLabelError(username_err, RED, "Username already exists");
+            return false;
+        }
+        return true;
     }
     public static boolean isValidPassword(String s, Label password_err) {
         if (s == null) {
