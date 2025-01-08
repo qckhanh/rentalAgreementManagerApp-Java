@@ -66,9 +66,24 @@ public class InputValidator {
             setLabelError(password_err, RED, "Password must not be empty");
             return false;
         }
-        boolean isValid = s.length() >= 8;
-        if(!isValid) setLabelError(password_err, RED, "Password must be at least 8 characters");
-        return isValid;
+
+        if (s.isEmpty()) {
+            setLabelError(password_err, RED, "Password must not be empty");
+            return false;
+        }
+
+        if (s.length() < 8) {
+            setLabelError(password_err, RED, "Password must be at least 8 characters");
+            return false;
+        }
+
+        // Maximum length of password is 50 digits
+        if (s.length() > 50) {
+            setLabelError(password_err, RED, "Password must be less than 50 characters");
+            return false;
+        }
+
+        return true;
     }
     private static boolean isValidEmail(String s, Label email_err) {
         boolean isValid = s.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
@@ -79,10 +94,27 @@ public class InputValidator {
         return isValid;
     }
     public static boolean NoCondition(String s, Label label) {
-        boolean isValid = !s.isBlank();
-        if(!isValid) setLabelError(label, RED, "Field must not be empty");
-        return isValid;
+//        boolean isValid = !s.isBlank();
+//        if(!isValid) setLabelError(label, RED, "Field must not be empty");
+//        return isValid;
 
+        if (s == null) {
+            setLabelError(label, RED, "Field must not be empty");
+            return false;
+        }
+
+        if (s.isEmpty()) {
+            setLabelError(label, RED, "Field must not be empty");
+            return false;
+        }
+
+        // Maximum length of input is 50 digits
+        if (s.length() > 50) {
+            setLabelError(label, RED, "Input must be less than 50 characters");
+            return false;
+        }
+
+        return true;
     }
     public static boolean isValidDateFormat(LocalDate date, Label label) {
         if(date == null){
@@ -131,6 +163,7 @@ public class InputValidator {
     }
     public static boolean isValidPrice(String s, Label label){
         if (!NoCondition(s, label)) return false;
+
         for(int i = 0; i < s.length(); i++){
             if(!Character.isDigit(s.charAt(i)) && s.charAt(i) != '.'){
                 setLabelError(label, RED, "Input must be a number");
@@ -236,9 +269,22 @@ public class InputValidator {
 //    }
 
     public static boolean isValidParkingSpaces(String input, Label parkingSpaceErr) {
+        if (input == null) {
+            parkingSpaceErr.setText("Field must not be empty");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
         // Check if the input is empty
         if (input.isEmpty()) {
             parkingSpaceErr.setText("Field must not be empty");
+            parkingSpaceErr.setTextFill(RED);
+            return false;
+        }
+
+        // Check if the input length is above 50:
+        if (input.length() > 50) {
+            parkingSpaceErr.setText("Input must be less than 50 characters");
             parkingSpaceErr.setTextFill(RED);
             return false;
         }
@@ -368,6 +414,7 @@ public class InputValidator {
         if (!isValidInteger(input, bedroomErr)) {
             return false;
         }
+
 
         // Check if the number is positive
         if (Integer.parseInt(input) <= 0) {
