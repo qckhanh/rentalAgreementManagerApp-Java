@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.Admin_DashboardController">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" stylesheets="@../../Style/Renter/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Admin.Admin_DashboardController">
     <children>
       <PieChart fx:id="pieChartPersonObject" layoutX="11.0" layoutY="201.0" prefHeight="113.0" prefWidth="176.0" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="201.0" />
         <TextField fx:id="search_input" layoutX="50.0" layoutY="131.0" prefHeight="39.0" prefWidth="666.0" promptText="Search for properties, host, owner, and more!" />

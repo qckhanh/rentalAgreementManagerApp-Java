@@ -3,6 +3,7 @@ package org.rmit.view.Start;
 import atlantafx.base.controls.Notification;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -117,7 +118,7 @@ public class StartViewFactory {
                 }
             }
         }
-        
+
         FontIcon icon = null;
         String style = null;
 
@@ -135,7 +136,7 @@ public class StartViewFactory {
             icon = UIDecorator.WARNING();
             style = Styles.WARNING;
         }
-        
+
 
         Notification notification = new Notification(
                 message,
@@ -171,12 +172,22 @@ public class StartViewFactory {
             out.playFromStart();
         });
 
+        Timeline autoDismiss = new Timeline(
+                new KeyFrame(Duration.seconds(2), e -> { // Set duration here (e.g., 5 seconds)
+                    Timeline fadeOut = Animations.slideOutUp(notification, Duration.millis(300));
+                    fadeOut.setOnFinished(f -> pane.getChildren().remove(notification));
+                    fadeOut.playFromStart();
+                })
+        );
+        autoDismiss.setCycleCount(1); // Execute once
+        autoDismiss.play();
 
-        Timeline in = Animations.slideInDown(notification, Duration.millis(250));
+
+        Timeline slideIn = Animations.slideInDown(notification, Duration.millis(250));
         if (!pane.getChildren().contains(notification)) {
             pane.getChildren().add(notification);
         }
-        in.playFromStart();
+        slideIn.playFromStart();
 
     }
 

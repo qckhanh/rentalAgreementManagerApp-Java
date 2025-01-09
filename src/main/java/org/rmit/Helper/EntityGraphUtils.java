@@ -77,6 +77,7 @@ public class EntityGraphUtils {
         EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
         entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username");
         entityGraph.addSubgraph("agreementList");
+        entityGraph.addSubgraph("subAgreements");
         return entityGraph;
     }
 
@@ -101,7 +102,7 @@ public class EntityGraphUtils {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
         entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters", "images"); // Add only the name of the Owner
-//        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
+        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
 //        ownerSubgraph.addAttributeNodes("name");
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
@@ -114,7 +115,7 @@ public class EntityGraphUtils {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
         entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden", "images"); // Add only the name of the Owner
-//        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
+        Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
 //        ownerSubgraph.addAttributeNodes("name");
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
@@ -354,6 +355,7 @@ public class EntityGraphUtils {
         graph.addAttributeNodes("id", "content", "timestamp", "header");
         Subgraph<Person> senderSubgraph = graph.addSubgraph("sender");
         senderSubgraph.addAttributeNodes("id", "name");
+        senderSubgraph.addSubgraph("receivedNotifications");
 
         Subgraph<Person> receiversSubgraph = graph.addSubgraph("receivers");
         receiversSubgraph.addAttributeNodes("id", "name");

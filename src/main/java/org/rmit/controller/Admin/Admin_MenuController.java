@@ -19,10 +19,9 @@ import java.util.ResourceBundle;
 
 public class Admin_MenuController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(Admin_MenuController.class);
+
     public ImageView avatar_ImageView;
-
     public Label name_label;
-
     public Label userType_label;
     public Button editProfile_btn;
     public Button dashboard_btn;
@@ -32,7 +31,6 @@ public class Admin_MenuController implements Initializable {
     public Button hostManager_btn;
     public Button ownerManager_btn;
     public Button paymentManager_btn;
-    public Button adminManager_btn;
     public Button property_manager;
 
 
