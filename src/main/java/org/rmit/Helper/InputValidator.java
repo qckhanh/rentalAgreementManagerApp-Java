@@ -226,6 +226,13 @@ public class InputValidator {
             return false;
         }
 
+        // Check if the input length is above 50:
+        if (input.length() > 50) {
+            squareMetersErr.setText("Input must be less than 50 characters");
+            squareMetersErr.setTextFill(RED);
+            return false;
+        }
+
         // Check if input is a number
         try {
             double squareMeters = Double.parseDouble(input);
@@ -415,6 +422,12 @@ public class InputValidator {
             return false;
         }
 
+        // Check the input length is above 50:
+        if (input.length() > 50) {
+            bedroomErr.setText("Input must be less than 50 characters");
+            bedroomErr.setTextFill(RED);
+            return false;
+        }
 
         // Check if the number is positive
         if (Integer.parseInt(input) <= 0) {
@@ -443,6 +456,13 @@ public class InputValidator {
 
         // Check if input is a number
         if (!isValidInteger(input, roomErr)) {
+            return false;
+        }
+
+        // Check the input length is above 50:
+        if (input.length() > 50) {
+            roomErr.setText("Input must be less than 50 characters");
+            roomErr.setTextFill(RED);
             return false;
         }
 
