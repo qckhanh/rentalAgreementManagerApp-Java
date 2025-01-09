@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.AgreementStatus;
@@ -17,6 +18,7 @@ import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.RentalPeriod;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
@@ -43,6 +45,7 @@ public class AgreementManagerController implements Initializable {
     public TextField fee_input;
     public DatePicker contractDate_datePicker;
     public Button del_btn;
+    public AnchorPane anchorPane;
 
     private ObjectProperty<RentalAgreement> selectedRentalAgreement = new SimpleObjectProperty<>();
     private ObservableList<RentalAgreement> rentalAgreementsObservableList = FXCollections.observableArrayList();
@@ -409,24 +412,21 @@ public class AgreementManagerController implements Initializable {
     // Helper Method:
     private void deleteAgreement() {
         RentalAgreement ra = selectedRentalAgreement.get();
-        if(ra == null) return;
-//        if(ra.getStatus() != null){
-//            if(!ra.getStatus().equals(AgreementStatus.COMPLETED)){
-//                System.out.println("Cannot delete this agreement because it is not completed");
-//                return;
-//            }
-//        }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement?")) return;
+        if(ra == null){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an agreement to delete");
+            return;
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement? This action may effect Host and Renters")) return;
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
         DatabaseUtil.warmUp();
         boolean isDelete = rentalAgreementDAO.delete(ra);
         if(isDelete){
             rentalAgreementsList.remove(ra);
             rentalAgreementsObservableList.setAll(rentalAgreementsList);
-            System.out.println("Agreement deleted");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Agreement deleted successfully");
         }
         else{
-            System.out.println("Agreement not deleted");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Agreement delete failed. Please try again");
         }
 
     }

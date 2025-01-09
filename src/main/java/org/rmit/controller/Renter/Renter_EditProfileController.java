@@ -23,8 +23,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static org.rmit.Helper.UIDecorator.EDIT;
-
 public class Renter_EditProfileController implements Initializable {
     public TextField newName_input;
     public TextField newContact_input;
@@ -41,7 +39,7 @@ public class Renter_EditProfileController implements Initializable {
     public Label contact_err;
     public Label dob_err;
     public Label password_err;
-    public boolean isAvatarChange = true;
+    public boolean isAvatarChange = false;
     public AnchorPane anchorPane;
 
     Person currentUser = Session.getInstance().getCurrentUser();
@@ -93,7 +91,9 @@ public class Renter_EditProfileController implements Initializable {
             checkForChanges();
         });
         currentUser.profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(ImageUtils.getByte(ImageUtils.DEFAULT_IMAGE))) return;
             avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+            checkForChanges();
         });
     }
 
@@ -118,7 +118,7 @@ public class Renter_EditProfileController implements Initializable {
                 .dependsOn("newUsername", newUsername_input.textProperty())
                 .withMethod(context -> {
                     String input = context.get("newUsername");
-                    if (!InputValidator.isValidUsername(input, username_err)) {
+                    if (!InputValidator.isValidNewUsername(input, username_err, newUsername_input.equals(currentUser.getUsername()))) {
                         context.error("Username must be at least 6 characters");
                     }
                 })
@@ -184,8 +184,10 @@ public class Renter_EditProfileController implements Initializable {
         SELECTED_PATH = ImageUtils.openFileChooseDialog();
         if(SELECTED_PATH == ImageUtils.DEFAULT_IMAGE){
             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
+            return;
         }
-        avatar_ImageView.setImage(ImageUtils.imageFromPath(SELECTED_PATH));
+        isAvatarChange = true;
+        currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
     }
 
     private void saveChanges() {
@@ -208,6 +210,7 @@ public class Renter_EditProfileController implements Initializable {
          setDisableAll(true);
         edit_btn.setText("Edit");
         edit_btn.setDisable(false);
+        isAvatarChange = false;
     }
 
     private void checkForChanges() {
@@ -216,8 +219,8 @@ public class Renter_EditProfileController implements Initializable {
                         !newContact_input.getText().equals(currentUser.getContact()) ||
                         !Objects.equals(newDOB_input.getValue(), currentUser.getDateOfBirth()) || // Null-safe comparison
                         !newPassword_input.getText().equals(currentUser.getPassword()) ||
-                        !newUsername_input.getText().equals(currentUser.getUsername());
-//                        !avatar_ImageView.getImage().equals(currentUser.getProfileAvatar());
+                        !newUsername_input.getText().equals(currentUser.getUsername()) ||
+                        !(avatar_ImageView.getImage().equals(currentUser.getProfileAvatar()) && !isAvatarChange);
 
         if (isChanged) {
             edit_btn.setText("Save");

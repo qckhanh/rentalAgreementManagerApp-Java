@@ -173,7 +173,7 @@ public class StartViewFactory {
         });
 
         Timeline autoDismiss = new Timeline(
-                new KeyFrame(Duration.seconds(2), e -> { // Set duration here (e.g., 5 seconds)
+                new KeyFrame(Duration.seconds(1.5), e -> { // Set duration here (e.g., 5 seconds)
                     Timeline fadeOut = Animations.slideOutUp(notification, Duration.millis(300));
                     fadeOut.setOnFinished(f -> pane.getChildren().remove(notification));
                     fadeOut.playFromStart();

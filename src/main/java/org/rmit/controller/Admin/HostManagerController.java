@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -18,13 +19,12 @@ import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
-import org.rmit.database.OwnerDAO;
 import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.Property;
-import org.rmit.view.Host.HostViewFactory;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -49,27 +49,25 @@ public class HostManagerController implements Initializable {
     public TextField username_input;
     public Button addToDB_btn;
     public PasswordTextField password_PasswordTextField;
+    public AnchorPane anchorPane;
 
     private ObservableList<Host> personObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Host> selectedPerson = new SimpleObjectProperty<>();
     List<Host> persons = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
 
     Label noneLabel = new Label();
-    Validator validator = new Validator();
+//    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         decor();
         revealPassword(password_PasswordTextField);
         setEditableTextField(true);
-//        avatarImageView.getStyleClass().addAll(
-//                Styles.ROUNDED
-//        );
         create_btn.setOnAction(e -> createNewPerson());
         update_btn.setOnAction(e -> updatePerson());
         delete_btn.setOnAction(e -> deletePerson());
         addToDB_btn.setOnAction(e -> {
-            if (validator.validate()) {addToDB();}
+            addToDB();
             clearTextField();
         });
 
@@ -106,11 +104,9 @@ public class HostManagerController implements Initializable {
         persons_TableView.setItems(personObservableList);
         loadData(persons);
 
-        validateInput(); // Ensure validators are initialized
-        addToDB_btn.disableProperty().bind(validator.containsErrorsProperty());
     }
 
-    private void validateInput() {
+    private void buildValidtor(Validator validator, boolean isForCreateNew) {
         validator.createCheck()
                 .dependsOn("fullName", fullName_input.textProperty())
                 .withMethod(context -> {
@@ -146,18 +142,18 @@ public class HostManagerController implements Initializable {
                 })
                 .decorates(dob_input)
                 .immediateClear();
-
-        validator.createCheck()
-                .dependsOn("username", username_input.textProperty())
-                .withMethod(context -> {
-                    String input = context.get("username");
-                    if (!InputValidator.isValidUsername(input, noneLabel)) {
-                        context.error("Username must be at least 6 characters");
-                        System.out.println("Username must be at least 6 characters");
-                    }
-                })
-                .decorates(username_input)
-                .immediateClear();
+            System.out.println("Creating new person");
+            validator.createCheck()
+                    .dependsOn("username", username_input.textProperty())
+                    .withMethod(context -> {
+                        String input = context.get("username");
+                        if (!InputValidator.isValidNewUsername(input, noneLabel, isForCreateNew)) {
+                            context.error("Username must be at least 6 characters");
+                            System.out.println("Username must be at least 6 characters");
+                        }
+                    })
+                    .decorates(username_input)
+                    .immediateClear();
 
         validator.createCheck()
                 .dependsOn("password", password_PasswordTextField.textProperty())
@@ -173,43 +169,58 @@ public class HostManagerController implements Initializable {
     }
 
     private void deletePerson() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this host?")) return;
         Host person = selectedPerson.get();
-        if(1 != 1){
-            System.out.println("Cannot delete host who have > 0 properties");
+        if(person == null){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a host to delete");
+            return;
         }
-        else {
-            HostDAO dao = new HostDAO();
-            DatabaseUtil.warmUp();
-            boolean isDeleted = dao.delete(person);
-            if(isDeleted){
-                personObservableList.remove(person);
-                clearTextField();
-                System.out.println("Deleted host");
-            }
-            else System.out.println("Cannot delete host");
+        if(person.getPropertiesManaged().size() > 0){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Host is managing properties");
+            return;
         }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this host?")) return;
+        HostDAO dao = new HostDAO();
+        DatabaseUtil.warmUp();
+        boolean isDeleted = dao.delete(person);
+        if(isDeleted){
+            personObservableList.remove(person);
+            clearTextField();
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host deleted successfully");
+        }
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Try again");
+
     }
 
     private void updatePerson() {
         boolean isEditable = fullName_input.isEditable();
         setEditableTextField(!isEditable);
-        if(isTextFieldChanged(selectedPerson.get()) && validator.validate()){
-            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this host?")) return;
-            Host person = selectedPerson.get();
-            person.setName(fullName_input.getText());
-            person.setContact(contact_input.getText());
-            person.setDateOfBirth(dob_input.getValue());
-            person.setPassword(password_PasswordTextField.getPassword());
-            HostDAO dao = new HostDAO();
-            DatabaseUtil.warmUp();
-            boolean isUpdated = dao.update(person);
-            if(isUpdated){
-                personObservableList.set(personObservableList.indexOf(person), person);
-                System.out.println("Updated host");
-            }
-            else System.out.println("Cannot update host");
+
+        Validator updateValidator = new Validator();
+        buildValidtor(updateValidator, false);
+
+        if(!isTextFieldChanged(selectedPerson.get())){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+            return;
         }
+        if(!updateValidator.validate()){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            return;
+        }
+
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this host?")) return;
+        Host person = selectedPerson.get();
+        person.setName(fullName_input.getText());
+        person.setContact(contact_input.getText());
+        person.setDateOfBirth(dob_input.getValue());
+        person.setPassword(password_PasswordTextField.getPassword());
+        HostDAO dao = new HostDAO();
+        DatabaseUtil.warmUp();
+        boolean isUpdated = dao.update(person);
+        if(isUpdated){
+            personObservableList.set(personObservableList.indexOf(person), person);
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host updated successfully");
+        }
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot update host. Try again");
     }
 
     private void createNewPerson() {
@@ -225,20 +236,27 @@ public class HostManagerController implements Initializable {
     }
 
     private void addToDB() {
+        Validator validatorCreate = new Validator();
+        buildValidtor(validatorCreate, true);
+        if (!validatorCreate.validate()){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            return;
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this host?")) return;
+
         HostDAO dao = new HostDAO();
         Host person = new Host();
         person.setUsername(username_input.getText());
         person.setName(fullName_input.getText());
         person.setContact(contact_input.getText());
         person.setDateOfBirth(dob_input.getValue());
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this host?")) return;
         DatabaseUtil.warmUp();
         boolean isAdded = dao.add(person);
         if(isAdded){
             personObservableList.add(person);
-            System.out.println("Added host");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host added successfully");
         }
-        else System.out.println("Cannot add host");
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot add host. Try again");
     }
 
     private boolean isTextFieldChanged(Host person){
