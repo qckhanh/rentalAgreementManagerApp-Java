@@ -483,7 +483,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
     }
 
-    // IT MIGHT BE HERE
     private void checkChanges() {
         boolean changed = false;
 
@@ -713,5 +712,4 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
         return false;
     }
-
 }
