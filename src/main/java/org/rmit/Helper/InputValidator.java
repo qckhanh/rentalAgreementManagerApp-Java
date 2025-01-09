@@ -366,4 +366,19 @@ public class InputValidator {
             return false;
         }
     }
+
+    public static boolean isValidRoom(String input, Label label){
+        try{
+            int room = Integer.parseInt(input);
+            if(room <= 0) {
+                setLabelError(label, RED, "Room number must be positive");
+                return false;
+            }
+            return true;
+        }
+        catch (Exception e){
+            setLabelError(label, RED, "Invalid room number");
+            return false;
+        }
+    }
 }

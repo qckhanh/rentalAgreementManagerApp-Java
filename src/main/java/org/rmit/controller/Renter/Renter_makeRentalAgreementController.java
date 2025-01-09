@@ -83,6 +83,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
             resetErrorLabels();
         });
         selectedOwner.addListener((observable, oldValue, newValue) -> {
+            if(newValue == null) return;
             owner_input.setText(newValue.getName());
         });
         selectedProperty.addListener((observable, oldValue, newValue) -> {
@@ -185,7 +186,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(list);
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
-        subRenterSearch_input.clear();
+//        subRenterSearch_input.clear();
         searchRenter_btn.setDisable(false);
 
     }

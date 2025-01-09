@@ -178,7 +178,7 @@
          </GridPane>
       </VBox>
       <Button fx:id="returnTableView_btn" layoutX="44.0" layoutY="74.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="43.0" text="Back" />
-      <Button fx:id="updateProperty_btn" layoutX="300.0" layoutY="705.0" minHeight="-Infinity" mnemonicParsing="false" prefHeight="38.0" prefWidth="151.0" text="Update">
+      <Button fx:id="editProperty" layoutX="297.0" layoutY="703.0" minHeight="-Infinity" mnemonicParsing="false" prefHeight="38.0" prefWidth="151.0" text="Edit">
          <font>
             <Font name="System Bold" size="16.0" />
          </font>
@@ -188,5 +188,10 @@
             <Font name="System Bold" size="28.0" />
          </font>
       </Label>
+      <Button fx:id="saveChange" layoutX="476.0" layoutY="703.0" minHeight="-Infinity" mnemonicParsing="false" prefHeight="38.0" prefWidth="58.0" text="Save">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

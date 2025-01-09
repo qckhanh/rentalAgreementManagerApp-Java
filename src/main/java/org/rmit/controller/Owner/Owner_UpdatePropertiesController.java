@@ -5,7 +5,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
@@ -46,7 +45,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public CheckBox propertyPet_chBox;
     public TextField propertyBedrooms_txtf;
     public TextField propertyRooms_txtf;
-    public Button updateProperty_btn;
+    public Button editProperty;
     public Label address_err;
     public Label price_err;
     public Label status_err;
@@ -63,7 +62,9 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Button addImage_btn;
     public Button clearImage_btn;
     public AnchorPane anchorPane;
-    Validator validator = new Validator();
+    public Button saveChange;
+    Validator validatorCP = new Validator();
+    Validator validatorRP = new Validator();
 
     private int totalNumberBedrooms = 0;
     private int totalNumberRooms = 0;
@@ -74,7 +75,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
 
     public static void setSelectedProperty(Property property) {       // need optimization
-//         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Property selected");
         int id = Integer.parseInt(property.getId() + "");
         if(property instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
@@ -90,47 +90,23 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        returnTableView_btn.setOnAction(e-> {
-            ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
-        });
-
-        addSelectedPropertyChangeListener();
-        Image firstImg = (images.size() == 0) ? ImageUtils.byteToImage(null) : ImageUtils.byteToImage(images.get(0));
-        imageView_propertyImg.setImage(firstImg);
-        propertyAddress_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-        propertyPrice_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-        propertyStatus_cbox.valueProperty().addListener(((observableValue, propertyStatus, t1) -> checkChanges()));
-        if (selectedProperty.get() instanceof CommercialProperty) {
-            propertyBtype_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-            propertySquareMeters_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-            propertyPSpaces_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-        }
-        else if (selectedProperty.get() instanceof ResidentialProperty) {
-            propertyGarden_chbox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
-            propertyPet_chBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> checkChanges());
-            propertyBedrooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-            propertyRooms_txtf.textProperty().addListener((observableValue, s, t1) -> checkChanges());
-            // Add listeners to update total number of bedrooms and rooms
-            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
-        }
-        setDisable(true);
-
-        updateProperty_btn.setText("Edit");
-        updateProperty_btn.setDisable(false);
-        updateProperty_btn.setOnAction(e-> updateProperty());
+        loadPropertyData();
+        setDisableTextField(true);
+        editProperty.setOnAction(e-> editProperty());
         nextImg_btn.setOnAction(e -> nextImg_btn());
         prevImg_btn.setOnAction(e -> prevImg_btn());
         clearImage_btn.setOnAction(e -> clearSelectedImage());
         addImage_btn.setOnAction(e -> addImage());
+        saveChange.setOnAction(e -> saveChanges());
 
-
-
-        addListener();
+//        addListener();
         resetErrorLabels();
-        validateInput();
+        validateCP();
+        validateRP();
         decor();
+        returnTableView_btn.setOnAction(e-> {
+            ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
+        });
     }
     private void decor(){
         UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
@@ -138,11 +114,30 @@ public class Owner_UpdatePropertiesController implements Initializable {
         UIDecorator.setNormalButton(addImage_btn, UIDecorator.ADD(), null);
         UIDecorator.setNormalButton(clearImage_btn, UIDecorator.DELETE(), null);
         UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.BACK_PREVIOUS_PAGE(), null);
-        UIDecorator.setNormalButton(updateProperty_btn, UIDecorator.SEND(), "Update");
+        UIDecorator.setNormalButton(editProperty, UIDecorator.SEND(), "Update");
     }
 
-    private void validateInput() {
-        validator.createCheck()
+    private boolean isChange(Property property){
+        if(!property.getAddress().equals(propertyAddress_txtf.getText())) return true;
+        if(property.getPrice() != Double.parseDouble(propertyPrice_txtf.getText())) return true;
+        if(property.getStatus() != propertyStatus_cbox.getValue()) return true;
+        if(isDifferent(images, property.getImages())) return true;
+        if(property instanceof CommercialProperty){
+            if(!((CommercialProperty) property).getBusinessType().equals(propertyBtype_txtf.getText())) return true;
+            if(((CommercialProperty) property).getSquareMeters() != Double.parseDouble(propertySquareMeters_txtf.getText())) return true;
+            if(((CommercialProperty) property).getTotalParkingSpace() != Integer.parseInt(propertyPSpaces_txtf.getText())) return true;
+        }
+        else if(property instanceof ResidentialProperty){
+            if(((ResidentialProperty) property).isHasGardenProperty() != propertyGarden_chbox.isSelected()) return true;
+            if(((ResidentialProperty) property).isIsPetAllowedProperty() != propertyPet_chBox.isSelected()) return true;
+            if(((ResidentialProperty) property).getTotalBedroom() != Integer.parseInt(propertyBedrooms_txtf.getText())) return true;
+            if(((ResidentialProperty) property).getTotalRoom() != Integer.parseInt(propertyRooms_txtf.getText())) return true;
+        }
+        return false;
+    }
+
+    private void validateCP() {
+        validatorCP.createCheck()
                 .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
                 .withMethod(context -> {
                     String input = context.get("propertyAddress");
@@ -153,7 +148,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .decorates(propertyAddress_txtf)
                 .immediateClear();
 
-        validator.createCheck()
+        validatorCP.createCheck()
                 .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
                 .withMethod(context -> {
                     String input = context.get("propertyPrice");
@@ -164,7 +159,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .decorates(propertyPrice_txtf)
                 .immediateClear();
 
-        validator.createCheck()
+        validatorCP.createCheck()
                 .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
                 .withMethod(context -> {
                     PropertyStatus input = context.get("propertyStatus");
@@ -177,7 +172,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 .immediateClear();
 
         if (selectedProperty.get() instanceof CommercialProperty) {
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertyBtype", propertyBtype_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyBtype");
@@ -188,7 +183,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertyBtype_txtf)
                     .immediateClear();
 
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertySquareMeters", propertySquareMeters_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertySquareMeters");
@@ -199,7 +194,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     .decorates(propertySquareMeters_txtf)
                     .immediateClear();
 
-            validator.createCheck()
+            validatorCP.createCheck()
                     .dependsOn("propertyPSpaces", propertyPSpaces_txtf.textProperty())
                     .withMethod(context -> {
                         String input = context.get("propertyPSpaces");
@@ -209,94 +204,159 @@ public class Owner_UpdatePropertiesController implements Initializable {
                     })
                     .decorates(propertyPSpaces_txtf)
                     .immediateClear();
-        } else if (selectedProperty.get() instanceof ResidentialProperty) {
-            validator.createCheck()
-                    .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyBedrooms");
-                        if (!InputValidator.isValidBedrooms(input, bedroom_err, totalNumberRooms)) {
-                            context.error("Bedrooms must be a valid number");
-                        }
-                    })
-                    .decorates(propertyBedrooms_txtf)
-                    .immediateClear();
-
-            validator.createCheck()
-                    .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyRooms");
-                        if (!InputValidator.isValidRooms(input, room_err, totalNumberBedrooms)) {
-                            context.error("Rooms must be a valid number");
-                        }
-                    })
-                    .decorates(propertyRooms_txtf)
-                    .immediateClear();
-        }
-
-//        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
-    }
-
-    private void addListener() {
-        propertyAddress_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(oldValue)) address_err.setText("");
-            checkChanges();
-        });
-        propertyPrice_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.equals(oldValue)) price_err.setText("");
-            checkChanges();
-        });
-        propertyStatus_cbox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (!Objects.equals(oldValue, newValue)) status_err.setText("");
-            checkChanges();
-        });
-        if (selectedProperty.get() instanceof CommercialProperty) {
-            propertyBtype_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.equals(oldValue)) businessType_err.setText("");
-                checkChanges();
-            });
-            propertySquareMeters_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.equals(oldValue)) squareMeters_err.setText("");
-                checkChanges();
-            });
-            propertyPSpaces_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.equals(oldValue)) parkingSpace_err.setText("");
-                checkChanges();
-            });
-        } else if (selectedProperty.get() instanceof ResidentialProperty) {
-            propertyGarden_chbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!Objects.equals(oldValue, newValue)) checkChanges();
-            });
-            propertyPet_chBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!Objects.equals(oldValue, newValue)) checkChanges();
-            });
-            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.equals(oldValue)) bedroom_err.setText("");
-                checkChanges();
-            });
-            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.equals(oldValue)) room_err.setText("");
-                checkChanges();
-            });
         }
     }
 
-    private void updateProperty() {
-        if (updateProperty_btn.getText().equals("Save")) {
-            if (!validator.validate()){
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in the form correctly");
-                return;
-            }
-            if(ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes")) saveChanges();
-        }
-        else {
-            setDisable(false);
-        }
+    private void validateRP() {
+        validatorRP.createCheck()
+                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyAddress");
+                    if (!InputValidator.NoCondition(input, address_err)) {
+                        context.error("Address must not be empty");
+                    }
+                })
+                .decorates(propertyAddress_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyPrice");
+                    if (!InputValidator.isValidPrice(input, price_err)) {
+                        context.error("Price must be a valid number");
+                    }
+                })
+                .decorates(propertyPrice_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
+                .withMethod(context -> {
+                    PropertyStatus input = context.get("propertyStatus");
+                    if (input == null) {
+                        context.error("A Status must be selected");
+                        status_err.setText("A Status must be selected");
+                    }
+                })
+                .decorates(propertyStatus_cbox)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyBedrooms");
+                    if (!InputValidator.isValidRoom(input, bedroom_err)) {
+                        context.error("Bedrooms must be a valid number");
+                    }
+                })
+                .decorates(propertyBedrooms_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
+                .withMethod(context -> {
+                    String input = context.get("propertyRooms");
+                    if (!InputValidator.isValidRoom(input, room_err)) {
+                        context.error("Rooms must be a valid number");
+                    }
+                })
+                .decorates(propertyRooms_txtf)
+                .immediateClear();
+
+        validatorRP.createCheck()
+                .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
+                .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
+                .withMethod(context -> {
+                    if(!InputValidator.isValidRoomsAndBedroom(context.get("propertyRooms"), context.get("propertyBedrooms"))){
+                        context.error("Rooms must be a valid number");
+                    }
+                })
+                .decorates(propertyRooms_txtf)
+                .immediateClear();
+
+    }
+
+//    private void addListener() {
+//        propertyAddress_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//            if (!newValue.equals(oldValue)) address_err.setText("");
+//            checkChanges();
+//        });
+//        propertyPrice_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//            if (!newValue.equals(oldValue)) price_err.setText("");
+//            checkChanges();
+//        });
+//        propertyStatus_cbox.valueProperty().addListener((observable, oldValue, newValue) -> {
+//            if (!Objects.equals(oldValue, newValue)) status_err.setText("");
+//            checkChanges();
+//        });
+//        if (selectedProperty.get() instanceof CommercialProperty) {
+//            propertyBtype_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals(oldValue)) businessType_err.setText("");
+//                checkChanges();
+//            });
+//            propertySquareMeters_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals(oldValue)) squareMeters_err.setText("");
+//                checkChanges();
+//            });
+//            propertyPSpaces_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals(oldValue)) parkingSpace_err.setText("");
+//                checkChanges();
+//            });
+//        } else if (selectedProperty.get() instanceof ResidentialProperty) {
+//            propertyGarden_chbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!Objects.equals(oldValue, newValue)) checkChanges();
+//            });
+//            propertyPet_chBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!Objects.equals(oldValue, newValue)) checkChanges();
+//            });
+//            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals(oldValue)) bedroom_err.setText("");
+//                checkChanges();
+//            });
+//            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+//                if (!newValue.equals(oldValue)) room_err.setText("");
+//                checkChanges();
+//            });
+//        }
+//    }
+
+    private void editProperty() {
+        boolean isDisable = propertyAddress_txtf.isDisable();
+        setDisableTextField(!isDisable);
+        saveChange.setVisible(isDisable);
     }
 
     private void saveChanges() {
+//        validatorRP.clear();
+//        validatorCP.clear();
+        validateCP();
+        validateRP();
+
+        if(selectedProperty.get() instanceof CommercialProperty) {
+            if (!validatorCP.validate()) {
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                return;
+            }
+        }
+        else if(selectedProperty.get() instanceof ResidentialProperty) {
+            if (!validatorRP.validate()) {
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                return;
+            }
+        }
+        if(!isChange(selectedProperty.get())){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+            return;
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")){
+            return;
+        }
+
         selectedProperty.get().setAddress(propertyAddress_txtf.getText());
         selectedProperty.get().setPrice(Double.parseDouble(propertyPrice_txtf.getText()));
         selectedProperty.get().setStatus(propertyStatus_cbox.getValue());
+
         for(byte[] bytes: images){
             selectedProperty.get().addImages(bytes);
         }
@@ -326,110 +386,106 @@ public class Owner_UpdatePropertiesController implements Initializable {
         else {
             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
         }
-        setDisable(true);
-        updateProperty_btn.setText("Edit");
-        updateProperty_btn.setDisable(false);
+        setDisableTextField(true);
+        saveChange.setVisible(false);
+
+        validatorRP.clear();
+        validatorCP.clear();
     }
 
-    public void addSelectedPropertyChangeListener() {
+    public void loadPropertyData() {
         selectedProperty.addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null && !newValue.equals(oldValue)) {
                 System.out.println("Selected property has changed.");
                 clearData();
-                setDisable(true);
+                setDisableTextField(true);
                 updateFormFields(newValue);
+                saveChange.setVisible(false);
             }
         });
-        // Update form fields initially if selectedProperty is not null
         if (selectedProperty.get() != null) {
             clearData();
             updateFormFields(selectedProperty.get());
         }
     }
 
-    private void checkChanges() {
-        boolean changed = false;
-        if (!propertyAddress_txtf.getText().equals(selectedProperty.get().getAddress())) {
-            changed = true;
-        }
-        if (!propertyPrice_txtf.getText().equals(String.valueOf(selectedProperty.get().getPrice()))) {
-            changed = true;
-        }
-        if (!propertyStatus_cbox.getValue().equals(selectedProperty.get().getStatus())) {
-            changed = true;
-        }
-        if(isDifferent(images, selectedProperty.get().getImages())) {
-            changed = true;
-        }
+//    private void checkChanges() {
+//        boolean changed = false;
+//        if (!propertyAddress_txtf.getText().equals(selectedProperty.get().getAddress())) {
+//            changed = true;
+//        }
+//        if (!propertyPrice_txtf.getText().equals(String.valueOf(selectedProperty.get().getPrice()))) {
+//            changed = true;
+//        }
+//        if (!propertyStatus_cbox.getValue().equals(selectedProperty.get().getStatus())) {
+//            changed = true;
+//        }
+//        if(isDifferent(images, selectedProperty.get().getImages())) {
+//            changed = true;
+//        }
+//
+//        if (selectedProperty.get() instanceof CommercialProperty) {
+//            if (!propertyBtype_txtf.getText().equals(((CommercialProperty) selectedProperty.get()).getBusinessType())) {
+//                changed = true;
+//            }
+//            if (!propertySquareMeters_txtf.getText().equals((String.valueOf(((CommercialProperty) selectedProperty.get()).getSquareMeters())))) {
+//                changed = true;
+//            }
+//            if (!propertyPSpaces_txtf.getText().equals(String.valueOf(((CommercialProperty) selectedProperty.get()).getTotalParkingSpace()))) {
+//                changed = true;
+//            }
+//        }
+//        if (selectedProperty.get() instanceof ResidentialProperty) {
+//            if (!propertyGarden_chbox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isHasGardenProperty()) {
+//                changed = true;
+//            }
+//            if (!propertyPet_chBox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isIsPetAllowedProperty()) {
+//                changed = true;
+//            }
+//            if (!propertyBedrooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalBedroom()))) {
+//                changed = true;
+//            }
+//            if (!propertyRooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalRoom()))) {
+//                changed = true;
+//            }
+//        }
+//
+//        if (changed) {
+//            editProperty.setText("Save");
+//            editProperty.setDisable(false);
+//        }
+//        else {
+//            editProperty.setText("Edit");
+//            setDisableTextField(true);
+//            editProperty.setDisable(false);
+//        }
+//    }
 
-        if (selectedProperty.get() instanceof CommercialProperty) {
-            if (!propertyBtype_txtf.getText().equals(((CommercialProperty) selectedProperty.get()).getBusinessType())) {
-                changed = true;
+    void setDisableTextField(boolean status) {
+            propertyAddress_txtf.setDisable(status);
+            propertyPrice_txtf.setDisable(status);
+            propertyStatus_cbox.setDisable(status);
+            if(selectedProperty.get() instanceof CommercialProperty){
+                propertyBtype_txtf.setDisable(status);
+                propertySquareMeters_txtf.setDisable(status);
+                propertyPSpaces_txtf.setDisable(status);
             }
-            if (!propertySquareMeters_txtf.getText().equals((String.valueOf(((CommercialProperty) selectedProperty.get()).getSquareMeters())))) {
-                changed = true;
+            else if(selectedProperty.get() instanceof ResidentialProperty){
+                propertyGarden_chbox.setDisable(status);
+                propertyPet_chBox.setDisable(status);
+                propertyBedrooms_txtf.setDisable(status);
+                propertyRooms_txtf.setDisable(status);
             }
-            if (!propertyPSpaces_txtf.getText().equals(String.valueOf(((CommercialProperty) selectedProperty.get()).getTotalParkingSpace()))) {
-                changed = true;
-            }
-        }
-        if (selectedProperty.get() instanceof ResidentialProperty) {
-            if (!propertyGarden_chbox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isHasGardenProperty()) {
-                changed = true;
-            }
-            if (!propertyPet_chBox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isIsPetAllowedProperty()) {
-                changed = true;
-            }
-            if (!propertyBedrooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalBedroom()))) {
-                changed = true;
-            }
-            if (!propertyRooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalRoom()))) {
-                changed = true;
-            }
-        }
-
-        if (changed) {
-            updateProperty_btn.setText("Save");
-            updateProperty_btn.setDisable(false);
-        }
-        else {
-            updateProperty_btn.setText("Edit");
-            setDisable(true);
-            updateProperty_btn.setDisable(false);
-        }
-    }
-
-    void setDisable(boolean status) {
-        if (status == true) {
-            propertyAddress_txtf.setDisable(true);
-            propertyPrice_txtf.setDisable(true);
-            propertyStatus_cbox.setDisable(true);
-            disableCommercialFields();
-            disableResidentialFields();
-        }
-        else {
-            if (selectedProperty.get() instanceof CommercialProperty) {
-                propertyAddress_txtf.setDisable(false);
-                propertyPrice_txtf.setDisable(false);
-                propertyStatus_cbox.setDisable(false);
-                enableCommercialFields();
-            }
-            else if (selectedProperty.get() instanceof ResidentialProperty) {
-                propertyAddress_txtf.setDisable(false);
-                propertyPrice_txtf.setDisable(false);
-                propertyStatus_cbox.setDisable(false);
-                enableResidentialFields();
-            }
-        }
     }
 
     private void updateFormFields(Property property) {
         images.clear();
-        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
-        images.addAll(property.getImages());
         if(images.size() > 0) {
             currentImageIndex = 0;
             imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(0)));
+        }
+        else{
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
         }
         propertyAddress_txtf.setText(property.getAddress());
         propertyPrice_txtf.setText(String.valueOf(property.getPrice()));
