@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
+
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Renter.Renter_MakePaymentController">
    <children>
       <Label fx:id="welcomeLabel" layoutX="36.0" layoutY="21.0" prefHeight="59.0" prefWidth="309.0" text="Create A New Payment">
@@ -82,5 +83,15 @@
             <ComboBox fx:id="paymentMethod_comboBox" prefHeight="40.0" prefWidth="343.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
          </children>
       </GridPane>
+      <Label fx:id="payment_method_err" layoutX="657.0" layoutY="573.0" text="Name must not be empty" textFill="RED">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="agreement_err" layoutX="657.0" layoutY="249.0" text="Name must not be empty" textFill="RED">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

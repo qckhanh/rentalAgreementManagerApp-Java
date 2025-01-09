@@ -126,9 +126,39 @@ public class Owner_AddPropertiesController implements Initializable {
         propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
         propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> updateTotalNumbers());
 
+        // NEW: Add listeners to clear error labels
+        propertyAddress_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            address_err.setText(""); // Clear error label
+        });
+
+        propertyPrice_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            price_err.setText(""); // Clear error label
+        });
+
+        propertyBtype_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            businessType_err.setText(""); // Clear error label
+        });
+
+        propertySquareMeters_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            squareMeters_err.setText(""); // Clear error label
+        });
+
+        propertyPSpaces_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            parkingSpace_err.setText(""); // Clear error label
+        });
+
+        propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            bedroom_err.setText(""); // Clear error label
+        });
+
+        propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
+            room_err.setText(""); // Clear error label
+        });
+
         resetErrorLabels();
         decor();
     }
+
     private void decor(){
         UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
@@ -451,6 +481,7 @@ public class Owner_AddPropertiesController implements Initializable {
         currentImageIndex = position;
         imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(position)));
     }
+
     private void clearSelectedImage() {
         selectedImages.clear();
         imageView_propertyImg.setImage(ImageUtils.byteToImage(null));

@@ -115,4 +115,14 @@ public abstract class DAOInterface<T>{
         }
     }
 
+    public static boolean isUsernameExists(String clazzName, String username) {
+        Session session = DatabaseUtil.getSession();
+        String hql = "SELECT 1 FROM " + clazzName + " u WHERE u.username = :username";
+        // Check if a match exists using setMaxResults(1)
+        Object result = session.createQuery(hql)
+                .setParameter("username", username)
+                .setMaxResults(1) // Limit the query to a single result
+                .uniqueResult(); // Retrieve a single result or null
+        return result != null; // If result is not null, the username exists
+    }
 }
