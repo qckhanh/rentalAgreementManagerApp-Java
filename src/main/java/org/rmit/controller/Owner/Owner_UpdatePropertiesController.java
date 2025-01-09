@@ -66,6 +66,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
     Validator validatorCP = new Validator();
     Validator validatorRP = new Validator();
 
+
     private int totalNumberBedrooms = 0;
     private int totalNumberRooms = 0;
     private List<byte[]> images = new ArrayList<>();
@@ -85,14 +86,17 @@ public class Owner_UpdatePropertiesController implements Initializable {
             property = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
 
         }
+
         selectedProperty.set(property);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         loadPropertyData();
         setDisableTextField(true);
         editProperty.setOnAction(e-> editProperty());
+
         nextImg_btn.setOnAction(e -> nextImg_btn());
         prevImg_btn.setOnAction(e -> prevImg_btn());
         clearImage_btn.setOnAction(e -> clearSelectedImage());
@@ -103,11 +107,13 @@ public class Owner_UpdatePropertiesController implements Initializable {
         resetErrorLabels();
         validateCP();
         validateRP();
+
         decor();
         returnTableView_btn.setOnAction(e-> {
             ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
         });
     }
+
     private void decor(){
         UIDecorator.setNormalButton(prevImg_btn, UIDecorator.PREVIOUS(), null);
         UIDecorator.setNormalButton(nextImg_btn, UIDecorator.NEXT(), null);
@@ -116,6 +122,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.BACK_PREVIOUS_PAGE(), null);
         UIDecorator.setNormalButton(editProperty, UIDecorator.SEND(), "Update");
     }
+
 
     private boolean isChange(Property property){
         if(!property.getAddress().equals(propertyAddress_txtf.getText())) return true;
@@ -325,6 +332,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         boolean isDisable = propertyAddress_txtf.isDisable();
         setDisableTextField(!isDisable);
         saveChange.setVisible(isDisable);
+
+
     }
 
     private void saveChanges() {
@@ -403,63 +412,14 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 saveChange.setVisible(false);
             }
         });
+
         if (selectedProperty.get() != null) {
             clearData();
             updateFormFields(selectedProperty.get());
         }
     }
 
-//    private void checkChanges() {
-//        boolean changed = false;
-//        if (!propertyAddress_txtf.getText().equals(selectedProperty.get().getAddress())) {
-//            changed = true;
-//        }
-//        if (!propertyPrice_txtf.getText().equals(String.valueOf(selectedProperty.get().getPrice()))) {
-//            changed = true;
-//        }
-//        if (!propertyStatus_cbox.getValue().equals(selectedProperty.get().getStatus())) {
-//            changed = true;
-//        }
-//        if(isDifferent(images, selectedProperty.get().getImages())) {
-//            changed = true;
-//        }
-//
-//        if (selectedProperty.get() instanceof CommercialProperty) {
-//            if (!propertyBtype_txtf.getText().equals(((CommercialProperty) selectedProperty.get()).getBusinessType())) {
-//                changed = true;
-//            }
-//            if (!propertySquareMeters_txtf.getText().equals((String.valueOf(((CommercialProperty) selectedProperty.get()).getSquareMeters())))) {
-//                changed = true;
-//            }
-//            if (!propertyPSpaces_txtf.getText().equals(String.valueOf(((CommercialProperty) selectedProperty.get()).getTotalParkingSpace()))) {
-//                changed = true;
-//            }
-//        }
-//        if (selectedProperty.get() instanceof ResidentialProperty) {
-//            if (!propertyGarden_chbox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isHasGardenProperty()) {
-//                changed = true;
-//            }
-//            if (!propertyPet_chBox.isSelected() == ((ResidentialProperty) selectedProperty.get()).isIsPetAllowedProperty()) {
-//                changed = true;
-//            }
-//            if (!propertyBedrooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalBedroom()))) {
-//                changed = true;
-//            }
-//            if (!propertyRooms_txtf.getText().equals(String.valueOf(((ResidentialProperty) selectedProperty.get()).getTotalRoom()))) {
-//                changed = true;
-//            }
-//        }
-//
-//        if (changed) {
-//            editProperty.setText("Save");
-//            editProperty.setDisable(false);
-//        }
-//        else {
-//            editProperty.setText("Edit");
-//            setDisableTextField(true);
-//            editProperty.setDisable(false);
-//        }
-//    }
+
 
     void setDisableTextField(boolean status) {
             propertyAddress_txtf.setDisable(status);
@@ -500,8 +460,10 @@ public class Owner_UpdatePropertiesController implements Initializable {
             propertyGarden_chbox.setSelected(((ResidentialProperty) property).isHasGardenProperty());
             propertyPet_chBox.setSelected(((ResidentialProperty) property).isIsPetAllowedProperty());
             propertyBedrooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
-            propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalBedroom()));
+            propertyRooms_txtf.setText(String.valueOf(((ResidentialProperty) property).getTotalRoom()));
         }
+
+
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Information loaded");
 
     }
@@ -546,7 +508,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         currentImageIndex = 0;
     }
 
-    private void updateTotalNumbers() {
+    private void updateTotalNumbersOfRooms() {
         try {
             totalNumberBedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
         } catch (NumberFormatException e) {
@@ -615,6 +577,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         currentImageIndex = position;
         imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(position)));
     }
+
     private void clearSelectedImage() {
         images.clear();
         imageView_propertyImg.setImage(ImageUtils.byteToImage(null));

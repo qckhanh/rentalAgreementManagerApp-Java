@@ -5,11 +5,17 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
+
+import javafx.scene.control.*;
+import javafx.util.StringConverter;
+import net.synedra.validatorfx.Validator;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.PaymentDAO;
@@ -26,6 +32,8 @@ import org.rmit.model.Session;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class Renter_MakePaymentController implements Initializable {
@@ -42,6 +50,10 @@ public class Renter_MakePaymentController implements Initializable {
     public ObjectProperty<RentalAgreement> selectedRentalAgreement;
     public AnchorPane anchorPane;
 
+    public Label payment_method_err;
+    public Label agreement_err;
+    public Validator validator = new Validator();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try{
@@ -52,6 +64,31 @@ public class Renter_MakePaymentController implements Initializable {
             mainRenter_input.setDisable(true);
             property_input.setDisable(true);
             amount_input.setEditable(false);
+            purchaseDate_datepicker.setDisable(true);
+            purchaseDate_datepicker.setValue(LocalDate.now());
+
+            // Format the date
+            purchaseDate_datepicker.setConverter(new StringConverter<LocalDate>() {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+                @Override
+                public String toString(LocalDate date) {
+                    if (date != null) {
+                        return dateFormatter.format(date);
+                    } else {
+                        return "";
+                    }
+                }
+
+                @Override
+                public LocalDate fromString(String string) {
+                    if (string != null && !string.isEmpty()) {
+                        return LocalDate.parse(string, dateFormatter);
+                    } else {
+                        return null;
+                    }
+                }
+            });
 
 
             mainRenter_input.setText(Session.getInstance().getCurrentUser().getName());
@@ -85,24 +122,60 @@ public class Renter_MakePaymentController implements Initializable {
             });
 
             rentalAgreement_ComboBox.setItems(validRentalAgreement());
-            rentalAgreement_ComboBox.setOnAction(e -> selectedRentalAgreement());
+            rentalAgreement_ComboBox.setOnAction(e -> {
+                selectedRentalAgreement();
+                agreement_err.setText("");
+            });
             paymentMethod_comboBox.getItems().addAll(
                     PaymentMethod.CARD,
                     PaymentMethod.CASH
             );
             paymentMethod_comboBox.setOnAction(e -> {
                 selectedPaymentMethod.set((PaymentMethod) paymentMethod_comboBox.getValue());
+                payment_method_err.setText("");
             });
 
-            submit_btn.setOnAction(e -> submitPayment());
+            submit_btn.setOnAction(e -> {
+                if (validator.validate()) submitPayment();
+            });
+            validateInput();
+            clearLabels();
+            submit_btn.disableProperty().bind(validator.containsErrorsProperty());
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void validateInput() {
+        validator.createCheck()
+                .dependsOn("paymentMethod", paymentMethod_comboBox.valueProperty())
+                .withMethod(context -> {
+                    PaymentMethod input = context.get("paymentMethod");
+                    if (input == null) {
+                        context.error("Please select a payment method");
+                        payment_method_err.setText("Please select a payment method");
+                    }
+                })
+                .decorates(paymentMethod_comboBox)
+                .immediateClear();
+
+        validator.createCheck()
+                .dependsOn("rentalAgreement", rentalAgreement_ComboBox.valueProperty())
+                .withMethod(context -> {
+                    RentalAgreement input = context.get("rentalAgreement");
+                    if (input == null) {
+                        context.error("Please select a rental agreement");
+                        agreement_err.setText("Please select a rental agreement");
+                    }
+                })
+                .decorates(rentalAgreement_ComboBox)
+                .immediateClear();
+    }
+
     private void submitPayment() {
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
+        submit_btn.disableProperty().unbind();
         submit_btn.setDisable(true);
         Payment newPayment = new Payment();
         newPayment.setRentalAgreement(selectedRentalAgreement.get());
@@ -113,6 +186,8 @@ public class Renter_MakePaymentController implements Initializable {
         newPayment.setMainRenter((Renter) Session.getInstance().getCurrentUser());
         PaymentDAO dao = new PaymentDAO();
         if (dao.add(newPayment)) {
+            clearLabels();
+            System.out.println("Payment successful");
             RenterDAO renterDAO = new RenterDAO();
             int id = (int)Session.getInstance().getCurrentUser().getId();
             Renter currentRenter = renterDAO.get(id, EntityGraphUtils::RenterFULL);
@@ -147,5 +222,10 @@ public class Renter_MakePaymentController implements Initializable {
             list.add(ra);
         }
         return list;
+    }
+
+    private void clearLabels() {
+        payment_method_err.setText("");
+        agreement_err.setText("");
     }
 }

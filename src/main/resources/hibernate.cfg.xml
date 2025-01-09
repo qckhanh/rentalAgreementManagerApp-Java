@@ -28,6 +28,7 @@
         <!--    NEON XXXXXXXXXXXXXXXXXX    -->
         <property name="hibernate.connection.url">
             jdbc:postgresql://ep-winter-king-a1v5wmx4-pooler.ap-southeast-1.aws.neon.tech/RentalAgreementApplication
+
         </property>
         <property name="hibernate.connection.username">
             neondb_owner
