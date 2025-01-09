@@ -17,13 +17,15 @@
 <!--                    11022005-->
 <!--                </property>-->
 
-<!--                <property name="hibernate.connection.username">-->
-<!--                    postgres.hfjwcjkrtorqkbulvain-->
-<!--                </property>-->
-<!--                <property name="hibernate.connection.password">-->
-<!--                    Duclamdao2k5-->
-<!--                </property>-->
+<!--                        <property name="hibernate.connection.username">-->
+<!--                            postgres.hfjwcjkrtorqkbulvain-->
+<!--                        </property>-->
+<!--                        <property name="hibernate.connection.password">-->
+<!--                            Duclamdao2k5-->
+<!--                        </property>-->
 
+
+        <!--    NEON XXXXXXXXXXXXXXXXXX    -->
         <property name="hibernate.connection.url">
             jdbc:postgresql://ep-winter-king-a1v5wmx4-pooler.ap-southeast-1.aws.neon.tech/RentalAgreementApplication
 

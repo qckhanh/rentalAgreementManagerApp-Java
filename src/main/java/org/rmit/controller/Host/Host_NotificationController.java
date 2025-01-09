@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
@@ -12,6 +13,7 @@ import org.rmit.Notification.Request;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
+import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
@@ -19,6 +21,7 @@ import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -43,6 +46,7 @@ public class Host_NotificationController implements Initializable {
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Host> currentUser = new SimpleObjectProperty<>((Host) Session.getInstance().getCurrentUser());
     public Button deleteNoti_btn;
+    public AnchorPane anchorPane;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -171,9 +175,13 @@ public class Host_NotificationController implements Initializable {
                 renterDAO.update(r);
             }
             currentUser.get().addAgreement(rentalAgreement);
-            hostDAO.update(currentUser.get());
-
-            System.out.println("Done ! ");
+            boolean isUpdated =  hostDAO.update(currentUser.get());
+            if(isUpdated){
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS,anchorPane, "Request approved successfully");
+            }
+            else {
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Request approved failed. Try again");
+            }
         }
     }
 

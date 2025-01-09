@@ -12,6 +12,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
@@ -24,6 +25,7 @@ import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -39,23 +41,14 @@ public class Admin_DashboardController implements Initializable {
     public Label totalAgreement_label;
     public Label totalPayments_label;
     public ListView upcommingPayment_listView;
-
-    @FXML
     public PieChart pieChartPersonObject;
     public ObservableList<PieChart.Data> pieChartData;
-
-    @FXML
     public LineChart<String, Number> lineChart;
-
-    @FXML
     public PieChart pieChartPropertyObject;
     public ObservableList<PieChart.Data> pieChartDataProperty;
-
-    @FXML
     public Label approxYearRevenue;
-
-    @FXML
     public Button refreshAdminDashBoard;
+    public AnchorPane anchorPane;
 
     LocalDate currentDate = LocalDate.now();
 
@@ -238,21 +231,15 @@ public class Admin_DashboardController implements Initializable {
     }
 
     public void updateData() {
-        // Update PieChart data for Person Object
         pieChartData = createPieChartDataPeople();
         pieChartPersonObject.setData(pieChartData);
         applyPieChartHoverEffects();
-
-        // Update LineChart data
         setLineGraph();
-
-        // Update PieChart data for Property Object
         pieChartDataProperty = createPieChartDataProperty();
         pieChartPropertyObject.setData(pieChartDataProperty);
         applyPieChartHoverEffects();
-
-        // Update Estimated Yearly Revenue
         setEstimatedYearlyRevenue();
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data Refreshed Successfully");
     }
 
     /* Helpers method for the Person Objects Pie Chart */
