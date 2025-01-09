@@ -3,6 +3,7 @@ package org.rmit.controller.Host;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -11,19 +12,16 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.HostDAO;
-import org.rmit.database.RenterDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static org.rmit.Helper.UIDecorator.EDIT;
 
 public class Host_EditProfileController implements Initializable {
     public TextField newName_input;
@@ -35,15 +33,18 @@ public class Host_EditProfileController implements Initializable {
     public ImageView avatar_ImageView;
     public Button avatarUpdate_btn;
     public String SELECTED_PATH = ImageUtils.DEFAULT_IMAGE;
+
     public Label name_err;
+    public Label username_err;
     public Label contact_err;
     public Label dob_err;
-    public Label username_err;
     public Label password_err;
-
-    Validator validator = new Validator();
+    public boolean isAvatarChange = false;
+    public AnchorPane anchorPane;
 
     Person currentUser = Session.getInstance().getCurrentUser();
+
+    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,7 +59,7 @@ public class Host_EditProfileController implements Initializable {
         validateInput();
     }
 
-    private void innitText(){
+    private void innitText() {
         newName_input.setText(currentUser.getName());
         newContact_input.setText(currentUser.getContact());
         newDOB_input.setValue(currentUser.getDateOfBirth());
@@ -68,7 +69,7 @@ public class Host_EditProfileController implements Initializable {
         edit_btn.setText("Edit");
     }
 
-    private void addListener(){
+    private void addListener() {
         newName_input.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.equals(oldValue)) name_err.setText("");
             checkForChanges();
@@ -90,11 +91,13 @@ public class Host_EditProfileController implements Initializable {
             checkForChanges();
         });
         currentUser.profileAvatarPropertyProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals(ImageUtils.getByte(ImageUtils.DEFAULT_IMAGE))) return;
             avatar_ImageView.setImage(ImageUtils.byteToImage(newValue));
+            checkForChanges();
         });
     }
 
-    private void decorElement(){
+    private void decorElement() {
         UIDecorator.setDangerButton(edit_btn, new FontIcon(Feather.EDIT), "Edit");
         UIDecorator.buttonIcon(avatarUpdate_btn, UIDecorator.EDIT());
     }
@@ -115,7 +118,7 @@ public class Host_EditProfileController implements Initializable {
                 .dependsOn("newUsername", newUsername_input.textProperty())
                 .withMethod(context -> {
                     String input = context.get("newUsername");
-                    if (!InputValidator.isValidUsername(input, username_err)) {
+                    if (!InputValidator.isValidNewUsername(input, username_err, newUsername_input.equals(currentUser.getUsername()))) {
                         context.error("Username must be at least 6 characters");
                     }
                 })
@@ -158,23 +161,32 @@ public class Host_EditProfileController implements Initializable {
         edit_btn.disableProperty().bind(validator.containsErrorsProperty());
     }
 
-    private void editProfile(){
+    private void editProfile() {
         if (edit_btn.getText().equals("Save")) {
+            // Validate before saving
             if (validator.validate()) {
                 // Invoke confirm message
                 boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
                 if (confirmed) {
                     saveChanges();
                 }
+            } else {
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             }
         } else {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
             setDisableAll(false);
         }
     }
 
     private void updateAvatar() {
         SELECTED_PATH = ImageUtils.openFileChooseDialog();
-        avatar_ImageView.setImage(ImageUtils.imageFromPath(SELECTED_PATH));
+        if (SELECTED_PATH == ImageUtils.DEFAULT_IMAGE) {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
+            return;
+        }
+        isAvatarChange = true;
+        currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
     }
 
     private void saveChanges() {
@@ -186,14 +198,18 @@ public class Host_EditProfileController implements Initializable {
         currentUser.setContact(newContact_input.getText());
         currentUser.setDateOfBirth(newDOB_input.getValue());
         currentUser.setPassword(newPassword_input.getText());
-        if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
+        if (SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
 
-        dao.update((Host)currentUser);
-
-        // Reset fields and button
+        boolean isUpdated = dao.update((Host) currentUser);
+        if (isUpdated) {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
+        } else {
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
+        }
         setDisableAll(true);
         edit_btn.setText("Edit");
         edit_btn.setDisable(false);
+        isAvatarChange = false;
     }
 
     private void checkForChanges() {
@@ -202,8 +218,8 @@ public class Host_EditProfileController implements Initializable {
                         !newContact_input.getText().equals(currentUser.getContact()) ||
                         !Objects.equals(newDOB_input.getValue(), currentUser.getDateOfBirth()) || // Null-safe comparison
                         !newPassword_input.getText().equals(currentUser.getPassword()) ||
-                        !newUsername_input.getText().equals(currentUser.getUsername());
-//                        !avatar_ImageView.getImage().equals(currentUser.getProfileAvatar());
+                        !newUsername_input.getText().equals(currentUser.getUsername()) ||
+                        !(avatar_ImageView.getImage().equals(currentUser.getProfileAvatar()) && !isAvatarChange);
 
         if (isChanged) {
             edit_btn.setText("Save");
@@ -215,7 +231,7 @@ public class Host_EditProfileController implements Initializable {
         }
     }
 
-    void setDisableAll(boolean status){
+    void setDisableAll(boolean status) {
         newName_input.setDisable(status);
         newContact_input.setDisable(status);
         newDOB_input.setDisable(status);
@@ -228,7 +244,7 @@ public class Host_EditProfileController implements Initializable {
         edit_btn.setDisable(status);
     }
 
-    private void resetErrorLabels(){
+    private void resetErrorLabels() {
         name_err.setText("");
         username_err.setText("");
         contact_err.setText("");

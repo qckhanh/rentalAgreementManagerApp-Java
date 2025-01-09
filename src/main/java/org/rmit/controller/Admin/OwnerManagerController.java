@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -22,6 +23,7 @@ import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.Property;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -45,13 +47,14 @@ public class OwnerManagerController implements Initializable {
     public TextField username_input;
     public Button addToDB_btn;
     public PasswordTextField password_PasswordTextField;
+    public AnchorPane anchorPane;
 
     private ObservableList<Owner> personObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Owner> selectedPerson = new SimpleObjectProperty<>();
     List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
 
     Label noneLabel = new Label();
-    Validator validator = new Validator();
+//    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -67,7 +70,7 @@ public class OwnerManagerController implements Initializable {
         });
         delete_btn.setOnAction(e -> deletePerson());
         addToDB_btn.setOnAction(e -> {
-            if(validator.validate()) addToDB();
+            addToDB();
             clearTextField();
         });
         addToDB_btn.setVisible(false);
@@ -95,11 +98,10 @@ public class OwnerManagerController implements Initializable {
         persons_TableView.setItems(personObservableList);
         loadData(owners);
 
-        validateInput();
-        addToDB_btn.disableProperty().bind(validator.containsErrorsProperty());
+//        addToDB_btn.disableProperty().bind(validator.containsErrorsProperty());
     }
 
-    private void validateInput() {
+    private void buildValidator(Validator validator,  boolean isNeedToCheckDb) {
         validator.createCheck()
                 .dependsOn("fullName", fullName_input.textProperty())
                 .withMethod(context -> {
@@ -140,7 +142,7 @@ public class OwnerManagerController implements Initializable {
                 .dependsOn("username", username_input.textProperty())
                 .withMethod(context -> {
                     String input = context.get("username");
-                    if (!InputValidator.isValidUsername(input, noneLabel)) {
+                    if (!InputValidator.isValidNewUsername(input, noneLabel, isNeedToCheckDb)) {
                         context.error("Username must be at least 6 characters");
                         System.out.println("Username must be at least 6 characters");
                     }
@@ -162,25 +164,30 @@ public class OwnerManagerController implements Initializable {
     }
 
     private void deletePerson() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this owner?")) return;
         Owner person = selectedPerson.get();
+        if(person == null){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an owner to delete");
+            return;
+        }
         if(person.getPropertiesOwned().size() != 0){
-            System.out.println("Cannot delete owner who have > 0 properties");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete owner with properties");
+            return;
         }
-        else {
-            OwnerDAO dao = new OwnerDAO();
-            DatabaseUtil.warmUp();
-            boolean isDeleted = dao.delete(person);
-            if(isDeleted){
-                personObservableList.remove(person);
-                clearTextField();
-                System.out.println("Deleted owner");
-            }
-            else System.out.println("Cannot delete owner");
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this owner?")) return;
+        OwnerDAO dao = new OwnerDAO();
+        DatabaseUtil.warmUp();
+        boolean isDeleted = dao.delete(person);
+        if(isDeleted){
+            personObservableList.remove(person);
+            clearTextField();
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner deleted successfully");
         }
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Delete owner failed. Please try again");
     }
 
     private void updatePerson() {
+        Validator validator = new Validator();
+        buildValidator(validator, false);
         boolean isEditable = fullName_input.isEditable();
         setEditableTextField(!isEditable);
         if(isTextFieldChanged(selectedPerson.get()) && validator.validate()){
@@ -195,15 +202,19 @@ public class OwnerManagerController implements Initializable {
             boolean isUpdated = dao.update(person);
             if (isUpdated) {
                     personObservableList.set(personObservableList.indexOf(person), person);
-                    System.out.println("Updated owner");
-                } else System.out.println("Cannot update owner");
-            clearTextField();
+                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner updated successfully");
+            } else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Update owner failed. Please try again");
+//            clearTextField();
         }
-
-
+        else{
+//            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+        }
     }
 
     private void createNewPerson() {
+        Validator validator = new Validator();
+        buildValidator(validator, true);
+
         clearTextField();
         setEditableTextField(true);
         username_input.setEditable(true);
@@ -217,20 +228,26 @@ public class OwnerManagerController implements Initializable {
     }
 
     private void addToDB() {
+        Validator validator = new Validator();
+        buildValidator(validator, true);
+        if(!validator.validate()){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            return;
+        }
+
+            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?")) return;
             OwnerDAO ownerDAO = new OwnerDAO();
             Owner person = new Owner();
             person.setUsername(username_input.getText());
             person.setName(fullName_input.getText());
             person.setContact(contact_input.getText());
             person.setDateOfBirth(dob_input.getValue());
-            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?"))
-                return;
             DatabaseUtil.warmUp();
             boolean isAdded = ownerDAO.add(person);
             if (isAdded) {
                 personObservableList.add(person);
-                System.out.println("Added Owner");
-            } else System.out.println("Cannot add Owner");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner added successfully");
+            } else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Add owner failed. Please try again");
     }
 
     private boolean isTextFieldChanged(Owner person){
@@ -245,7 +262,7 @@ public class OwnerManagerController implements Initializable {
     private void decor(){
         UIDecorator.setDangerButton(delete_btn, UIDecorator.DELETE(), null);
         UIDecorator.setSuccessButton(create_btn, new FontIcon(Feather.PLUS_CIRCLE), null);
-        UIDecorator.setSuccessButton(addToDB_btn, new FontIcon(Feather.PLUS_CIRCLE), "Save");
+        UIDecorator.setSuccessButton(addToDB_btn, new FontIcon(Feather.PLUS_CIRCLE), null);
         UIDecorator.setNormalButton(update_btn, UIDecorator.EDIT(), null);
         UIDecorator.setSuccessButton(addToDB_btn, UIDecorator.SEND(), null);
 

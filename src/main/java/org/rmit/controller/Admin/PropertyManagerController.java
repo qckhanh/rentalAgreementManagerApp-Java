@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.hibernate.Session;
 import org.rmit.Helper.DatabaseUtil;
@@ -26,8 +27,11 @@ import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.*;
 import org.rmit.model.Property.Property;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -57,11 +61,12 @@ public class PropertyManagerController implements Initializable {
     public List<Property> propertyList = ModelCentral.getInstance().getAdminViewFactory().getAllProperty();
     public ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Property> selectedProperty = new SimpleObjectProperty<>();
-    public ObjectProperty<List<byte[]>> selectedImages = new SimpleObjectProperty<>();
+    public List<byte[]> selectedImages = new ArrayList<>();
     public TextField propertyType;
     public ComboBox<PropertyType> propertyType_comboBox;
     public ComboBox<PropertyStatus> propertyStatus_comboBox;
     public StringProperty squareMeters = new SimpleStringProperty();
+    public AnchorPane anchorPane;
 
     private Label noneLabel = new Label();
     private Validator validatorCP = new Validator();
@@ -304,11 +309,15 @@ public class PropertyManagerController implements Initializable {
         update_btn.setOnAction(e -> updateProperty());
         delete_btn.setOnAction(e -> deleteProperty());
         addToDB_btn.setOnAction(e -> {
-//            if (validatorCP.validate() || validatorRP.validate()) addToDB();
             if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)) {
                 if (validatorCP.validate() && isValidSquareMeters()) addToDB();
+                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again.");
             } else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)) {
                 if (validatorRP.validate()) addToDB();
+                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again.");
+            }
+            else{
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a property type");
             }
             clearTextFilled();
         });
@@ -356,7 +365,8 @@ public class PropertyManagerController implements Initializable {
             if (newValue == null) return;
             selectedProperty.set(newValue);
             showProperty();
-            selectedImages.set(newValue.getImages());
+            selectedImages.clear();
+            selectedImages.addAll(newValue.getImages());
         });
         List<Owner> list = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
         owner_comboBox.setItems(FXCollections.observableArrayList(list));
@@ -444,8 +454,8 @@ public class PropertyManagerController implements Initializable {
         if(selectedProperty.get() == null) return;
         setEditable(false);
         if(selectedProperty.get().getImages().size() != 0){
-            selectedImages.set(selectedProperty.get().getImages());
-            imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(0)));
+            selectedImages.addAll(selectedProperty.get().getImages());
+            imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(0)));
         }
         id_input.setText(selectedProperty.get().getId() + "");
         address_input.setText(selectedProperty.get().addressPropertyProperty().get());
@@ -572,11 +582,11 @@ public class PropertyManagerController implements Initializable {
         Property property = selectedProperty.get();
         if(property == null) return;
         if(property.getAgreementList().size() > 0){
-            System.out.println("Cannot delete property with agreement");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete property with agreement");
             return;
         }
         if(property.getHosts().size() > 0){
-            System.out.println("Cannot delete property with host");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete property with host");
             return;
         }
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this property?")) return;
@@ -592,16 +602,15 @@ public class PropertyManagerController implements Initializable {
         if(isDeleted){
             propertyList.remove(property);
             propertiesObservableList.setAll(propertyList);
-            System.out.println("Deleted");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property deleted successfully");
         }
-        else System.out.println("Failed to delete");
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to delete property. Try again");
 
     }
 
     private void updateProperty() {
         boolean isEditable = address_input.isEditable();
         setEditable(!isEditable);
-
         Property property = selectedProperty.get();
         if(property == null) return;
         if(!isTexfieldChanged(property) && !(validatorRP.validate() || validatorCP.validate())) return;
@@ -637,15 +646,11 @@ public class PropertyManagerController implements Initializable {
         if(isUpdated){
             propertyList.set(propertyList.indexOf(property), property);
             propertiesObservableList.setAll(propertyList);
-            System.out.println("Updated");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
             List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
             int index = owners.indexOf(property.getOwner());
-            //Update on owner
-//            Owner owner = owners.get(index);
-//            owner.addProperty(property);
-
         }
-        else System.out.println("Failed to update");
+        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
     }
 
     private void createProperty() {
@@ -653,6 +658,7 @@ public class PropertyManagerController implements Initializable {
         setEditable(true);
         id_input.setText("Auto");
         addToDB_btn.setVisible(true);
+        addToDB_btn.setDisable(true);
 
         RA_tableView.getItems().clear();
         Host_tableView.getItems().clear();
@@ -671,7 +677,10 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void addToDB() {
-        if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.NONE)) System.out.println("Cannot add");
+        if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.NONE)){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a property type");
+            return;
+        }
         if(propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.COMMERCIAL)){
             CommercialProperty newProperty = new CommercialProperty();
             newProperty.setAddress(address_input.getText());
@@ -696,9 +705,9 @@ public class PropertyManagerController implements Initializable {
             if(isAdded){
                 propertyList.add(newProperty);
                 propertiesObservableList.setAll(propertyList);
-                System.out.println("Added");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property added successfully");
             }
-            else System.out.println("Failed to add");
+            else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to add property. Try again");
         }
         else if (propertyType_comboBox.getSelectionModel().getSelectedItem().equals(PropertyType.RESIDENTIAL)){
             ResidentialProperty newProperty = new ResidentialProperty();
@@ -723,9 +732,9 @@ public class PropertyManagerController implements Initializable {
             if(isAdded){
                 propertyList.add(newProperty);
                 propertiesObservableList.setAll(propertyList);
-                System.out.println("Added");
+                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property added successfully");
             }
-            else System.out.println("Failed to add");
+            else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to add property. Try again");
         }
     }
 
@@ -769,25 +778,25 @@ public class PropertyManagerController implements Initializable {
     }
 
     private void prevImg_btn() {
-        if(selectedImages.get().size() == 0){
-            System.out.println("Exception: No images to display");
+        if(selectedImages.size() == 0){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
-        int selectedImagesSize = selectedImages.get().size();
+        int selectedImagesSize = selectedImages.size();
         int position = (currentImageIndex - 1 + selectedImagesSize) % selectedImagesSize;
         currentImageIndex = position;
-        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(position)));
     }
 
     private void nextImg_btn() {
-        if(selectedImages.get().size() == 0){
-            System.out.println("Exception: No images to display");
+        if(selectedImages.size() == 0){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
-        int selectedImagesSize = selectedImages.get().size();
+        int selectedImagesSize = selectedImages.size();
 
         int position = (currentImageIndex  + 1) % selectedImagesSize;
         currentImageIndex = position;
-        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get().get(position)));
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(position)));
     }
 }

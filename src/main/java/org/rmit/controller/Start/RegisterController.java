@@ -104,7 +104,7 @@ public class RegisterController implements Initializable {
                 .dependsOn("username", username_input.textProperty())
                 .withMethod(context ->{
                     String input = context.get("username");
-                    if(!InputValidator.isValidUsername(input, username_err)){
+                    if(!InputValidator.isValidNewUsername(input, username_err, true)){
                         context.error("Username must be at least 6 characters");
                     }
                 })

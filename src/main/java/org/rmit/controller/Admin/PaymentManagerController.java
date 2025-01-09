@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.UIDecorator;
 import net.synedra.validatorfx.Validator;
@@ -18,6 +19,7 @@ import org.rmit.model.Agreement.RentalAgreement;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -39,6 +41,7 @@ public class PaymentManagerController implements Initializable {
     public ComboBox<RentalAgreement> agreement_comboBox;
     public ComboBox<Property> property_comboBox;
     public ComboBox<Renter> mainRenter_comboBox;
+    public AnchorPane anchorPane;
 
     private ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Payment> selectedPayment = new SimpleObjectProperty<>();
@@ -250,7 +253,12 @@ public class PaymentManagerController implements Initializable {
     }
 
     private void saveToDB() {
-        if(!isChanged(new Payment())) return;
+        if(!isChanged(new Payment())){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No changes detected");
+            return;
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this payment?")) return;
+
         Payment payment = new Payment();
         payment.setAmount(Double.parseDouble(amount_input.getText()));
         payment.setDate(paymentDate_datePicker.getValue());
@@ -260,8 +268,6 @@ public class PaymentManagerController implements Initializable {
         payment.setProperty(agreement.getProperty());
         payment.setMainRenter(agreement.getMainTenant());
 
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this payment?")) return;
-
         PaymentDAO paymentDAO = new PaymentDAO();
         DatabaseUtil.warmUp();
         boolean isUpdated = paymentDAO.update(payment);
@@ -269,13 +275,11 @@ public class PaymentManagerController implements Initializable {
         if(isUpdated){
             paymentList.add(payment);
             paymentObservableList.setAll(paymentList);
-            System.out.println("Payment updated");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Payment created successfully");
         }
         else{
-            System.out.println("Payment not updated");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create payment. Try again");
         }
-
-
     }
 
     private void addPayment() {
