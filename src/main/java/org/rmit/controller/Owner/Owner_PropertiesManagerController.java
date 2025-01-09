@@ -65,7 +65,6 @@ public class Owner_PropertiesManagerController implements Initializable {
         propertyTypeFilter_comboBox.setPromptText("Property type");
         propertyStatusFilter_comboBox.setPromptText("Property status");
 
-
         selectedPropertyStatus.set(PropertyStatus.NONE);
         propertyStatusFilter_comboBox.setOnAction(e -> {
             selectedPropertyStatus.set((PropertyStatus) propertyStatusFilter_comboBox.getValue());
@@ -175,6 +174,7 @@ public class Owner_PropertiesManagerController implements Initializable {
 
         updatePropertyButton.setOnAction(e-> {
             updateProperty();
+            refreshData();
             properties_tableView.refresh();
         });
 
@@ -190,6 +190,8 @@ public class Owner_PropertiesManagerController implements Initializable {
         Owner owner = ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull);
         Set<Property> updatedProperties = owner.getPropertiesOwned();
         properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+        loadData(updatedProperties);
+        properties_tableView.refresh();
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
     }
 
@@ -210,6 +212,7 @@ public class Owner_PropertiesManagerController implements Initializable {
             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete property have rental agreements or hosts");
             return;
         }
+
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
         boolean success = false;
         int id = Integer.parseInt(selectedProperty.getId()+"");
