@@ -39,7 +39,7 @@ public class PaymentDAOTest {
 
     @Test
     void testGetPaymentDAO() {
-        assertTrue(new PaymentDAO().get(2, EntityGraphUtils::SimplePaymentFull) != null);
+        assertNotNull(new PaymentDAO().get(2, EntityGraphUtils::SimplePaymentFull));
     }
 
 }

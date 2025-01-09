@@ -76,6 +76,7 @@ public class EntityGraphUtils {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
         entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username");
+        entityGraph.addSubgraph("agreementList");
         return entityGraph;
     }
 
@@ -235,9 +236,12 @@ public class EntityGraphUtils {
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
         entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password");
+        Subgraph<Property> propertySubgraph = entityGraph.addSubgraph("propertiesOwned");
+        simpleProperty(propertySubgraph);
+        propertySubgraph.addSubgraph("agreementList");
+        propertySubgraph.addSubgraph("hosts");
 
         simplePerson(entityGraph.addSubgraph("hosts"));
-        simpleProperty(entityGraph.addSubgraph("propertiesOwned"));
 
         return entityGraph;
     }
@@ -402,6 +406,8 @@ public class EntityGraphUtils {
 
         Subgraph<Owner> ownerSubgraph = graph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
         ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
+        graph.addSubgraph("hosts");
+        graph.addSubgraph("agreementList");
     }
 
 

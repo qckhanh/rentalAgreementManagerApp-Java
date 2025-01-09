@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.database.AdminDAO;
 import org.rmit.model.ModelCentral;
 import org.rmit.model.Persons.Admin;
@@ -66,6 +67,7 @@ public class AdminManagerController implements Initializable {
         AdminDAO adminDAO = new AdminDAO();
         int id = Integer.parseInt(selectedAdmin.get().getId() + "");
         Admin admin = selectedAdmin.get();
+        DatabaseUtil.warmUp();
         adminDAO.delete(admin);
         adminObservableList.remove(selectedAdmin.get());
     }

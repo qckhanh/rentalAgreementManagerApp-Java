@@ -5,9 +5,17 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
+
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import net.synedra.validatorfx.Validator;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.PaymentDAO;
@@ -21,6 +29,7 @@ import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -39,6 +48,7 @@ public class Renter_MakePaymentController implements Initializable {
     public ObjectProperty<Property> selectedProperty;
     public ObjectProperty<PaymentMethod> selectedPaymentMethod;
     public ObjectProperty<RentalAgreement> selectedRentalAgreement;
+    public AnchorPane anchorPane;
 
     public Label payment_method_err;
     public Label agreement_err;
@@ -87,6 +97,7 @@ public class Renter_MakePaymentController implements Initializable {
             );
 
             selectedRentalAgreement.addListener((observable, oldValue, newValue) -> {
+                if(newValue == null) return;
                 selectedProperty.set(newValue.getProperty());
                 property_input.setText(newValue.getProperty().getAddress());
                 amount_input.setText(String.valueOf(newValue.getProperty().getPrice()));
@@ -164,6 +175,7 @@ public class Renter_MakePaymentController implements Initializable {
 
     private void submitPayment() {
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
+        submit_btn.setDisable(true);
         Payment newPayment = new Payment();
         newPayment.setRentalAgreement(selectedRentalAgreement.get());
         newPayment.setProperty(selectedProperty.get());
@@ -179,9 +191,21 @@ public class Renter_MakePaymentController implements Initializable {
             int id = (int)Session.getInstance().getCurrentUser().getId();
             Renter currentRenter = renterDAO.get(id, EntityGraphUtils::RenterFULL);
             Session.getInstance().setCurrentUser(currentRenter);
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Purchased successfully");
         } else {
-            System.out.println("Payment failed");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
         }
+        submit_btn.setDisable(false);
+        clearAllFields();
+    }
+
+    private void clearAllFields() {
+        mainRenter_input.clear();
+        property_input.clear();
+        amount_input.clear();
+        purchaseDate_datepicker.setValue(null);
+        rentalAgreement_ComboBox.setValue(null);
+        paymentMethod_comboBox.setValue(null);
     }
 
     private void selectedRentalAgreement() {

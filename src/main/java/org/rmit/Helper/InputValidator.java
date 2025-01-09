@@ -94,6 +94,7 @@ public class InputValidator {
         return isValid;
     }
     public static boolean NoCondition(String s, Label label) {
+
 //        boolean isValid = !s.isBlank();
 //        if(!isValid) setLabelError(label, RED, "Field must not be empty");
 //        return isValid;

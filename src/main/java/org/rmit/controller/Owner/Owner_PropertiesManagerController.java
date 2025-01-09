@@ -28,6 +28,7 @@ import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
+import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,6 +46,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     public ComboBox propertyStatusFilter_comboBox;
     public TableView<Property> properties_tableView;
     public Button refresh;
+    public AnchorPane anchorPane;
     private ObservableList<Property> propertiesObservableList = FXCollections.observableArrayList();
     public ObjectProperty<Person> currentUser = Session.getInstance().currentUserProperty();
 
@@ -134,7 +136,6 @@ public class Owner_PropertiesManagerController implements Initializable {
                     }
                     return null;
                 })
-
         );
         properties_tableView.setItems(propertiesObservableList);
         loadData(((Owner)currentUser.get()).getPropertiesOwned());
@@ -144,7 +145,7 @@ public class Owner_PropertiesManagerController implements Initializable {
             filteredList = filteredByPropertyType(filteredList, newValue);
             filteredList = filteredByPropertyStatus(filteredList, selectedPropertyStatus.get());
             loadData(filteredList);
-            System.out.println("filtered by ptype");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Filter: Property type");
         });
 
         selectedPropertyStatus.addListener((observableValue, oldValue, newValue) -> {
@@ -152,16 +153,14 @@ public class Owner_PropertiesManagerController implements Initializable {
             filteredList = filteredByPropertyStatus(filteredList, newValue);
             filteredList = filteredByPropertyType(filteredList, selectedPropertyType.get());
             loadData(filteredList);
-            System.out.println("filtered by pstatus");
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Filter: Property Status");
+
         });
 
         properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             deletePropertyButton.setDisable(newValue == null);
-        });
-
-
-        properties_tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             updatePropertyButton.setDisable(newValue == null);
+
         });
 
         deletePropertyButton.setOnAction(e-> {
@@ -191,6 +190,7 @@ public class Owner_PropertiesManagerController implements Initializable {
         Owner owner = ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull);
         Set<Property> updatedProperties = owner.getPropertiesOwned();
         properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
     }
 
     private void decor(){
@@ -201,24 +201,36 @@ public class Owner_PropertiesManagerController implements Initializable {
     }
 
     private void deleteProperty(){
-        boolean success = false;
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
-        int id = Integer.parseInt(selectedProperty.getId()+"");
-        boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
-        if (confirmed) {
-            if (selectedProperty instanceof ResidentialProperty) {
-                ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-                ResidentialProperty rp = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
-                if (rpDAO.delete(rp)) success = true;
-            } else if (selectedProperty instanceof CommercialProperty) {
-                CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-                CommercialProperty cp = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
-                if (cpDAO.delete(cp)) success = true;
-            }
+        if(selectedProperty == null){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please select a property to delete");
+            return;
         }
+        if(selectedProperty.getHosts().size() != 0 || selectedProperty.getAgreementList().size() != 0){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete property have rental agreements or hosts");
+            return;
+        }
+        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
+        boolean success = false;
+        int id = Integer.parseInt(selectedProperty.getId()+"");
+
+        if (selectedProperty instanceof ResidentialProperty) {
+            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+            ResidentialProperty rp = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+            if (rpDAO.delete(rp)) success = true;
+        } else if (selectedProperty instanceof CommercialProperty) {
+            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+            CommercialProperty cp = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+            if (cpDAO.delete(cp)) success = true;
+        }
+
         if (success) {
             properties_tableView.getItems().remove(selectedProperty);
             properties_tableView.refresh();
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property deleted successfully");
+        }
+        else{
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to delete property. Try again later");
         }
     }
 
@@ -230,14 +242,16 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     private void updateProperty() {
         Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
-        if (selectedProperty != null) {
-            Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
-            ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
-            // Reload data after updating the property
-            Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
-            properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
-            loadData(updatedProperties);
+        if(selectedProperty == null){
+            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please select a property to update");
+            return;
         }
+        Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
+        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+        Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
+        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+        loadData(updatedProperties);
+
         properties_tableView.refresh();
     }
 
@@ -263,7 +277,6 @@ public class Owner_PropertiesManagerController implements Initializable {
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         return column;
     }
-
 
     private Set<Property> filteredByPropertyType(Set<Property> propertySet, PropertyType type) {
         if (type.equals(PropertyType.NONE)) return propertySet;

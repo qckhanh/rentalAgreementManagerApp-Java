@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.rmit.Helper.DatabaseUtil;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
@@ -41,6 +42,7 @@ public class AgreementManagerController implements Initializable {
     public TextField id_input;
     public TextField fee_input;
     public DatePicker contractDate_datePicker;
+    public Button del_btn;
 
     private ObjectProperty<RentalAgreement> selectedRentalAgreement = new SimpleObjectProperty<>();
     private ObservableList<RentalAgreement> rentalAgreementsObservableList = FXCollections.observableArrayList();
@@ -65,6 +67,7 @@ public class AgreementManagerController implements Initializable {
 //        addAgreementButton.setOnAction(e -> addAgreement());
 //        updateAgreeementButton.setOnAction(e -> updateAgreement());
 //        deleteAgreementButton.setOnAction(e -> deleteAgreement());
+        del_btn.setOnAction(e -> deleteAgreement());
     }
 
     private void saveToDB() {
@@ -81,6 +84,7 @@ public class AgreementManagerController implements Initializable {
             ra.setSubTenants(selectedSubRenters);
 
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdate = rentalAgreementDAO.update(ra);
             if(isUpdate){
                 rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
@@ -121,6 +125,7 @@ public class AgreementManagerController implements Initializable {
             ra.setSubTenants(selectedSubRenters);
 
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
+            DatabaseUtil.warmUp();
             boolean isUpdate = rentalAgreementDAO.update(ra);
             if(isUpdate){
                 rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
@@ -405,22 +410,15 @@ public class AgreementManagerController implements Initializable {
     private void deleteAgreement() {
         RentalAgreement ra = selectedRentalAgreement.get();
         if(ra == null) return;
-        if(ra.getStatus() != null){
-            if(!ra.getStatus().equals(AgreementStatus.COMPLETED)){
-                System.out.println("Cannot delete this agreement because it is not completed");
-                return;
-            }
-        }
+//        if(ra.getStatus() != null){
+//            if(!ra.getStatus().equals(AgreementStatus.COMPLETED)){
+//                System.out.println("Cannot delete this agreement because it is not completed");
+//                return;
+//            }
+//        }
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement?")) return;
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-
-        ra.setHost(null);
-//        ra.setMainTenant(null);
-//        ra.setSubTenants(null);
-//        ra.setProperty(null);
-
-        rentalAgreementDAO.update(ra);
-
+        DatabaseUtil.warmUp();
         boolean isDelete = rentalAgreementDAO.delete(ra);
         if(isDelete){
             rentalAgreementsList.remove(ra);
