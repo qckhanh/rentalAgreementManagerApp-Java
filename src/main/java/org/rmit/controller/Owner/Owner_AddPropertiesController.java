@@ -256,7 +256,7 @@ public class Owner_AddPropertiesController implements Initializable {
                 .withMethod(context -> {
                     String input = context.get("propertyAddress");
                     if (!InputValidator.NoCondition(input, address_err)) {
-                        address_err.setText("Address must not be empty");
+//                        address_err.setText("Address must not be empty");
                         context.error("Address must not be empty");
                         System.out.println("Validation Error: Address must not be empty");
                     }
@@ -272,7 +272,7 @@ public class Owner_AddPropertiesController implements Initializable {
                         context.error("Price must be a valid number");
                         System.out.println("Validation Error: Price must be a valid number");
                         if (input.isEmpty()) {
-                            price_err.setText("Field must not be empty");
+//                            price_err.setText("Field must not be empty");
                             System.out.println("Validation Error: Field must not be empty");
                         }
                     }

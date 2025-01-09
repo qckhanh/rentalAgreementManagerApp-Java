@@ -281,6 +281,7 @@ public class PaymentManagerController implements Initializable {
     private void addPayment() {
         clearPaymentDetail();
         setEditable(true);
+        id_input.setText("Auto");
         savePayment_btn.setVisible(true);
         savePayment_btn.setVisible(true);
     }
