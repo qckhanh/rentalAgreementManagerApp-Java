@@ -1,9 +1,6 @@
 package org.rmit;
-import jakarta.persistence.EntityManager;
 import javafx.application.Application;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.hibernate.Session;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.model.ModelCentral;

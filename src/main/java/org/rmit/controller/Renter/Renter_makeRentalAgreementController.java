@@ -61,6 +61,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
     public ImageView imageView_propertyImg;
     public AnchorPane anchorPane;
     Validator validator = new Validator();
+    List<Renter> listSubrenter_found = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -74,6 +75,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         subRenterSearch_input.setOnAction(e -> searchRenter());
         searchRenter_btn.setOnAction(e -> searchRenter());
         property_ComboBox.setOnAction(e -> {
+            if(property_ComboBox.getSelectionModel().getSelectedItem() == null) return;
             selectedProperty.set(property_ComboBox.getSelectionModel().getSelectedItem());
             selectedOwner.set(property_ComboBox.getSelectionModel().getSelectedItem().getOwner());
             resetErrorLabels();
@@ -87,6 +89,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
             owner_input.setText(newValue.getName());
         });
         selectedProperty.addListener((observable, oldValue, newValue) -> {
+            if(newValue == null) return;
             host_comboBox.getItems().clear();
             host_comboBox.getItems().addAll(newValue.getHosts());
             selectedImage.set(selectedProperty.get().getImages());
@@ -182,10 +185,10 @@ public class Renter_makeRentalAgreementController implements Initializable {
         searchRenter_btn.setDisable(true);
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Searching for renter...");
         RenterDAO renterDAO = new RenterDAO();
-        List<Renter> list = renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
+        listSubrenter_found = renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
         subRenter_listView.getItems().clear();
-        subRenter_listView.getItems().addAll(list);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
+        subRenter_listView.getItems().addAll(listSubrenter_found);
+        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  listSubrenter_found.size() + " results(s) found");
         searchRenter_btn.setDisable(false);
 
     }
@@ -256,7 +259,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
                     Renter item = getItem();
                     if (item != null && selectedSubRenters.contains(item)) {
                         selectedSubRenters.remove(item);  // Remove from the selected list
-                        reloadRenterListView(selectedSubRenters);
+                        reloadRenterListView(new HashSet<>(listSubrenter_found));
                         updateItem(item, false);  // Update the cell to show the "Add" button
                     }
                 });
@@ -372,7 +375,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
     private void clearAllField(){
         property_ComboBox.getItems().clear();
         host_comboBox.getItems().clear();
-        rentalPeriod_comboBox.getItems().clear();
+        rentalPeriod_comboBox.setValue(RentalPeriod.DAILY);
         subRenter_listView.getItems().clear();
         propertySearch_input.clear();
         owner_input.clear();
