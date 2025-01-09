@@ -1,13 +1,17 @@
 package org.rmit.controller.Start;
 
+import atlantafx.base.controls.PasswordTextField;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.synedra.validatorfx.TooltipWrapper;
 import net.synedra.validatorfx.Validator;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
 import org.rmit.model.ModelCentral;
@@ -27,7 +31,7 @@ public class LoginController implements Initializable {
     public Label username_lbl;
     public TextField username_input;
     public Label password;
-    public PasswordField password_input;
+    public PasswordTextField password_input;
     public Button forgetPass_btn;
     public Button signIn_btn;
     public Button register_btn;
@@ -96,6 +100,8 @@ public class LoginController implements Initializable {
         signIn_btn.setOnAction(actionEvent -> signInValidate());
         guest_btn.setOnAction(actionEvent -> loginAsGuest());
 
+        revealPassword(password_input);
+
     }
 
     void openRegister() {
@@ -110,7 +116,8 @@ public class LoginController implements Initializable {
 
     private void signInValidate(){
         String username = username_input.getText();
-        String password = password_input.getText();
+        String password = password_input.getPassword();
+        System.out.println(password);
         if(username.isBlank() || password.isBlank()) {
             if(username.isBlank()) UIDecorator.tfError(username_input);
             if(password.isBlank()) UIDecorator.tfError(password_input);
@@ -269,6 +276,18 @@ public class LoginController implements Initializable {
         signUpWrapper.setPrefWidth(width);
         signUpWrapper.setPrefHeight(height);
 //        signUpWrapper.setStyle(style);
+    }
+
+    private void revealPassword(PasswordTextField passwordTextField){
+        FontIcon icon = new FontIcon(Feather.EYE_OFF);
+        icon.setCursor(Cursor.HAND);
+        icon.setOnMouseClicked(e -> {
+            icon.setIconCode(passwordTextField.getRevealPassword()
+                    ? Feather.EYE_OFF : Feather.EYE
+            );
+            passwordTextField.setRevealPassword(!passwordTextField.getRevealPassword());
+        });
+        passwordTextField.setRight(icon);
     }
 }
 

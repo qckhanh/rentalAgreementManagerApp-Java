@@ -132,6 +132,7 @@ public class RenterViewFactory {
         renter_agreementManagerView = null;
         renter_makePaymentView = null;
         renter_makeRentalAgreementView = null;
+        renter_notificationView = null;
     }
 
     //getter and setter

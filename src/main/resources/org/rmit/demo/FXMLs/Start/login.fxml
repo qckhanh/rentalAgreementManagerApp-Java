@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.PasswordTextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -35,7 +35,7 @@
                   </Label>
                   <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="375.0" spacing="3.0">
                      <children>
-                        <PasswordField fx:id="password_input" prefHeight="43.0" prefWidth="340.0" />
+                        <PasswordTextField fx:id="password_input" prefHeight="43.0" prefWidth="347.0" />
                      </children>
                   </HBox>
                   <Button fx:id="forgetPass_btn" mnemonicParsing="false" text="Forget password?" underline="true">

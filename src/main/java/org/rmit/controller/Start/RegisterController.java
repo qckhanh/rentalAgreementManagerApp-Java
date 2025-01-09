@@ -1,10 +1,14 @@
 package org.rmit.controller.Start;
 
+import atlantafx.base.controls.PasswordTextField;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.InputValidator;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
@@ -25,12 +29,12 @@ import java.util.ResourceBundle;
 public class RegisterController implements Initializable {
 
     public TextField fullName_input;
-    public PasswordField password_input;
+    public PasswordTextField password_input;
     public Button submitRegister_btn;
     public Button backToLogin_btn;
     public TextField username_input;
     public TextField contact_input;
-    public PasswordField rePassword_input;
+    public PasswordTextField rePassword_input;
     public DatePicker dob_datePicker;
     public ChoiceBox<ACCOUNT_TYPE> typeOfUser_choiceBox;
 
@@ -48,6 +52,7 @@ public class RegisterController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         resetTextFields();
         resetLabel();
         typeOfUser_choiceBox.setValue(ACCOUNT_TYPE.RENTER);
@@ -80,6 +85,8 @@ public class RegisterController implements Initializable {
         });
 
         validateInput();
+        revealPassword(password_input);
+        revealPassword(rePassword_input);
 
     }
 
@@ -134,7 +141,7 @@ public class RegisterController implements Initializable {
                 .immediateClear();
 
         validator.createCheck()
-                .dependsOn("password", password_input.textProperty())
+                .dependsOn("password", password_input.passwordProperty())
                 .withMethod(context ->{
                     String input = context.get("password");
                     if(!InputValidator.isValidPassword(input, password_err)){
@@ -145,8 +152,8 @@ public class RegisterController implements Initializable {
                 .immediateClear();
 
         validator.createCheck()
-                .dependsOn("rePassword", rePassword_input.textProperty())
-                .dependsOn("password", password_input.textProperty())
+                .dependsOn("rePassword", rePassword_input.passwordProperty())
+                .dependsOn("password", password_input.passwordProperty())
                 .withMethod(context ->{
                     String password = context.get("password");
                     String passwordConfirmation = context.get("rePassword");
@@ -237,4 +244,16 @@ public class RegisterController implements Initializable {
         contact_input.setText("");
         dob_datePicker.setValue(null);
     }
+    private void revealPassword(PasswordTextField passwordTextField){
+        FontIcon icon = new FontIcon(Feather.EYE_OFF);
+        icon.setCursor(Cursor.HAND);
+        icon.setOnMouseClicked(e -> {
+            icon.setIconCode(passwordTextField.getRevealPassword()
+                    ? Feather.EYE_OFF : Feather.EYE
+            );
+            passwordTextField.setRevealPassword(!passwordTextField.getRevealPassword());
+        });
+        passwordTextField.setRight(icon);
+    }
+
 }

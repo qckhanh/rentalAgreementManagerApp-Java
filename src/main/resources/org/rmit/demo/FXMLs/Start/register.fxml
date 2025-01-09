@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.PasswordTextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../../Style/Start/register.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Start.RegisterController">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../../Style/Start/register.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rmit.controller.Start.RegisterController">
    <children>
       <VBox alignment="CENTER" layoutX="298.0" layoutY="27.0" prefHeight="708.0" prefWidth="427.0" spacing="5.0">
          <children>
@@ -80,7 +80,7 @@
                   </Label>
                   <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="427.0" spacing="3.0">
                      <children>
-                        <PasswordField fx:id="password_input" prefHeight="43.0" prefWidth="432.0" />
+                        <PasswordTextField fx:id="password_input" prefHeight="47.0" prefWidth="431.0" />
                      </children>
                   </HBox>
                </children>
@@ -92,8 +92,10 @@
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
-                  <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="401.0" spacing="3.0" />
-                  <PasswordField fx:id="rePassword_input" prefHeight="27.0" prefWidth="427.0" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="401.0" spacing="3.0">
+                     <children>
+                        <PasswordTextField fx:id="rePassword_input" prefHeight="37.0" prefWidth="458.0" />
+                     </children></HBox>
                </children>
             </VBox>
             <Button fx:id="submitRegister_btn" mnemonicParsing="false" prefHeight="61.0" prefWidth="427.0" text="Register">
