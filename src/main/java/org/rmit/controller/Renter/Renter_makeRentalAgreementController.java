@@ -185,7 +185,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(list);
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
-        subRenterSearch_input.clear();
+        //subRenterSearch_input.clear();
         searchRenter_btn.setDisable(false);
 
     }
