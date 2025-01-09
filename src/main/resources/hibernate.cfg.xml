@@ -7,22 +7,33 @@
         <!-- Database connection settings -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
 
-                <property name="hibernate.connection.url">
-                    jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
-                </property>
-                <property name="hibernate.connection.username">
-                    postgres.qzrobawhuhlydmxxhcjo
-                </property>
-                <property name="hibernate.connection.password">
-                    11022005
-                </property>
+<!--                <property name="hibernate.connection.url">-->
+<!--                    jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres-->
+<!--                </property>-->
+<!--                <property name="hibernate.connection.username">-->
+<!--                    postgres.qzrobawhuhlydmxxhcjo-->
+<!--                </property>-->
+<!--                <property name="hibernate.connection.password">-->
+<!--                    11022005-->
+<!--                </property>-->
 
-<!--                        <property name="hibernate.connection.username">-->
-<!--                            postgres.hfjwcjkrtorqkbulvain-->
-<!--                        </property>-->
-<!--                        <property name="hibernate.connection.password">-->
-<!--                            Duclamdao2k5-->
-<!--                        </property>-->
+<!--                <property name="hibernate.connection.username">-->
+<!--                    postgres.hfjwcjkrtorqkbulvain-->
+<!--                </property>-->
+<!--                <property name="hibernate.connection.password">-->
+<!--                    Duclamdao2k5-->
+<!--                </property>-->
+
+        <property name="hibernate.connection.url">
+            jdbc:postgresql://ep-winter-king-a1v5wmx4-pooler.ap-southeast-1.aws.neon.tech/RentalAgreementApplication
+
+        </property>
+        <property name="hibernate.connection.username">
+            neondb_owner
+        </property>
+        <property name="hibernate.connection.password">
+            2uVp6AMgIzna
+        </property>
 
         <property name="hibernate.c3p0.testConnectionOnCheckout">true</property>
         <property name="hibernate.c3p0.testConnectionOnCheckin">true</property>

@@ -126,8 +126,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         updateProperty_btn.setText("Edit");
         updateProperty_btn.setDisable(false);
         updateProperty_btn.setOnAction(e-> {
-            if (selectedProperty.get() instanceof CommercialProperty && validatorCP.validate()) updateProperty();
-            else if (selectedProperty.get() instanceof ResidentialProperty && validatorRP.validate()) updateProperty();
+            if (selectedProperty.get() instanceof CommercialProperty /*&& validatorCP.validate()*/) updateProperty();
+            else if (selectedProperty.get() instanceof ResidentialProperty /*&& validatorRP.validate()*/) updateProperty();
         });
 
         nextImg_btn.setOnAction(e -> nextImg_btn());
@@ -137,8 +137,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
         addListener();
         resetErrorLabels();
-        validateInputCP();
-        validateInputRP();
+        //validateInputCP();
+        //validateInputRP();
         decor();
     }
 
@@ -246,139 +246,139 @@ public class Owner_UpdatePropertiesController implements Initializable {
 ////        updateProperty_btn.disableProperty().bind(validator.containsErrorsProperty());
 //    }
 
-    private void validateInputCP(){
-        validatorCP.createCheck()
-                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
-                .withMethod(context -> {
-                    String input = context.get("propertyAddress");
-                    if (!InputValidator.NoCondition(input, address_err)) {
-                        context.error("Address must not be empty");
-                    }
-                })
-                .decorates(propertyAddress_txtf)
-                .immediateClear();
-
-        validatorCP.createCheck()
-                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
-                .withMethod(context -> {
-                    String input = context.get("propertyPrice");
-                    if (!InputValidator.isValidPrice(input, price_err)) {
-                        context.error("Price must be a valid number");
-                    }
-                })
-                .decorates(propertyPrice_txtf)
-                .immediateClear();
-
-        validatorCP.createCheck()
-                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
-                .withMethod(context -> {
-                    PropertyStatus input = context.get("propertyStatus");
-                    if (input == null) {
-                        context.error("A Status must be selected");
-                        status_err.setText("A Status must be selected");
-                    }
-                })
-                .decorates(propertyStatus_cbox)
-                .immediateClear();
-
-        if (selectedProperty.get() instanceof CommercialProperty) {
-            validatorCP.createCheck()
-                    .dependsOn("propertyBtype", propertyBtype_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyBtype");
-                        if (!InputValidator.NoCondition(input, businessType_err)) {
-                            context.error("BusinessType must not be empty");
-                        }
-                    })
-                    .decorates(propertyBtype_txtf)
-                    .immediateClear();
-
-            validatorCP.createCheck()
-                    .dependsOn("propertySquareMeters", propertySquareMeters_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertySquareMeters");
-                        if (!InputValidator.isValidSquareMeters(input, squareMeters_err)) {
-                            context.error("Square meters must be a valid number");
-                        }
-                    })
-                    .decorates(propertySquareMeters_txtf)
-                    .immediateClear();
-
-            validatorCP.createCheck()
-                    .dependsOn("propertyPSpaces", propertyPSpaces_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyPSpaces");
-                        if (!InputValidator.isValidParkingSpaces(input, parkingSpace_err)) {
-                            context.error("Parking spaces must be a valid number");
-                        }
-                    })
-                    .decorates(propertyPSpaces_txtf)
-                    .immediateClear();
-        }
-        updateProperty_btn.disableProperty().bind(validatorCP.containsErrorsProperty());
-    }
-
-    private void validateInputRP(){
-        validatorRP.createCheck()
-                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
-                .withMethod(context -> {
-                    String input = context.get("propertyAddress");
-                    if (!InputValidator.NoCondition(input, address_err)) {
-                        context.error("Address must not be empty");
-                    }
-                })
-                .decorates(propertyAddress_txtf)
-                .immediateClear();
-
-        validatorRP.createCheck()
-                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
-                .withMethod(context -> {
-                    String input = context.get("propertyPrice");
-                    if (!InputValidator.isValidPrice(input, price_err)) {
-                        context.error("Price must be a valid number");
-                    }
-                })
-                .decorates(propertyPrice_txtf)
-                .immediateClear();
-
-        validatorRP.createCheck()
-                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
-                .withMethod(context -> {
-                    PropertyStatus input = context.get("propertyStatus");
-                    if (input == null) {
-                        context.error("A Status must be selected");
-                        status_err.setText("A Status must be selected");
-                    }
-                })
-                .decorates(propertyStatus_cbox)
-                .immediateClear();
-
-        if (selectedProperty.get() instanceof ResidentialProperty) {
-
-            validatorRP.createCheck()
-                    .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyBedrooms");
-                        if (!InputValidator.isValidBedrooms(input, bedroom_err, totalNumberRooms)) {
-                            context.error("Bedrooms must be a valid number");
-                        }
-                    })
-                    .decorates(propertyBedrooms_txtf)
-                    .immediateClear();
-
-            validatorRP.createCheck()
-                    .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
-                    .withMethod(context -> {
-                        String input = context.get("propertyRooms");
-                        if (!InputValidator.isValidRooms(input, room_err, totalNumberBedrooms)) {
-                            context.error("Rooms must be a valid number");
-                        }
-                    })
-                    .decorates(propertyRooms_txtf)
-                    .immediateClear();
-        }
-        updateProperty_btn.disableProperty().bind(validatorRP.containsErrorsProperty());
-    }
+//    private void validateInputCP(){
+//        validatorCP.createCheck()
+//                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyAddress");
+//                    if (!InputValidator.NoCondition(input, address_err)) {
+//                        context.error("Address must not be empty");
+//                    }
+//                })
+//                .decorates(propertyAddress_txtf)
+//                .immediateClear();
+//
+//        validatorCP.createCheck()
+//                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyPrice");
+//                    if (!InputValidator.isValidPrice(input, price_err)) {
+//                        context.error("Price must be a valid number");
+//                    }
+//                })
+//                .decorates(propertyPrice_txtf)
+//                .immediateClear();
+//
+//        validatorCP.createCheck()
+//                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
+//                .withMethod(context -> {
+//                    PropertyStatus input = context.get("propertyStatus");
+//                    if (input == null) {
+//                        context.error("A Status must be selected");
+//                        status_err.setText("A Status must be selected");
+//                    }
+//                })
+//                .decorates(propertyStatus_cbox)
+//                .immediateClear();
+//
+//        if (selectedProperty.get() instanceof CommercialProperty) {
+//            validatorCP.createCheck()
+//                    .dependsOn("propertyBtype", propertyBtype_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyBtype");
+//                        if (!InputValidator.NoCondition(input, businessType_err)) {
+//                            context.error("BusinessType must not be empty");
+//                        }
+//                    })
+//                    .decorates(propertyBtype_txtf)
+//                    .immediateClear();
+//
+//            validatorCP.createCheck()
+//                    .dependsOn("propertySquareMeters", propertySquareMeters_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertySquareMeters");
+//                        if (!InputValidator.isValidSquareMeters(input, squareMeters_err)) {
+//                            context.error("Square meters must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertySquareMeters_txtf)
+//                    .immediateClear();
+//
+//            validatorCP.createCheck()
+//                    .dependsOn("propertyPSpaces", propertyPSpaces_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyPSpaces");
+//                        if (!InputValidator.isValidParkingSpaces(input, parkingSpace_err)) {
+//                            context.error("Parking spaces must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyPSpaces_txtf)
+//                    .immediateClear();
+//        }
+//        updateProperty_btn.disableProperty().bind(validatorCP.containsErrorsProperty());
+//    }
+//
+//    private void validateInputRP(){
+//        validatorRP.createCheck()
+//                .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyAddress");
+//                    if (!InputValidator.NoCondition(input, address_err)) {
+//                        context.error("Address must not be empty");
+//                    }
+//                })
+//                .decorates(propertyAddress_txtf)
+//                .immediateClear();
+//
+//        validatorRP.createCheck()
+//                .dependsOn("propertyPrice", propertyPrice_txtf.textProperty())
+//                .withMethod(context -> {
+//                    String input = context.get("propertyPrice");
+//                    if (!InputValidator.isValidPrice(input, price_err)) {
+//                        context.error("Price must be a valid number");
+//                    }
+//                })
+//                .decorates(propertyPrice_txtf)
+//                .immediateClear();
+//
+//        validatorRP.createCheck()
+//                .dependsOn("propertyStatus", propertyStatus_cbox.valueProperty())
+//                .withMethod(context -> {
+//                    PropertyStatus input = context.get("propertyStatus");
+//                    if (input == null) {
+//                        context.error("A Status must be selected");
+//                        status_err.setText("A Status must be selected");
+//                    }
+//                })
+//                .decorates(propertyStatus_cbox)
+//                .immediateClear();
+//
+//        if (selectedProperty.get() instanceof ResidentialProperty) {
+//
+//            validatorRP.createCheck()
+//                    .dependsOn("propertyBedrooms", propertyBedrooms_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyBedrooms");
+//                        if (!InputValidator.isValidBedrooms(input, bedroom_err, totalNumberRooms)) {
+//                            context.error("Bedrooms must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyBedrooms_txtf)
+//                    .immediateClear();
+//
+//            validatorRP.createCheck()
+//                    .dependsOn("propertyRooms", propertyRooms_txtf.textProperty())
+//                    .withMethod(context -> {
+//                        String input = context.get("propertyRooms");
+//                        if (!InputValidator.isValidRooms(input, room_err, totalNumberBedrooms)) {
+//                            context.error("Rooms must be a valid number");
+//                        }
+//                    })
+//                    .decorates(propertyRooms_txtf)
+//                    .immediateClear();
+//        }
+//        updateProperty_btn.disableProperty().bind(validatorRP.containsErrorsProperty());
+//    }
 
     private void addListener() {
         propertyAddress_txtf.textProperty().addListener((observable, oldValue, newValue) -> {

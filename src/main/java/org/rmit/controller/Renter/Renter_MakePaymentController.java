@@ -175,6 +175,7 @@ public class Renter_MakePaymentController implements Initializable {
 
     private void submitPayment() {
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
+        submit_btn.disableProperty().unbind();
         submit_btn.setDisable(true);
         Payment newPayment = new Payment();
         newPayment.setRentalAgreement(selectedRentalAgreement.get());
