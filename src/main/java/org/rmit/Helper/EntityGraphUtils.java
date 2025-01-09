@@ -1,5 +1,6 @@
 package org.rmit.Helper;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Subgraph;
@@ -103,6 +104,10 @@ public class EntityGraphUtils {
         EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
         entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters", "images"); // Add only the name of the Owner
         Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
+        ownerSubgraph.addAttributeNodes("id", "name");
+        Subgraph<Host> hostSubGraph = entityGraph.addSubgraph("hosts");
+        hostSubGraph.addAttributeNodes("id", "name");
+
 //        ownerSubgraph.addAttributeNodes("name");
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
@@ -116,6 +121,9 @@ public class EntityGraphUtils {
         EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
         entityGraph.addAttributeNodes("images", "address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden", "images"); // Add only the name of the Owner
         Subgraph<Owner> ownerSubgraph = entityGraph.addSubgraph("owner");
+        ownerSubgraph.addAttributeNodes("id", "name");
+        Subgraph<Host> hostSubGraph = entityGraph.addSubgraph("hosts");
+        hostSubGraph.addAttributeNodes("id", "name");
 //        ownerSubgraph.addAttributeNodes("name");
 //        Subgraph<Host> hostEntityGraph = entityGraph.addSubgraph("hosts");
 //        hostEntityGraph.addAttributeNodes("id", "name");
@@ -456,6 +464,31 @@ public class EntityGraphUtils {
         Subgraph<Owner> ownerSubgraph = graph.addSubgraph("owner"); // Assuming `owner` is the name of the relationship in Property
         ownerSubgraph.addAttributeNodes("name"); // Add only the name of the Owner
     }
+
+    public static EntityGraph<Owner> OwnerForEmailSent(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
+        entityGraph.addAttributeNodes("id", "name");
+        entityGraph.addSubgraph("receivedNotifications");
+        return entityGraph;
+    }
+
+    public static EntityGraph<Host> HostForEmailSent(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
+        entityGraph.addAttributeNodes("id", "name");
+        entityGraph.addSubgraph("receivedNotifications");
+        return entityGraph;
+    }
+
+    public static EntityGraph<Renter> RenterForEmailSent(Session session) {
+        EntityManager emf = session.unwrap(EntityManager.class);
+        EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
+        entityGraph.addAttributeNodes("id", "name");
+        entityGraph.addSubgraph("receivedNotifications");
+        return entityGraph;
+    }
+
 
 
 

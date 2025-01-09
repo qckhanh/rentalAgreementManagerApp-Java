@@ -1,6 +1,7 @@
 package org.rmit.controller.Renter;
 
 import atlantafx.base.layout.DeckPane;
+import atlantafx.base.theme.Theme;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
@@ -11,6 +12,7 @@ import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.*;
 import org.rmit.Notification.Request;
 import org.rmit.database.CommercialPropertyDAO;
+import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.model.ModelCentral;
@@ -285,12 +287,6 @@ public class Renter_makeRentalAgreementController implements Initializable {
         });
     }
 
-    boolean isExist(Renter r){
-        for(Renter renter : selectedSubRenters){
-            if(renter == r) return true;
-        }
-        return false;
-    }
 
     private void reloadRenterListView(Set<Renter> renters){
         subRenter_listView.getItems().clear();
@@ -302,13 +298,12 @@ public class Renter_makeRentalAgreementController implements Initializable {
         if(propertySearch_input.getText().isBlank()) return;
         searchProperty_btn.setDisable(true);
         propertySearch_input.setDisable(true);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Searching for property...");
         property_ComboBox.getItems().clear();
         List<Property> list = new ArrayList<>();
         CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-        list.addAll(commercialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::commercialPropertyForSearching));
+        list.addAll(commercialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleCommercialProperty));
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-        list.addAll(residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::residentalPropertyForSearching));
+        list.addAll(residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleResidentialProperty));
         property_ComboBox.getItems().addAll(list);
         ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
         searchProperty_btn.setDisable(false);
@@ -323,6 +318,9 @@ public class Renter_makeRentalAgreementController implements Initializable {
         }
         if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
         submit_btn.setDisable(true);
+        HostDAO hostDAO = new HostDAO();
+        int id = Integer.parseInt(selectedHost.get().getId() + "");
+        selectedHost.set(hostDAO.get(id, EntityGraphUtils::HostForEmailSent));
 
         String s = NotificationUtils.buildDaft_RentalAgreement(
                 selectedProperty.get().getId(),
@@ -363,7 +361,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
         }
         clearAllField();
-        submit_btn.setDisable(true);
+        submit_btn.setDisable(false);
     };
 
     private void resetErrorLabels() {
@@ -386,7 +384,11 @@ public class Renter_makeRentalAgreementController implements Initializable {
         selectedSubRenter.set(null);
         selectedRentalPeriod.set(null);
         selectedSubRenters.clear();
+        listSubrenter_found.clear();
+        subRenter_listView.getItems().clear();
         resetErrorLabels();
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
+        selectedImage.set(new ArrayList<>());
     }
 
     private void prevImg_btn() {

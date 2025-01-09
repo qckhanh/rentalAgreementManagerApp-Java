@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Persons.Person;
+import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.ResidentialProperty;
 
 import java.util.Collections;
@@ -195,30 +196,67 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         notificationGraph(graph.addSubgraph("receivedNotifications"));
     }
 
+//    @Override
+//    public List<ResidentialProperty> search(String keyword, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
+//        Session session = DatabaseUtil.getSession();
+//        List<ResidentialProperty> result = Collections.emptyList(); // Properly initialized
+//
+//        try {
+//            // JPQL to search by address (partial match) or ID (exact match)
+//            String jpql = "SELECT c FROM ResidentialProperty c " +
+//                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
+//                    "OR c.id = :idKeyword";
+//
+//            result = session.createQuery(jpql, ResidentialProperty.class)
+//                    .setMaxResults(10) // Limit results
+//                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
+//                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
+//                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+//                    .list();
+//            DatabaseUtil.shutdown(session);
+//        } catch (Exception e) {
+//            e.printStackTrace(); // Replace with proper logging
+//        } finally {
+//            DatabaseUtil.shutdown(session); // Ensure session is closed
+//        }
+//        return result;
+//    }
+
     @Override
     public List<ResidentialProperty> search(String keyword, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();
-        List<ResidentialProperty> result = Collections.emptyList(); // Properly initialized
+        List<ResidentialProperty> result = Collections.emptyList();
 
         try {
-            // JPQL to search by address (partial match) or ID (exact match)
-            String jpql = "SELECT c FROM ResidentialProperty c " +
-                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
-                    "OR c.id = :idKeyword";
+            String cleanKeyword = keyword.trim().toLowerCase();
+
+            // First try exact ID match (faster)
+            Long id = parseId(cleanKeyword);
+            if (id != -1) {
+                ResidentialProperty property = get(Integer.parseInt(cleanKeyword), entityGraphFunction);
+                if (property != null) {
+                    result = Collections.singletonList(property);
+                    return result;
+                }
+            }
+
+            // If no ID match, then search by address
+            String jpql = "SELECT DISTINCT c FROM ResidentialProperty c " +
+                    "WHERE LOWER(c.address) LIKE :addressKeyword";
 
             result = session.createQuery(jpql, ResidentialProperty.class)
-                    .setMaxResults(10) // Limit results
-                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
-                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
-                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
+                    .setMaxResults(5)
+                    .setParameter("addressKeyword", "%" + cleanKeyword + "%")
+                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
-            DatabaseUtil.shutdown(session);
+
         } catch (Exception e) {
-            e.printStackTrace(); // Replace with proper logging
+            e.printStackTrace();
         } finally {
-            DatabaseUtil.shutdown(session); // Ensure session is closed
+            DatabaseUtil.shutdown(session);
         }
         return result;
     }
+
 
 }

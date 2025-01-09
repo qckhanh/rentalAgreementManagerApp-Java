@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.rmit.Helper.DatabaseUtil;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Property.CommercialProperty;
+import org.rmit.model.Property.ResidentialProperty;
 
 import java.util.Collections;
 import java.util.List;
@@ -199,30 +200,70 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         notificationGraph(graph.addSubgraph("receivedNotifications"));
     }
 
+//    @Override
+//    public List<CommercialProperty> search(String keyword, Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
+//        Session session = DatabaseUtil.getSession();
+//        List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
+//
+//        try {
+//            String jpql = "SELECT c FROM CommercialProperty c " +
+//                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
+//                    "OR c.id = :idKeyword";
+//
+//            result = session.createQuery(jpql, CommercialProperty.class)
+//                    .setMaxResults(10) // Limit results
+//                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
+//                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
+//                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
+//                    .list();
+//            DatabaseUtil.shutdown(session);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
+
+
+
+    // Helper method to parse the ID from the keyword
+
+
     @Override
     public List<CommercialProperty> search(String keyword, Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();
-        List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
+        List<CommercialProperty> result = Collections.emptyList();
 
         try {
-            String jpql = "SELECT c FROM CommercialProperty c " +
-                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
-                    "OR c.id = :idKeyword";
+            // Trim and clean the keyword
+            String cleanKeyword = keyword.trim().toLowerCase();
+
+            // First try exact ID match (faster)
+            Long id = parseId(cleanKeyword);
+            if (id != -1) {
+                CommercialProperty property = get(Integer.parseInt(cleanKeyword), entityGraphFunction);
+                if (property != null) {
+                    result = Collections.singletonList(property);
+                    return result;
+                }
+            }
+
+            // If no ID match, then search by address
+            String jpql = "SELECT DISTINCT  c FROM CommercialProperty c " +
+                    "WHERE LOWER(c.address) LIKE :addressKeyword";
 
             result = session.createQuery(jpql, CommercialProperty.class)
-                    .setMaxResults(10) // Limit results
-                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
-                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
+                    .setMaxResults(5)
+                    .setParameter("addressKeyword", "%" + cleanKeyword + "%")
                     .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
                     .list();
-            DatabaseUtil.shutdown(session);
+
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            DatabaseUtil.shutdown(session);
         }
         return result;
     }
-
-    // Helper method to parse the ID from the keyword
 
 
 }
