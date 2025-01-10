@@ -2,32 +2,24 @@ package org.rmit.controller.Renter;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import org.rmit.Helper.EntityGraphUtils;
-import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
-import org.rmit.model.Agreement.AgreementStatus;
-import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
-import org.rmit.model.Persons.Host;
-import org.rmit.model.Persons.Owner;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Renter;
-import org.rmit.model.Property.Property;
-import org.rmit.model.Property.PropertyStatus;
-import org.rmit.model.Property.RentalPeriod;
 import org.rmit.model.Session;
 import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 
@@ -56,6 +48,7 @@ public class Renter_NotificationController implements Initializable {
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Renter> currentUser = new SimpleObjectProperty<>((Renter) Session.getInstance().getCurrentUser());
 
+    private ObservableList<Notification> notifications = FXCollections.observableArrayList();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         decor();
@@ -63,6 +56,9 @@ public class Renter_NotificationController implements Initializable {
         setUpDataBehavior();
         setUpButtonAction();
         loadListView(getNoFilter());
+
+        notifications.addAll(currentUser.get().receivedNotificationsPropertyProperty().get());
+        notifications.addAll(currentUser.get().sentNotificationsPropertyProperty().get());
     }
 
     // Setup
@@ -163,7 +159,7 @@ public class Renter_NotificationController implements Initializable {
     private void denyRequest() {}
 
     private void deleteNoti() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
         Notification notification = selectedNotificationProperty.get();
         int id = Integer.parseInt(notification.getId() + "");
         NotificationDAO notificationDAO = new NotificationDAO();
@@ -179,7 +175,7 @@ public class Renter_NotificationController implements Initializable {
 
         loadListView(getNoFilter());
 
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
     }
 
     // Helper
@@ -188,6 +184,8 @@ public class Renter_NotificationController implements Initializable {
         Set<Notification> notifications = new HashSet<>();
         notifications.addAll(currentUser.get().getSentNotifications());
         notifications.addAll(currentUser.get().getReceivedNotifications());
+
+
         return notifications;
     }
 

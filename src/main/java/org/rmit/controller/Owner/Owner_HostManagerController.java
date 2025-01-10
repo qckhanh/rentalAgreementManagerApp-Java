@@ -8,7 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
@@ -18,8 +18,6 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
-
-import static org.rmit.Helper.EntityGraphUtils.SimpleHost;
 
 public class Owner_HostManagerController implements Initializable {
     public Label welcomeLabel;
@@ -75,7 +73,7 @@ public class Owner_HostManagerController implements Initializable {
         List<Host> lists = hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost);
         Set<Host> hostSet = new HashSet<>(lists);
         loadHost(hostSet);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, lists.size() + " host(s) found");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, lists.size() + " host(s) found");
         search_btn.setDisable(false);
     }
 
@@ -93,7 +91,7 @@ public class Owner_HostManagerController implements Initializable {
 
     private void showDetails(Host h) {
         if (h == null)  return;
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
         int id = Integer.parseInt(h.getId()+"");
         if (hostMap.containsKey(id)) {
             h = hostMap.get(id);
@@ -103,7 +101,7 @@ public class Owner_HostManagerController implements Initializable {
             h = hostDAO.get(id, EntityGraphUtils::hostForSearching);
             hostMap.put(id, h);
         }
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host details loaded");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host details loaded");
         D_input.setText(h.getId()+"");
         username_input.setText(h.getUsername());
         fullName_input.setText(h.getName());

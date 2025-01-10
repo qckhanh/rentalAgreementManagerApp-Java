@@ -7,17 +7,14 @@ import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.rmit.Helper.DatabaseUtil;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.AdminDAO;
 import org.rmit.database.DAOInterface;
-import org.rmit.database.RenterDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Person;
-import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
@@ -169,16 +166,16 @@ public class Admin_EditProfileController implements Initializable {
             // Validate before saving
             if (validator.validate()) {
                 // Invoke confirm message
-                boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
+                boolean confirmed = ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
                 if (confirmed) {
                     saveChanges();
                 }
             }
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             }
         } else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
             setDisableAll(false);
         }
     }
@@ -186,7 +183,7 @@ public class Admin_EditProfileController implements Initializable {
     private void updateAvatar() {
         SELECTED_PATH = ImageUtils.openFileChooseDialog();
         if(SELECTED_PATH == ImageUtils.DEFAULT_IMAGE){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
             return;
         }
         isAvatarChange = true;
@@ -206,9 +203,9 @@ public class Admin_EditProfileController implements Initializable {
 
         boolean isUpdated =  dao.update((Admin)currentUser);
         if(isUpdated){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
         } else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
         }
         setDisableAll(true);
         edit_btn.setText("Edit");

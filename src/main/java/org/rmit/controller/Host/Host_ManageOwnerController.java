@@ -10,8 +10,7 @@ import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
-import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
@@ -21,8 +20,6 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
-
-import static org.rmit.Helper.EntityGraphUtils.SimpleOwner;
 
 public class Host_ManageOwnerController implements Initializable {
     public TextField D_input;
@@ -44,7 +41,7 @@ public class Host_ManageOwnerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         search_btn.setOnAction(e ->{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
             searchOwner();
         });
         search_input.setOnAction(e -> searchOwner());
@@ -85,7 +82,7 @@ public class Host_ManageOwnerController implements Initializable {
         OwnerDAO ownerDAO = new OwnerDAO();
         List<Owner> lists = ownerDAO.search(search_input.getText(), EntityGraphUtils::SimpleOwner);
         loadOwner(new HashSet<>(lists));
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + lists.size() + " owner(s)");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + lists.size() + " owner(s)");
         search_btn.setDisable(false);
 //        search_input.clear();
     }

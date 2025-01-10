@@ -4,13 +4,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Host.HOST_MENU_OPTION;
-import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -69,32 +67,32 @@ public class Host_MenuController implements Initializable {
 
 
     private void logOut() {
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
-        ModelCentral.getInstance().getHostViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getHostViewFactory().resetView();
+        ViewCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard() {
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.DASHBOARD);
     }
 
     private void editProfile() {
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.EDIT_PROFILE);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void manageProperty() {
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_PROPERTY);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_PROPERTY);
     }
 
     private void manageAgreement() {
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_AGREEMENT);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_AGREEMENT);
     }
 
     private void manageOwner(){
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.MANAGE_OWNER);
     }
 
     private void openNotification(){
-        ModelCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.NOTIFICATION);
+        ViewCentral.getInstance().getHostViewFactory().setSelectedMenuItem(HOST_MENU_OPTION.NOTIFICATION);
     }
 }

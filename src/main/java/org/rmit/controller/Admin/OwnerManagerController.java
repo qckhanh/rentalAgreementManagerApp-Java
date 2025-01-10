@@ -19,7 +19,7 @@ import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.Property;
@@ -51,7 +51,7 @@ public class OwnerManagerController implements Initializable {
 
     private ObservableList<Owner> personObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Owner> selectedPerson = new SimpleObjectProperty<>();
-    List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
+    List<Owner> owners = ViewCentral.getInstance().getAdminViewFactory().getAllOwner();
 
     Label noneLabel = new Label();
 //    Validator validator = new Validator();
@@ -166,23 +166,23 @@ public class OwnerManagerController implements Initializable {
     private void deletePerson() {
         Owner person = selectedPerson.get();
         if(person == null){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an owner to delete");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an owner to delete");
             return;
         }
         if(person.getPropertiesOwned().size() != 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete owner with properties");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete owner with properties");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this owner?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this owner?")) return;
         OwnerDAO dao = new OwnerDAO();
         DatabaseUtil.warmUp();
         boolean isDeleted = dao.delete(person);
         if(isDeleted){
             personObservableList.remove(person);
             clearTextField();
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner deleted successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner deleted successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Delete owner failed. Please try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Delete owner failed. Please try again");
     }
 
     private void updatePerson() {
@@ -191,7 +191,7 @@ public class OwnerManagerController implements Initializable {
         boolean isEditable = fullName_input.isEditable();
         setEditableTextField(!isEditable);
         if(isTextFieldChanged(selectedPerson.get()) && validator.validate()){
-            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this owner?")) return;
+            if (!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this owner?")) return;
             Owner person = selectedPerson.get();
             person.setName(fullName_input.getText());
             person.setContact(contact_input.getText());
@@ -202,8 +202,8 @@ public class OwnerManagerController implements Initializable {
             boolean isUpdated = dao.update(person);
             if (isUpdated) {
                     personObservableList.set(personObservableList.indexOf(person), person);
-                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner updated successfully");
-            } else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Update owner failed. Please try again");
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner updated successfully");
+            } else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Update owner failed. Please try again");
 //            clearTextField();
         }
         else{
@@ -231,11 +231,11 @@ public class OwnerManagerController implements Initializable {
         Validator validator = new Validator();
         buildValidator(validator, true);
         if(!validator.validate()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             return;
         }
 
-            if (!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?")) return;
+            if (!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this owner?")) return;
             OwnerDAO ownerDAO = new OwnerDAO();
             Owner person = new Owner();
             person.setUsername(username_input.getText());
@@ -246,8 +246,8 @@ public class OwnerManagerController implements Initializable {
             boolean isAdded = ownerDAO.add(person);
             if (isAdded) {
                 personObservableList.add(person);
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner added successfully");
-            } else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Add owner failed. Please try again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Owner added successfully");
+            } else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Add owner failed. Please try again");
     }
 
     private boolean isTextFieldChanged(Owner person){

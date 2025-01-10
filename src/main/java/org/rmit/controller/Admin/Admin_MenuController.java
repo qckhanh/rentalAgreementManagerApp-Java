@@ -4,13 +4,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Admin.ADMIN_MENU_OPTION;
-import org.rmit.view.Renter.RENTER_MENU_OPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,46 +77,46 @@ public class Admin_MenuController implements Initializable {
     }
 
     private void manageProperty() {
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PROPERTY_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PROPERTY_MANAGER);
     }
 
     private void editProfile(){
         // Write your code here:
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.EDIT_PROFILE);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void openDashboard(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
     }
 
     private void logOut(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
-        ModelCentral.getInstance().getAdminViewFactory().resetView();
-        ModelCentral.getInstance().resetAdminView();
-        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getAdminViewFactory().resetView();
+        ViewCentral.getInstance().resetAdminView();
+        ViewCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void manageRenter(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.RENTER_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.RENTER_MANAGER);
     }
 
     private void manageAgreement(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.AGREEMENT_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.AGREEMENT_MANAGER);
     }
 
     private void manageHost(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.HOST_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.HOST_MANAGER);
     }
 
     private void manageOwner(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.OWNER_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.OWNER_MANAGER);
     }
 
     private void managePayment(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PAYMENT_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.PAYMENT_MANAGER);
     }
 
     private void manageAdmin(){
-        ModelCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.ADMIN_MANAGER);
+        ViewCentral.getInstance().getAdminViewFactory().setSelectedMenuItem(ADMIN_MENU_OPTION.ADMIN_MANAGER);
     }
 }

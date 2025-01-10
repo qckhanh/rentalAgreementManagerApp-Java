@@ -9,10 +9,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.DatabaseUtil;
+import org.rmit.Helper.UIDecorator;
 import org.rmit.database.RentalAgreementDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
@@ -49,7 +50,7 @@ public class AgreementManagerController implements Initializable {
 
     private ObjectProperty<RentalAgreement> selectedRentalAgreement = new SimpleObjectProperty<>();
     private ObservableList<RentalAgreement> rentalAgreementsObservableList = FXCollections.observableArrayList();
-    private List<RentalAgreement> rentalAgreementsList = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
+    private List<RentalAgreement> rentalAgreementsList = ViewCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
     private Set<Renter> selectedSubRenters = new HashSet<>();
 
     private ObjectProperty<Renter> selectedMainRenter = new SimpleObjectProperty<>();
@@ -62,6 +63,7 @@ public class AgreementManagerController implements Initializable {
         setUpButtonAction();
         setUpDataBehavior();
         setUpDataView();
+        UIDecorator.setDangerButton(del_btn, UIDecorator.DELETE(), null);
     }
 
     private void setUpButtonAction(){
@@ -75,7 +77,7 @@ public class AgreementManagerController implements Initializable {
 
     private void saveToDB() {
         if(isTextFieldChanged(new RentalAgreement())){
-            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
+            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
             RentalAgreement ra = new RentalAgreement();
             ra.setProperty(selectedProperty.get());
             ra.setPeriod(rentalPeriod_comboBox.getValue());
@@ -106,17 +108,17 @@ public class AgreementManagerController implements Initializable {
         setEditable(true);
 
         mainRenter_comboBox.getItems().clear();
-        mainRenter_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
+        mainRenter_comboBox.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
 
         subRenter_listView.getItems().clear();
-        subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
+        subRenter_listView.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
     }
 
     private void updateAgreement() {
         boolean isEditable = fee_input.isEditable();
         setEditable(!isEditable);
         if(isTextFieldChanged(selectedRentalAgreement.get())){
-            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
+            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
             RentalAgreement ra = selectedRentalAgreement.get();
             ra.setProperty(selectedProperty.get());
             ra.setPeriod(rentalPeriod_comboBox.getValue());
@@ -269,7 +271,7 @@ public class AgreementManagerController implements Initializable {
 
                         subRenter_listView.getItems().clear();
                         subRenter_listView.getItems().addAll(item);
-                        subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
+                        subRenter_listView.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
                         updateItem(item, false);  // Update the cell to show the "Add" button
                     }
                 });
@@ -332,13 +334,13 @@ public class AgreementManagerController implements Initializable {
                         ra -> ra.getProperty().addressPropertyProperty().get())
         );
         propertyFilter_comboBox.getItems().addAll((Property) new CommercialProperty());
-        propertyFilter_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllProperty());
+        propertyFilter_comboBox.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllProperty());
         agreementStatusFilter_comboBox.getItems().addAll(AgreementStatus.values());
         rentalPeriod_comboBox.getItems().addAll(RentalPeriod.values());
         status_comboBox.getItems().addAll(AgreementStatus.values());
-        mainRenter_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
-        property_comboBox.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllProperty());
-        subRenter_listView.setItems(FXCollections.observableArrayList(ModelCentral.getInstance().getAdminViewFactory().getAllRenter()));
+        mainRenter_comboBox.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
+        property_comboBox.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllProperty());
+        subRenter_listView.setItems(FXCollections.observableArrayList(ViewCentral.getInstance().getAdminViewFactory().getAllRenter()));
     }
 
     private void showInfor(RentalAgreement newValue) {
@@ -364,7 +366,7 @@ public class AgreementManagerController implements Initializable {
 
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(newValue.getSubTenants());
-        subRenter_listView.getItems().addAll(ModelCentral.getInstance().getAdminViewFactory().getAllRenter());
+        subRenter_listView.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
 
         selectedSubRenters.clear();
         selectedSubRenters.addAll(newValue.getSubTenants());
@@ -413,20 +415,20 @@ public class AgreementManagerController implements Initializable {
     private void deleteAgreement() {
         RentalAgreement ra = selectedRentalAgreement.get();
         if(ra == null){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an agreement to delete");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select an agreement to delete");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement? This action may effect Host and Renters")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to delete this agreement? This action may effect Host and Renters")) return;
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
         DatabaseUtil.warmUp();
         boolean isDelete = rentalAgreementDAO.delete(ra);
         if(isDelete){
             rentalAgreementsList.remove(ra);
             rentalAgreementsObservableList.setAll(rentalAgreementsList);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Agreement deleted successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Agreement deleted successfully");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Agreement delete failed. Please try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Agreement delete failed. Please try again");
         }
 
     }

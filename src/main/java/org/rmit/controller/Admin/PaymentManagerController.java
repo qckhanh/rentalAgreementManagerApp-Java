@@ -16,7 +16,7 @@ import org.rmit.database.PaymentDAO;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.PaymentMethod;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
@@ -45,7 +45,7 @@ public class PaymentManagerController implements Initializable {
 
     private ObservableList<Payment> paymentObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Payment> selectedPayment = new SimpleObjectProperty<>();
-    List<Payment> paymentList = ModelCentral.getInstance().getAdminViewFactory().getAllPayment();
+    List<Payment> paymentList = ViewCentral.getInstance().getAdminViewFactory().getAllPayment();
 
     private Validator validator = new Validator();
     Label noneLabel = new Label();
@@ -133,8 +133,8 @@ public class PaymentManagerController implements Initializable {
 
         loadData(paymentList);
 
-        agreement_comboBox.setItems(FXCollections.observableArrayList(ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement()));
-        agreementFilter_comboBox.setItems(FXCollections.observableArrayList(ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement()));
+        agreement_comboBox.setItems(FXCollections.observableArrayList(ViewCentral.getInstance().getAdminViewFactory().getAllRentalAgreement()));
+        agreementFilter_comboBox.setItems(FXCollections.observableArrayList(ViewCentral.getInstance().getAdminViewFactory().getAllRentalAgreement()));
         PaymentMethodFilter_comboBox.getItems().addAll(
                 PaymentMethod.CARD,
                 PaymentMethod.CASH
@@ -254,10 +254,10 @@ public class PaymentManagerController implements Initializable {
 
     private void saveToDB() {
         if(!isChanged(new Payment())){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No changes detected");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No changes detected");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this payment?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this payment?")) return;
 
         Payment payment = new Payment();
         payment.setAmount(Double.parseDouble(amount_input.getText()));
@@ -275,10 +275,10 @@ public class PaymentManagerController implements Initializable {
         if(isUpdated){
             paymentList.add(payment);
             paymentObservableList.setAll(paymentList);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Payment created successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Payment created successfully");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create payment. Try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create payment. Try again");
         }
     }
 

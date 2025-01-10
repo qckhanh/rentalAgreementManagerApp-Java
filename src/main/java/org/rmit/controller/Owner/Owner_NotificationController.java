@@ -13,10 +13,9 @@ import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
-import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.ResidentialProperty;
@@ -161,10 +160,10 @@ public class Owner_NotificationController implements Initializable {
     private void approveRequest() {
         Request request = (Request) selectedNotificationProperty.get();
         if(request.isAllApproved() == true){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot do further action on this request");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot do further action on this request");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to approve this request?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to approve this request?")) return;
 
         currentUser.get().acceptRequest(request);
         int draftID = NotificationUtils.getDraftID(request.getDraftObject());
@@ -186,7 +185,7 @@ public class Owner_NotificationController implements Initializable {
             }
 
             if(property == null){
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(
                         NOTIFICATION_TYPE.ERROR,
                         anchorPane,
                         "Cannot found property with ID: " + draftID + ". Cannot approve request"
@@ -197,7 +196,7 @@ public class Owner_NotificationController implements Initializable {
             host.addProperty(property);
             boolean isUpadated = hostDAO.update(host);
             if(!isUpadated){
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(
                         NOTIFICATION_TYPE.ERROR,
                         anchorPane,
                         "Fail to add property to host. Please try again"
@@ -228,14 +227,14 @@ public class Owner_NotificationController implements Initializable {
             NotificationDAO notificationDAO = new NotificationDAO();
             notificationDAO.update(notification);
             if(isSent){
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(
                         NOTIFICATION_TYPE.SUCCESS,
                         anchorPane,
                         "Notification successfully sent"
                 );
             }
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(
                         NOTIFICATION_TYPE.ERROR,
                         anchorPane,
                         "Notification failed to send. Please try again"
@@ -248,10 +247,10 @@ public class Owner_NotificationController implements Initializable {
     private void denyRequest() {
         Request request = (Request) selectedNotificationProperty.get();
         if(request.isAllApproved()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot do further action on this request");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot do further action on this request");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to deny this request?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to deny this request?")) return;
 
         currentUser.get().denyRequest(request);
         String header = "DENY REQUEST";
@@ -269,13 +268,13 @@ public class Owner_NotificationController implements Initializable {
         OwnerDAO ownerDAO = new OwnerDAO();
         boolean isUpdated =  ownerDAO.update(currentUser.get());
         if(isUpdated){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(
                     NOTIFICATION_TYPE.SUCCESS,
                     anchorPane,
                     "Notification successfully sent");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(
                     NOTIFICATION_TYPE.ERROR,
                     anchorPane,
                     "Notification failed to send. Please try again"
@@ -285,7 +284,7 @@ public class Owner_NotificationController implements Initializable {
     }
 
     private void deleteNoti() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
         Notification notification = selectedNotificationProperty.get();
         int id = Integer.parseInt(notification.getId() + "");
         NotificationDAO notificationDAO = new NotificationDAO();
@@ -301,7 +300,7 @@ public class Owner_NotificationController implements Initializable {
 
         loadListView(getNoFilter());
 
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
     }
 
     // Helper

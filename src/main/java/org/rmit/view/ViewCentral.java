@@ -1,4 +1,4 @@
-package org.rmit.model;
+package org.rmit.view;
 
 import org.rmit.view.Admin.AdminViewFactory;
 import org.rmit.view.Guest.GuestViewFactory;
@@ -7,8 +7,8 @@ import org.rmit.view.Owner.OwnerViewFactory;
 import org.rmit.view.Renter.RenterViewFactory;
 import org.rmit.view.Start.StartViewFactory;
 
-public class ModelCentral {
-    private static ModelCentral modelCentral;
+public class ViewCentral {
+    private static ViewCentral viewCentral;
 
     private StartViewFactory startViewFactory;
     private RenterViewFactory renterViewFactory;
@@ -17,14 +17,13 @@ public class ModelCentral {
     private GuestViewFactory guestViewFactory;
     private AdminViewFactory adminViewFactory;
 
+    private ViewCentral() {}
 
-    private ModelCentral() {}
-
-    public static ModelCentral getInstance() {
-        if (modelCentral == null) {
-            modelCentral = new ModelCentral();
+    public static ViewCentral getInstance() {
+        if (viewCentral == null) {
+            viewCentral = new ViewCentral();
         }
-        return modelCentral;
+        return viewCentral;
     }
 
     public StartViewFactory getStartViewFactory() {

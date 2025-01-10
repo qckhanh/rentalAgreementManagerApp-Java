@@ -3,7 +3,7 @@ package org.rmit.controller.Renter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
@@ -15,21 +15,18 @@ public class RenterController implements Initializable{
     BorderPane borderPane;
 
     public RenterController() {
-        // khi nguoi dung bam nut --> selectedMenuItem thay doi --> thay doi view
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
-        ModelCentral.getInstance().getRenterViewFactory().renterSelectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD); // set the intial view
+        ViewCentral.getInstance().getRenterViewFactory().selectedMenuItemProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
-                case DASHBOARD -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_dashboardView());
-                case PAYMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_paymentManagerView());
-                case AGREEMENT_MANAGER -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_agreementManagerView());
-                case EDIT_PROFILE -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_EditProfileView());
-                case MAKE_PAYMENT -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_makePaymentView());
-                case SEARCH -> System.out.println("Search");
-                case MAKE_RENTAL_AGREEMENT -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_makeRentalAgreementView());
-                case NOTIFICATION -> borderPane.setCenter(ModelCentral.getInstance().getRenterViewFactory().getRenter_NotificationView());
+                case DASHBOARD -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_dashboardView());
+                case PAYMENT_MANAGER -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_paymentManagerView());
+                case AGREEMENT_MANAGER -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_agreementManagerView());
+                case EDIT_PROFILE -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_EditProfileView());
+                case MAKE_PAYMENT -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_makePaymentView());
+                case MAKE_RENTAL_AGREEMENT -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_makeRentalAgreementView());
+                case NOTIFICATION -> borderPane.setCenter(ViewCentral.getInstance().getRenterViewFactory().getRenter_NotificationView());
             }
         });
-        //set default view
     }
 
     @Override

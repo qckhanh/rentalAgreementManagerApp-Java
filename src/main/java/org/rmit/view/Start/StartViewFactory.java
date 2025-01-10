@@ -42,6 +42,12 @@ public class StartViewFactory {
         initController = initLoad.getController();
     }
 
+    public void startNoInternetConnection(){
+        FXMLLoader noInternet = new FXMLLoader(getClass().getResource(FXML_PATH + "noInternet.fxml"));
+        createStage(noInternet);
+//        initController = initLoad.getController();
+    }
+
     public void loading(){
         FXMLLoader loading = new FXMLLoader(getClass().getResource(FXML_PATH + "loading.fxml"));
         createStage(loading);

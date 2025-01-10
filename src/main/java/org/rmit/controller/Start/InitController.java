@@ -3,7 +3,7 @@ package org.rmit.controller.Start;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,7 +21,7 @@ public class InitController implements Initializable {
         try{
 //            parent_BorderPane.getStylesheets().add(FXSkins.getStylesheetURL());
 
-            parent_BorderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getRegisterView());
+            parent_BorderPane.setCenter(ViewCentral.getInstance().getStartViewFactory().getRegisterView());
         }
         catch (Exception e){
             e.printStackTrace();
@@ -30,7 +30,7 @@ public class InitController implements Initializable {
 
     public void openLogin(){
         try{
-            parent_BorderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getLoginView());
+            parent_BorderPane.setCenter(ViewCentral.getInstance().getStartViewFactory().getLoginView());
         }
         catch (Exception e){
             System.out.println("Error loading login.fxml");

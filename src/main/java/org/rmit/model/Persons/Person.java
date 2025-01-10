@@ -33,10 +33,10 @@ public abstract class Person {
     protected String password;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private Set<Notification> sentNotifications = new HashSet<>();
+    protected Set<Notification> sentNotifications = new HashSet<>();
 
     @ManyToMany(mappedBy = "receivers", cascade = CascadeType.ALL)
-    private Set<Notification> receivedNotifications = new HashSet<>();
+    protected Set<Notification> receivedNotifications = new HashSet<>();
 
 ///////////////////////////////////////////////////////////////////////////////
     @Transient
@@ -53,6 +53,10 @@ public abstract class Person {
      protected StringProperty passwordProperty = new SimpleStringProperty();
     @Transient
     protected ObjectProperty<byte[]> profileAvatarProperty = new SimpleObjectProperty<>();
+    @Transient
+    protected ObjectProperty<Set<Notification>> sentNotificationsProperty = new SimpleObjectProperty<>();
+    @Transient
+    protected ObjectProperty<Set<Notification>> receivedNotificationsProperty = new SimpleObjectProperty<>();
 
     @PostLoad
     protected abstract void synWithSimpleProperty();
@@ -66,10 +70,12 @@ public abstract class Person {
         for(Person receiver : notification.getReceivers()) {
             receiver.addReceivedNotification(notification);
         }
+        receivedNotificationsProperty.set(receivedNotifications);
     }
 
     private void addReceivedNotification(Notification notification) {
         receivedNotifications.add(notification);
+        receivedNotificationsProperty.set(receivedNotifications);
     }
 
     public boolean acceptRequest(Request request) {
@@ -86,6 +92,7 @@ public abstract class Person {
 
     public void setReceivedNotifications(Set<Notification> receivedNotifications) {
         this.receivedNotifications = receivedNotifications;
+        receivedNotificationsProperty.set(receivedNotifications);
     }
 
     public Set<Notification> getSentNotifications() {
@@ -94,6 +101,7 @@ public abstract class Person {
 
     public void setSentNotifications(Set<Notification> sentNotifications) {
         this.sentNotifications = sentNotifications;
+        sentNotificationsProperty.set(sentNotifications);
     }
 
     public String getPassword() {
@@ -233,4 +241,37 @@ public abstract class Person {
         return "ID - " + id;
     }
 
+    public Set<Notification> getReceivedNotificationsProperty() {
+        return receivedNotificationsProperty.get();
+    }
+
+    public ObjectProperty<Set<Notification>> receivedNotificationsPropertyProperty() {
+        return receivedNotificationsProperty;
+    }
+
+    public void setReceivedNotificationsProperty(Set<Notification> receivedNotificationsProperty) {
+        this.receivedNotificationsProperty.set(receivedNotificationsProperty);
+    }
+
+    public Set<Notification> getSentNotificationsProperty() {
+        return sentNotificationsProperty.get();
+    }
+
+    public ObjectProperty<Set<Notification>> sentNotificationsPropertyProperty() {
+        return sentNotificationsProperty;
+    }
+
+    public void setSentNotificationsProperty(Set<Notification> sentNotificationsProperty) {
+        this.sentNotificationsProperty.set(sentNotificationsProperty);
+    }
+
+    public void addSentNotification(Notification notification){
+        this.sentNotifications.add(notification);
+        this.sentNotificationsProperty.setValue(this.sentNotifications);
+    }
+
+//    public void addReceivedNotification(Notification notification){
+//        this.receivedNotifications.add(notification);
+//        this.receivedNotificationsProperty.setValue(this.receivedNotifications);
+//    }
 }

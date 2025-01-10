@@ -1,5 +1,6 @@
 package org.rmit.controller.Renter;
 
+import atlantafx.base.controls.ModalPane;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -17,15 +18,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 import org.rmit.Helper.EntityGraphUtils;
-import org.rmit.database.DAOInterface;
 import org.rmit.database.PaymentDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.PaymentMethod;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
-import org.rmit.model.Persons.Person;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Session;
@@ -61,8 +60,9 @@ public class Renter_MakePaymentController implements Initializable {
             selectedPaymentMethod = new SimpleObjectProperty<>();
             selectedRentalAgreement = new SimpleObjectProperty<>();
 
-            mainRenter_input.setDisable(true);
-            property_input.setDisable(true);
+            mainRenter_input.setEditable(false);
+            mainRenter_input.setText("You");
+            property_input.setEditable(false);
             amount_input.setEditable(false);
             purchaseDate_datepicker.setDisable(true);
             purchaseDate_datepicker.setValue(LocalDate.now());
@@ -136,7 +136,8 @@ public class Renter_MakePaymentController implements Initializable {
             });
 
             submit_btn.setOnAction(e -> {
-                if (validator.validate()) submitPayment();
+                submitPayment();
+
             });
             validateInput();
             clearLabels();
@@ -174,7 +175,12 @@ public class Renter_MakePaymentController implements Initializable {
     }
 
     private void submitPayment() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
+        if (!validator.validate()){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please fill in all fields");
+            return;
+        }
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to make this payment?")) return;
+
         submit_btn.disableProperty().unbind();
         submit_btn.setDisable(true);
         Payment newPayment = new Payment();
@@ -192,19 +198,19 @@ public class Renter_MakePaymentController implements Initializable {
             int id = (int)Session.getInstance().getCurrentUser().getId();
             Renter currentRenter = renterDAO.get(id, EntityGraphUtils::RenterFULL);
             Session.getInstance().setCurrentUser(currentRenter);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Purchased successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Purchased successfully");
         } else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
         }
         submit_btn.setDisable(false);
         clearAllFields();
     }
 
     private void clearAllFields() {
-        mainRenter_input.clear();
+//        mainRenter_input.clear();
         property_input.clear();
         amount_input.clear();
-        purchaseDate_datepicker.setValue(null);
+//        purchaseDate_datepicker.setValue(null);
         rentalAgreement_ComboBox.setValue(null);
         paymentMethod_comboBox.setValue(null);
     }
