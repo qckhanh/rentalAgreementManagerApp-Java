@@ -14,7 +14,7 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
@@ -70,8 +70,8 @@ public class LoginController implements Initializable {
         });
         validate();
         status_label.setText("");
-        ModelCentral.getInstance().getStartViewFactory().setIsLogin(true);
-        ModelCentral.getInstance().getStartViewFactory().isLoginProperty().addListener((observable, oldValue, newValue) -> {
+        ViewCentral.getInstance().getStartViewFactory().setIsLogin(true);
+        ViewCentral.getInstance().getStartViewFactory().isLoginProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue == false) {
                 status_label.setTextFill(Color.RED);
                 status_label.setText("Incorrect username or password");
@@ -82,7 +82,7 @@ public class LoginController implements Initializable {
             }
         });
 
-        viewFactory = ModelCentral.getInstance().getStartViewFactory();
+        viewFactory = ViewCentral.getInstance().getStartViewFactory();
         userLOGINType_ChoiceBox.setItems(FXCollections.observableArrayList(
                 ACCOUNT_TYPE.ADMIN,
                 ACCOUNT_TYPE.GUEST,
@@ -110,8 +110,8 @@ public class LoginController implements Initializable {
 
     void loginAsGuest() {
         Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-        ModelCentral.getInstance().getGuestViewFactory().startGuestView();
+        ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+        ViewCentral.getInstance().getGuestViewFactory().startGuestView();
     }
 
     private void signInValidate(){
@@ -130,56 +130,56 @@ public class LoginController implements Initializable {
         if(viewFactory.getAccountLoginType() == ACCOUNT_TYPE.ADMIN) {
             dao = new AdminDAO();
             loginUser = (Admin) dao.validateLogin(username, password);
-            if(loginUser == null) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
+            if(loginUser == null) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
             else {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getAdminViewFactory().startAdminView();
+                ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ViewCentral.getInstance().getAdminViewFactory().startAdminView();
             }
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.RENTER) {
             dao = new RenterDAO();
             loginUser = (Renter) dao.validateLogin(username, password);
-            if(loginUser == null) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
+            if(loginUser == null) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
             else {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getRenterViewFactory().startRenterView();
+                ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ViewCentral.getInstance().getRenterViewFactory().startRenterView();
             }
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.OWNER) {
             dao = new OwnerDAO();
             loginUser = (Owner) dao.validateLogin(username, password);
-            if(loginUser == null) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
+            if(loginUser == null) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
             else {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getOwnerViewFactory().startOwnerView();
+                ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ViewCentral.getInstance().getOwnerViewFactory().startOwnerView();
             }
 
         }
         else if (viewFactory.getAccountLoginType() == ACCOUNT_TYPE.HOST) {
             dao = new HostDAO();
             loginUser = (Host) dao.validateLogin(username, password);
-            if(loginUser == null) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
+            if(loginUser == null) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
             else {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
                 Session.getInstance().setCurrentUser(loginUser);
                 Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-                ModelCentral.getInstance().getHostViewFactory().startHostView();
+                ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                ViewCentral.getInstance().getHostViewFactory().startHostView();
             }
 
         }
 
-        ModelCentral.getInstance().getStartViewFactory().setIsLogin(loginUser != null);
-        System.out.println("Login status: " + ModelCentral.getInstance().getStartViewFactory().isIsLogin());
+        ViewCentral.getInstance().getStartViewFactory().setIsLogin(loginUser != null);
+        System.out.println("Login status: " + ViewCentral.getInstance().getStartViewFactory().isIsLogin());
 
         System.out.println("Current user: " + viewFactory.getAccountLoginType());
         System.out.println(Session.getInstance().getCurrentUser());

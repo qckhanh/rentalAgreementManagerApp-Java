@@ -4,7 +4,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.rmit.model.ModelCentral;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

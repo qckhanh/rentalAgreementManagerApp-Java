@@ -14,10 +14,8 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
-import org.rmit.database.DAOInterface;
-import org.rmit.database.HostDAO;
 import org.rmit.database.ResidentialPropertyDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
@@ -26,8 +24,6 @@ import org.rmit.model.Session;
 
 import java.net.URL;
 import java.util.*;
-
-import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
 
 public class Guest_BrowsePropertyController implements Initializable {
     //preview
@@ -118,7 +114,7 @@ public class Guest_BrowsePropertyController implements Initializable {
 
 
     private void requestManageProperty(Property property){
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("You must register first")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("You must register first")) return;
     }
 
     private void clearDataCommercial(){

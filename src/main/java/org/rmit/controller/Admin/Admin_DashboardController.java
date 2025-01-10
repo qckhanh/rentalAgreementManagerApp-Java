@@ -3,7 +3,6 @@ package org.rmit.controller.Admin;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -18,7 +17,7 @@ import org.rmit.database.*;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
@@ -239,13 +238,13 @@ public class Admin_DashboardController implements Initializable {
         pieChartPropertyObject.setData(pieChartDataProperty);
         applyPieChartHoverEffects();
         setEstimatedYearlyRevenue();
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data Refreshed Successfully");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data Refreshed Successfully");
     }
 
     /* Helpers method for the Person Objects Pie Chart */
     private int countSystemNumberOfOwner() {
 //        OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> owners = ModelCentral.getInstance().getAdminViewFactory().getAllOwner();
+        List<Owner> owners = ViewCentral.getInstance().getAdminViewFactory().getAllOwner();
         if (owners == null) return 0;
 //        System.out.println("Number of Owners: " + owners.size());
         return owners.size();
@@ -253,21 +252,21 @@ public class Admin_DashboardController implements Initializable {
 
     private int countSystemNumberOfRenter() {
 //        RenterDAO renterDAO = new RenterDAO();
-        List<Renter> renters = ModelCentral.getInstance().getAdminViewFactory().getAllRenter();
+        List<Renter> renters = ViewCentral.getInstance().getAdminViewFactory().getAllRenter();
         if (renters == null) return 0;
 //        System.out.println("Number of Renters: " + renters.size());
         return renters.size();
     }
 
     private int countSystemNumberOfHost() {
-        List<Host> host = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
+        List<Host> host = ViewCentral.getInstance().getAdminViewFactory().getAllHost();
         if (host == null) return 0;
         return host.size();
     }
 
     private int countSystemNumberOfAdmin() {
         AdminDAO adminDAO = new AdminDAO();
-        List<Admin> admins = ModelCentral.getInstance().getAdminViewFactory().getAllAdmin();
+        List<Admin> admins = ViewCentral.getInstance().getAdminViewFactory().getAllAdmin();
         if (admins == null) return 0;
 //        System.out.println("Number of Admins: " + admins.size());
         return admins.size();
@@ -304,7 +303,7 @@ public class Admin_DashboardController implements Initializable {
 
     /* Helpers method for the Property Objects Pie Chart */
     private int countCommercialProperties(){
-        List<CommercialProperty> commercialProperties = ModelCentral.getInstance().getAdminViewFactory().getAllCommercialProperty();
+        List<CommercialProperty> commercialProperties = ViewCentral.getInstance().getAdminViewFactory().getAllCommercialProperty();
 
         if (commercialProperties == null) return 0;
         System.out.println("Number of Commercial Properties: " + commercialProperties.size());
@@ -312,7 +311,7 @@ public class Admin_DashboardController implements Initializable {
     }
 
     private int countResidentialProperties(){
-        List<ResidentialProperty> residentialProperties = ModelCentral.getInstance().getAdminViewFactory().getAllResidentialProperty();
+        List<ResidentialProperty> residentialProperties = ViewCentral.getInstance().getAdminViewFactory().getAllResidentialProperty();
 
         if (residentialProperties == null) return 0;
         System.out.println("Number of Residential Properties: " + residentialProperties.size());
@@ -339,7 +338,7 @@ public class Admin_DashboardController implements Initializable {
     /* Helpers method for the Line Graph */
     private double calculatePastYearlyRevenue(int year){
         double total = 0;
-        List<Payment> payments = ModelCentral.getInstance().getAdminViewFactory().getAllPayment();
+        List<Payment> payments = ViewCentral.getInstance().getAdminViewFactory().getAllPayment();
 
         if (payments == null) return 0;
         for (Payment payment : payments){
@@ -353,7 +352,7 @@ public class Admin_DashboardController implements Initializable {
 
     /* Helpers method for the Estimated Yearly Revenue */
     private double calculateEstimatedYearlyRevenue() {
-        List<RentalAgreement> agreements = ModelCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
+        List<RentalAgreement> agreements = ViewCentral.getInstance().getAdminViewFactory().getAllRentalAgreement();
         if(agreements == null) return 0;
         double total = 0;
         if (agreements.isEmpty()) {return 0;}

@@ -67,6 +67,8 @@ public class Renter extends Person {
         this.subAgreementsProperty.setValue(this.subAgreements);
         this.agreementListProperty.setValue(this.agreementList);
         this.paymentsProperty.setValue(this.payments);
+        this.receivedNotificationsProperty.setValue(this.receivedNotifications);
+        this.sentNotificationsProperty.setValue(this.sentNotifications);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -138,4 +140,5 @@ public class Renter extends Person {
     public ObjectProperty<Set<Payment>> paymentsPropertyProperty() {
         return paymentsProperty;
     }
+
 }

@@ -4,13 +4,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Session;
 import org.rmit.view.Owner.OWNER_MENU_OPTION;
-import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -65,32 +63,32 @@ public class Owner_MenuController implements Initializable {
     }
 
     private void notifications() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.NOTIFICATION);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.NOTIFICATION);
     }
 
 
     private void logOut() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
-        ModelCentral.getInstance().getOwnerViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getOwnerViewFactory().resetView();
+        ViewCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.DASHBOARD);
         System.out.println("hallo!");
     }
 
     private void propertiesManager() {
         System.out.println("hallo! ich bin lam");
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
     }
 
     private void editProfile() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.EDIT_PROFILE);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void hostManager() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.HOST_MANAGER);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.HOST_MANAGER);
     }
 
 

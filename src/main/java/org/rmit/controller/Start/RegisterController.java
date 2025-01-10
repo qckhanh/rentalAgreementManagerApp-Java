@@ -13,7 +13,7 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.database.HostDAO;
 import org.rmit.database.OwnerDAO;
 import org.rmit.database.RenterDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;
@@ -92,7 +92,7 @@ public class RegisterController implements Initializable {
 
     void openLogin() {
         resetLabel();
-        ModelCentral.getInstance().getStartViewFactory().showLoginView();
+        ViewCentral.getInstance().getStartViewFactory().showLoginView();
     }
 
     private void validateInput(){
@@ -176,7 +176,7 @@ public class RegisterController implements Initializable {
             return;
         }
         if(!validator.validate()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             return;
         }
 
@@ -185,10 +185,10 @@ public class RegisterController implements Initializable {
             Renter newUser = new Renter();
             UserFactory(newUser);
             if(userDAO.add(newUser)){
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
             }
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
             }
@@ -197,9 +197,9 @@ public class RegisterController implements Initializable {
             HostDAO userDAO = new HostDAO();
             Host newUser = new Host();
             UserFactory(newUser);
-            if(userDAO.add(newUser)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
+            if(userDAO.add(newUser)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
             }
@@ -208,9 +208,9 @@ public class RegisterController implements Initializable {
             OwnerDAO userDAO = new OwnerDAO();
             Owner newUser = new Owner();
             UserFactory(newUser);
-            if(userDAO.add(newUser)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
+            if(userDAO.add(newUser)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Your account has been created. Please login");
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Something went wrong. Please try again");
                 registerAttempt++;
                 register();
             }

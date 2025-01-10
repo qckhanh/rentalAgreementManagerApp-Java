@@ -38,6 +38,8 @@ public class Host extends Person {
         this.propertiesManagedProperty.setValue(this.propertiesManaged);
         this.rentalAgreementsProperty.setValue(this.rentalAgreements);
         this.cooperatingOwnersProperty.setValue(this.cooperatingOwners);
+        this.receivedNotificationsProperty.setValue(this.receivedNotifications);
+        this.sentNotificationsProperty.setValue(this.sentNotifications);
     }
 
     public Host() {

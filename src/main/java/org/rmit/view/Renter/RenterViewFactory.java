@@ -10,7 +10,7 @@ import org.rmit.controller.Renter.RenterController;
 
 public class RenterViewFactory {
     String RENTER_PATH = "/org/rmit/demo/FXMLs/Renter/";
-    private ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItem;        // for tracking which menu option is selected
+    private ObjectProperty<RENTER_MENU_OPTION> selectedMenuItem;  // for tracking which menu option is selected
 
     private AnchorPane renter_editProfileView;
     private AnchorPane renter_dashboardView;
@@ -22,7 +22,7 @@ public class RenterViewFactory {
 
 
     public RenterViewFactory() {
-        renterSelectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
+        selectedMenuItem = new SimpleObjectProperty<>(RENTER_MENU_OPTION.DASHBOARD);      // default view
     }
 
     //start renter view when user login as renter
@@ -44,7 +44,6 @@ public class RenterViewFactory {
         }
         return renter_editProfileView;
     }
-
     public AnchorPane getRenter_NotificationView(){
         if (renter_notificationView == null){
             try {
@@ -55,8 +54,6 @@ public class RenterViewFactory {
         }
         return renter_notificationView;
     }
-
-
     public AnchorPane getRenter_dashboardView(){
         if (null == null){
             try {
@@ -98,7 +95,6 @@ public class RenterViewFactory {
         }
         return renter_makePaymentView;
     }
-
     public AnchorPane getRenter_makeRentalAgreementView(){
         if(renter_makeRentalAgreementView == null){
             try {
@@ -109,7 +105,6 @@ public class RenterViewFactory {
         }
         return renter_makeRentalAgreementView;
     }
-
 
     //helper method
     private void createStage(FXMLLoader loader) {
@@ -124,7 +119,6 @@ public class RenterViewFactory {
         stage.setResizable(false);
         stage. show();
     }
-
     public void resetView(){
         renter_editProfileView = null;
         renter_dashboardView = null;
@@ -136,14 +130,14 @@ public class RenterViewFactory {
     }
 
     //getter and setter
-    public RENTER_MENU_OPTION getRenterSelectedMenuItem() {
-        return renterSelectedMenuItem.get();
+    public RENTER_MENU_OPTION getSelectedMenuItem() {
+        return selectedMenuItem.get();
     }
-    public ObjectProperty<RENTER_MENU_OPTION> renterSelectedMenuItemProperty() {
-        return renterSelectedMenuItem;
+    public void setSelectedMenuItem(RENTER_MENU_OPTION selectedMenuItem) {
+        this.selectedMenuItem.set(selectedMenuItem);
+    }
+    public ObjectProperty<RENTER_MENU_OPTION> selectedMenuItemProperty() {
+        return selectedMenuItem;
     }
 
-    public void setRenterSelectedMenuItem(RENTER_MENU_OPTION renterSelectedMenuItem) {
-        this.renterSelectedMenuItem.set(renterSelectedMenuItem);
-    }
 }

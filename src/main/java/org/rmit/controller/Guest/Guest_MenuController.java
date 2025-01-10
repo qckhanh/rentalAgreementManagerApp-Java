@@ -3,17 +3,12 @@ package org.rmit.controller.Guest;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import org.kordamp.ikonli.feather.Feather;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.view.Guest.GUEST_MENU_OPTION;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static org.rmit.Helper.UIDecorator.REGISTER;
 
 public class Guest_MenuController implements Initializable {
 
@@ -46,35 +41,35 @@ public class Guest_MenuController implements Initializable {
     }
 
     private void browseProperty() {
-        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.BROWSE_PROPERTY);
+        ViewCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.BROWSE_PROPERTY);
     }
 
     private void signUp() {
-        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.REGISTER);
+        ViewCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.REGISTER);
         Stage currentStage = (Stage) logOut_btn.getScene().getWindow();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
-        ModelCentral.getInstance().getStartViewFactory().showRegisterView();
+        ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+        ViewCentral.getInstance().getStartViewFactory().startApplication();
+        ViewCentral.getInstance().getStartViewFactory().showRegisterView();
     }
 
     private void rentalManager() {
-        ModelCentral.getInstance().getStartViewFactory().confirmMessage("This feature is not available for guest" +
+        ViewCentral.getInstance().getStartViewFactory().confirmMessage("This feature is not available for guest" +
                 "Register now! to become a host and enjoy this feature");
     }
 
     private void browseUser() {
-        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.BROWSE_USER);
+        ViewCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.BROWSE_USER);
     }
 
     private void logOut() {
-        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.LOG_OUT);
+        ViewCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.LOG_OUT);
 
         Stage currentStage = (Stage) logOut_btn.getScene().getWindow();
-        ModelCentral.getInstance().getStartViewFactory().closeStage(currentStage);
-        ModelCentral.getInstance().getStartViewFactory().startApplication();
+        ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+        ViewCentral.getInstance().getStartViewFactory().startApplication();
     }
 
     private void dashboard() {
-        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.DASHBOARD);
     }
 }

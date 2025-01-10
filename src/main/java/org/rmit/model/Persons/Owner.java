@@ -35,6 +35,9 @@ public class Owner extends Person {
 
         this.hostsProperty.setValue(this.hosts);
         this.propertiesOwnedProperty.setValue(this.propertiesOwned);
+
+        this.receivedNotificationsProperty.setValue(this.receivedNotifications);
+        this.sentNotificationsProperty.setValue(this.sentNotifications);
     }
 
     public Owner() {

@@ -21,7 +21,7 @@ import org.rmit.Helper.UIDecorator;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Renter;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
@@ -50,7 +50,7 @@ public class RenterManagerController implements Initializable {
 
     private ObservableList<Renter> renterObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Renter> selectedRenter = new SimpleObjectProperty<>();
-    List<Renter> renters = ModelCentral.getInstance().getAdminViewFactory().getAllRenter();
+    List<Renter> renters = ViewCentral.getInstance().getAdminViewFactory().getAllRenter();
 
 //    Validator validator = new Validator();
     Label noneLabel = new Label();
@@ -167,14 +167,14 @@ public class RenterManagerController implements Initializable {
     private void deletePerson() {
         Renter renter = selectedRenter.get();
         if(renter == null){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a renter to delete");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a renter to delete");
             return;
         }
         if(renter.getAgreementList().size() != 0 || renter.getSubAgreements().size() != 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete renter with agreement");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Cannot delete renter with agreement");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this renter?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this renter?")) return;
 
         RenterDAO renterDAO = new RenterDAO();
         DatabaseUtil.warmUp();
@@ -182,9 +182,9 @@ public class RenterManagerController implements Initializable {
         if(isDeleted){
             renterObservableList.remove(renter);
             clearTextField();
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter deleted successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter deleted successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete renter. Please try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete renter. Please try again");
     }
 
     private void updatePerson() {
@@ -192,15 +192,15 @@ public class RenterManagerController implements Initializable {
         buildValidator(validatorUpdate, false);
 
         boolean isEditable = fullName_input.isEditable();
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "You now can edit the renter's information");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "You now can edit the renter's information");
         setEditableTextField(!isEditable);
         if(!isTextFieldChanged(selectedRenter.get())){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
             return;
         }
 
         if(validatorUpdate.validate()){
-            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this renter?")) return;
+            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this renter?")) return;
             Renter renter = selectedRenter.get();
             renter.setName(fullName_input.getText());
             renter.setContact(contact_input.getText());
@@ -211,12 +211,12 @@ public class RenterManagerController implements Initializable {
             boolean isUpdated = renterDAO.update(renter);
             if(isUpdated){
                 renterObservableList.set(renterObservableList.indexOf(renter), renter);
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter updated successfully");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter updated successfully");
             }
-            else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot update renter. Please try again");
+            else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot update renter. Please try again");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Invalid input. Please check again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Invalid input. Please check again");
         }
     }
 
@@ -244,7 +244,7 @@ public class RenterManagerController implements Initializable {
         Validator validator = new Validator();
         buildValidator(validator, true);
         if(!validator.validate()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Invalid input. Please check again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Invalid input. Please check again");
             return;
         }
 
@@ -254,15 +254,15 @@ public class RenterManagerController implements Initializable {
         renter.setName(fullName_input.getText());
         renter.setContact(contact_input.getText());
         renter.setDateOfBirth(dob_input.getValue());
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this renter?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this renter?")) return;
         warmUp();
         DatabaseUtil.warmUp();
         boolean isAdded = renterDAO.add(renter);
         if(isAdded){
             renterObservableList.add(renter);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter added successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Renter added successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot add renter. Please try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot add renter. Please try again");
     }
 
     private boolean isTextFieldChanged(Renter renter){

@@ -22,11 +22,16 @@ public class DatabaseUtil {
     }
 
     public static Session getSession() {
-        if(sessionFactory == null) {
-            sessionFactory = buildSessionFactory();
+        try{
+            if(sessionFactory == null) {
+                sessionFactory = buildSessionFactory();
+            }
+            currentSession = sessionFactory.openSession();
+            return currentSession;
         }
-        currentSession = sessionFactory.openSession();
-        return currentSession;
+        catch(Exception e){
+            return null;
+        }
     }
 
     public static Transaction getTransaction(Session session) {

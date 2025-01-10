@@ -13,7 +13,7 @@ import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.ResidentialPropertyDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.*;
 import org.rmit.model.Session;
@@ -348,37 +348,37 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void returnTableView() {
-        ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
+        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
     }
 
     private void addProperty() {
             DAOInterface dao = null;
             if (typeOfProperty_choiceBox.getValue() == PropertyType.COMMERCIAL) {
                 if (!validatorCP.validate()){
-                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                     return;
                 }
-                if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
+                if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
                 dao = new CommercialPropertyDAO();
                 CommercialProperty cp = new CommercialProperty();
                 CommercialPropertyFactory(cp);
                 for(byte[] img : selectedImages) cp.addImages(img);
 
-                if (dao.add(cp)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
-                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                if (dao.add(cp)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
+                else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
 
             } else if (typeOfProperty_choiceBox.getValue() == PropertyType.RESIDENTIAL) {
                 if (!validatorRP.validate()){
-                    ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                     return;
                 }
-                if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
+                if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
                 dao = new ResidentialPropertyDAO();
                 ResidentialProperty rp = new ResidentialProperty();
                 for(byte[] img : selectedImages) rp.addImages(img);
                 ResidentialPropertyFactory(rp);
-                if (dao.add(rp)) ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
-                else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                if (dao.add(rp)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
+                else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
             }
     }
 
@@ -436,7 +436,7 @@ public class Owner_AddPropertiesController implements Initializable {
 
     private void addImage() {
         if(selectedImages.size() >= 3) {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(
                     NOTIFICATION_TYPE.WARNING,
                     anchorPane,
                     "Maximum 3 images allowed"
@@ -450,18 +450,18 @@ public class Owner_AddPropertiesController implements Initializable {
                 currentImageIndex = totalImages - 1;
                 imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImages.get(currentImageIndex)));
                 totalImages++;
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
 
             }
             else {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must < 1MB");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must < 1MB");
             }
         }
     }
 
     private void prevImg_btn() {
         if(selectedImages.size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImages.size();
@@ -472,7 +472,7 @@ public class Owner_AddPropertiesController implements Initializable {
 
     private void nextImg_btn() {
         if(selectedImages.size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImages.size();

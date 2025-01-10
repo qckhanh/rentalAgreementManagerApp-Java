@@ -9,17 +9,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2MZ;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
-import org.rmit.model.Persons.Renter;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.PropertyStatus;
@@ -29,9 +26,6 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
-
-import static org.rmit.Helper.EntityGraphUtils.SimpleCommercialProperty;
-import static org.rmit.Helper.EntityGraphUtils.SimpleResidentialProperty;
 
 public class Host_ManagePropertyController implements Initializable {
     //preview
@@ -134,7 +128,7 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void saveChanges() {
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
         selectedProperty.get().setStatus(propertyStatusCbox.getValue());
         Property selected = selectedProperty.get();
         boolean isUpdated = false;
@@ -149,11 +143,11 @@ public class Host_ManagePropertyController implements Initializable {
         if (isUpdated) {
             int id = Integer.parseInt(selected.getId() + "");
             propertyMap.get(id).setStatus(selected.getStatus());
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Status updated successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Status updated successfully");
 
         }
         else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update status. Please try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update status. Please try again");
         }
     }
 
@@ -168,7 +162,7 @@ public class Host_ManagePropertyController implements Initializable {
     private void searchProperty() {
         if(search_input.getText().isBlank()) return;
         search_btn.setDisable(true);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Searching...");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Searching...");
         Set<Property> res = new HashSet<>();
         CommercialPropertyDAO dao = new CommercialPropertyDAO();
         List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
@@ -178,7 +172,7 @@ public class Host_ManagePropertyController implements Initializable {
         res.addAll(ans2);
         property_listView.setItems(getPropertyList(res));
 
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + res.size() + " property(s)");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + res.size() + " property(s)");
         search_btn.setDisable(false);
 //        search_input.clear();
     }
@@ -190,7 +184,7 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void unmanageProperty(Property property){
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
         manageProperty_btn.setDisable(true);
         ((Host)Session.getInstance().getCurrentUser()).removeProperty(property);
         managedProperties.get().remove(property);
@@ -198,10 +192,10 @@ public class Host_ManagePropertyController implements Initializable {
         DAOInterface dao = new HostDAO();
         boolean isUpdated =  dao.update(Session.getInstance().getCurrentUser());
         if(isUpdated){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully unmanaged property");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully unmanaged property");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to unmanage property");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to unmanage property");
         }
         manageProperty_btn.setDisable(false);
     }
@@ -209,7 +203,7 @@ public class Host_ManagePropertyController implements Initializable {
     private void requestManageProperty(int propertyID){
         Property property = propertyMap.get(propertyID);
         System.out.println(property);
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
         manageProperty_btn.setDisable(true);
         String content = String.format(
                 NotificationUtils.CONTENT_REQUEST_PROPERTY,
@@ -240,10 +234,10 @@ public class Host_ManagePropertyController implements Initializable {
         HostDAO hostDAO = new HostDAO();
         boolean isUpdated =  hostDAO.update(currentUser);
         if(isUpdated){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully requested manage property");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully requested manage property");
         }
         else{
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to request manage property");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to request manage property");
         }
         manageProperty_btn.setDisable(false);
     }
@@ -288,7 +282,7 @@ public class Host_ManagePropertyController implements Initializable {
     private void showPropertyDetail(Property property){
         clearDataProperty();
         int id = Integer.parseInt(property.getId()+"");
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loading property details...");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loading property details...");
 
         if(propertyMap.containsKey(id)){
             property = propertyMap.get(id);
@@ -302,7 +296,7 @@ public class Host_ManagePropertyController implements Initializable {
                 property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::residentalPropertyForSearching);
             }
         }
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loaded property details");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loaded property details");
         currentImageIndex = 0;
         selectedImage.set(property.getImages());
         if(selectedImage.get().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(currentImageIndex)));
@@ -336,7 +330,7 @@ public class Host_ManagePropertyController implements Initializable {
 
     private void prevImg_btn() {
         if(selectedImage.get().size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImage.get().size();
@@ -347,7 +341,7 @@ public class Host_ManagePropertyController implements Initializable {
 
     private void nextImg_btn() {
         if(selectedImage.get().size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImage.get().size();

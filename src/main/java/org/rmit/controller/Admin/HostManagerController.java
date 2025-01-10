@@ -20,7 +20,7 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Property.Property;
@@ -53,7 +53,7 @@ public class HostManagerController implements Initializable {
 
     private ObservableList<Host> personObservableList = FXCollections.observableArrayList();
     private ObjectProperty<Host> selectedPerson = new SimpleObjectProperty<>();
-    List<Host> persons = ModelCentral.getInstance().getAdminViewFactory().getAllHost();
+    List<Host> persons = ViewCentral.getInstance().getAdminViewFactory().getAllHost();
 
     Label noneLabel = new Label();
 //    Validator validator = new Validator();
@@ -171,23 +171,23 @@ public class HostManagerController implements Initializable {
     private void deletePerson() {
         Host person = selectedPerson.get();
         if(person == null){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a host to delete");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please select a host to delete");
             return;
         }
         if(person.getPropertiesManaged().size() > 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Host is managing properties");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Host is managing properties");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this host?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this host?")) return;
         HostDAO dao = new HostDAO();
         DatabaseUtil.warmUp();
         boolean isDeleted = dao.delete(person);
         if(isDeleted){
             personObservableList.remove(person);
             clearTextField();
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host deleted successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host deleted successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot delete host. Try again");
 
     }
 
@@ -199,15 +199,15 @@ public class HostManagerController implements Initializable {
         buildValidtor(updateValidator, false);
 
         if(!isTextFieldChanged(selectedPerson.get())){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
             return;
         }
         if(!updateValidator.validate()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             return;
         }
 
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this host?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to update this host?")) return;
         Host person = selectedPerson.get();
         person.setName(fullName_input.getText());
         person.setContact(contact_input.getText());
@@ -218,9 +218,9 @@ public class HostManagerController implements Initializable {
         boolean isUpdated = dao.update(person);
         if(isUpdated){
             personObservableList.set(personObservableList.indexOf(person), person);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host updated successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host updated successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot update host. Try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot update host. Try again");
     }
 
     private void createNewPerson() {
@@ -239,10 +239,10 @@ public class HostManagerController implements Initializable {
         Validator validatorCreate = new Validator();
         buildValidtor(validatorCreate, true);
         if (!validatorCreate.validate()){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this host?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to create this host?")) return;
 
         HostDAO dao = new HostDAO();
         Host person = new Host();
@@ -254,9 +254,9 @@ public class HostManagerController implements Initializable {
         boolean isAdded = dao.add(person);
         if(isAdded){
             personObservableList.add(person);
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host added successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host added successfully");
         }
-        else ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot add host. Try again");
+        else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Cannot add host. Try again");
     }
 
     private boolean isTextFieldChanged(Host person){

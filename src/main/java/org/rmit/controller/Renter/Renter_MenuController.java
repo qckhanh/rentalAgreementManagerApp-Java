@@ -4,12 +4,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.UIDecorator;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Session;
-import org.rmit.view.Host.HOST_MENU_OPTION;
 import org.rmit.view.Renter.RENTER_MENU_OPTION;
 
 import java.net.URL;
@@ -74,36 +72,36 @@ public class Renter_MenuController implements Initializable {
     }
 
     private void logOut(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
-        ModelCentral.getInstance().getRenterViewFactory().resetView();
-        ModelCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getRenterViewFactory().resetView();
+        ViewCentral.getInstance().getStartViewFactory().logOut(logOut_btn);
     }
 
     private void openDashboard(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.DASHBOARD);
     }
 
     private void editProfile(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.EDIT_PROFILE);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.EDIT_PROFILE);
     }
 
     private void paymentManager(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.PAYMENT_MANAGER);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.PAYMENT_MANAGER);
     }
 
     private void rentalManager(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.AGREEMENT_MANAGER);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.AGREEMENT_MANAGER);
     }
 
     private void makePayment(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.MAKE_PAYMENT);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.MAKE_PAYMENT);
     }
 
     private void makeAgreement(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.MAKE_RENTAL_AGREEMENT);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.MAKE_RENTAL_AGREEMENT);
     }
 
     private void openNotification(){
-        ModelCentral.getInstance().getRenterViewFactory().setRenterSelectedMenuItem(RENTER_MENU_OPTION.NOTIFICATION);
+        ViewCentral.getInstance().getRenterViewFactory().setSelectedMenuItem(RENTER_MENU_OPTION.NOTIFICATION);
     }
 }

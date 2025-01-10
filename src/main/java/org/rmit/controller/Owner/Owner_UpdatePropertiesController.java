@@ -14,7 +14,7 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Property.CommercialProperty;
 import org.rmit.model.Property.Property;
 import org.rmit.model.Property.PropertyStatus;
@@ -25,7 +25,6 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class Owner_UpdatePropertiesController implements Initializable {
@@ -110,7 +109,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
         decor();
         returnTableView_btn.setOnAction(e-> {
-            ModelCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
+            ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
         });
     }
 
@@ -344,21 +343,21 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
         if(selectedProperty.get() instanceof CommercialProperty) {
             if (!validatorCP.validate()) {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                 return;
             }
         }
         else if(selectedProperty.get() instanceof ResidentialProperty) {
             if (!validatorRP.validate()) {
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                 return;
             }
         }
         if(!isChange(selectedProperty.get())){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")){
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")){
             return;
         }
 
@@ -390,10 +389,10 @@ public class Owner_UpdatePropertiesController implements Initializable {
             isUpdated = rpDAO.update((ResidentialProperty) selectedProperty.get());
         }
         if(isUpdated) {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
         }
         else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
         }
         setDisableTextField(true);
         saveChange.setVisible(false);
@@ -464,7 +463,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
 
 
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Information loaded");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Information loaded");
 
     }
 
@@ -539,7 +538,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void addImage() {
         if(images.size() >= 3) {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Maximum 3 images allowed");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Maximum 3 images allowed");
         }
         else {
             String path = ImageUtils.openFileChooseDialog();
@@ -547,17 +546,17 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 images.add(ImageUtils.getByte(path));
                 currentImageIndex = images.size() - 1;
                 imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(currentImageIndex)));
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Image added successfully");
             }
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No image selected. Image size must be less than 1MB");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No image selected. Image size must be less than 1MB");
             }
         }
     }
 
     private void prevImg_btn() {
         if(images.size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = images.size();
@@ -568,7 +567,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     private void nextImg_btn() {
         if(images.size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = images.size();

@@ -12,7 +12,7 @@ import org.rmit.Helper.InputValidator;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.RenterDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
 import org.rmit.model.Session;
@@ -166,16 +166,16 @@ public class Renter_EditProfileController implements Initializable {
             // Validate before saving
             if (validator.validate()) {
                 // Invoke confirm message
-                boolean confirmed = ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
+                boolean confirmed = ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?");
                 if (confirmed) {
                     saveChanges();
                 }
             }
             else{
-                ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Please fill in all fields correctly");
             }
         } else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "You can now edit your profile");
             setDisableAll(false);
         }
     }
@@ -183,7 +183,7 @@ public class Renter_EditProfileController implements Initializable {
     private void updateAvatar() {
         SELECTED_PATH = ImageUtils.openFileChooseDialog();
         if(SELECTED_PATH == ImageUtils.DEFAULT_IMAGE){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No image selected. Image must be less than 1MB");
             return;
         }
         isAvatarChange = true;
@@ -192,7 +192,7 @@ public class Renter_EditProfileController implements Initializable {
 
     private void saveChanges() {
         // Save the changes to the currentUser object
-        DAOInterface dao = new RenterDAO();
+        DAOInterface<Renter> dao = new RenterDAO();
 
         currentUser.setName(newName_input.getText());
         currentUser.setUsername(newUsername_input.getText());
@@ -203,9 +203,9 @@ public class Renter_EditProfileController implements Initializable {
 
          boolean isUpdated =  dao.update((Renter)currentUser);
          if(isUpdated){
-             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
+             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
          } else {
-             ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
+             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
          }
          setDisableAll(true);
         edit_btn.setText("Edit");

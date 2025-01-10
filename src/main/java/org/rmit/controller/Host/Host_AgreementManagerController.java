@@ -4,19 +4,17 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import org.rmit.Helper.NotificationUtils;
 import org.rmit.Notification.NormalNotification;
-import org.rmit.Notification.Notification;
 import org.rmit.database.HostDAO;
 import org.rmit.model.Agreement.AgreementStatus;
 import org.rmit.model.Agreement.Payment;
 import org.rmit.model.Agreement.RentalAgreement;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Person;
 import org.rmit.model.Persons.Renter;
@@ -24,11 +22,8 @@ import org.rmit.model.Property.Property;
 import org.rmit.model.Property.RentalPeriod;
 import org.rmit.model.Session;
 
-import javax.management.relation.RelationNotFoundException;
 import java.net.URL;
-import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
@@ -190,7 +185,7 @@ public class Host_AgreementManagerController implements Initializable {
                     {
                         btn.setOnAction(e -> {
                             RentalAgreement data = getTableView().getItems().get(getIndex());
-                            if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure?")) return;
+                            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure?")) return;
                             String head = "Rent Payment Reminder";
                             int num = expectedPayments(data.getContractDate(), data.getPeriod()) - data.getPayments().size();
                             String content = "Please pay your rent. YOU ARE LACKING " + num + "PAYMENTS";

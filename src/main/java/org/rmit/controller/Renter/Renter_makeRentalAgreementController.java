@@ -1,7 +1,6 @@
 package org.rmit.controller.Renter;
 
 import atlantafx.base.layout.DeckPane;
-import atlantafx.base.theme.Theme;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
@@ -15,7 +14,7 @@ import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.database.ResidentialPropertyDAO;
-import org.rmit.model.ModelCentral;
+import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Renter;
@@ -94,7 +93,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
             if(newValue == null) return;
             host_comboBox.getItems().clear();
             host_comboBox.getItems().addAll(newValue.getHosts());
-            selectedImage.set(selectedProperty.get().getImages());
+            selectedImage.set(selectedProperty.get().getImages() == null ? new ArrayList<>() : selectedProperty.get().getImages());
             imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
             currentImageIndex = 0;
             if(selectedImage.get().size() != 0){
@@ -173,26 +172,25 @@ public class Renter_makeRentalAgreementController implements Initializable {
     }
 
     private void addRenterToList() {
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Sub-renter added");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Sub-renter added");
         selectedSubRenters.add(subRenter_listView.getSelectionModel().getSelectedItem());
     }
 
     private void removeSubRenter() {
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Sub-renter removed");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Sub-renter removed");
         selectedSubRenters.remove(subRenter_listView.getSelectionModel().getSelectedItem());
     }
 
     private void searchRenter() {
         if(subRenterSearch_input.getText().isBlank()) return;
         searchRenter_btn.setDisable(true);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Searching for renter...");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Searching for renter...");
         RenterDAO renterDAO = new RenterDAO();
         listSubrenter_found = renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(listSubrenter_found);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  listSubrenter_found.size() + " results(s) found");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  listSubrenter_found.size() + " results(s) found");
         searchRenter_btn.setDisable(false);
-
     }
 
     private void customCellFactory(){
@@ -305,7 +303,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
         list.addAll(residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleResidentialProperty));
         property_ComboBox.getItems().addAll(list);
-        ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
         searchProperty_btn.setDisable(false);
         propertySearch_input.setDisable(false);
         propertySearch_input.clear();
@@ -313,10 +311,10 @@ public class Renter_makeRentalAgreementController implements Initializable {
 
     private void submitRA() {
         if (!validator.validate()) {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please fill in all required fields");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please fill in all required fields");
             return;
         }
-        if(!ModelCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
+        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
         submit_btn.setDisable(true);
         HostDAO hostDAO = new HostDAO();
         int id = Integer.parseInt(selectedHost.get().getId() + "");
@@ -356,12 +354,13 @@ public class Renter_makeRentalAgreementController implements Initializable {
         RenterDAO renterDAO = new RenterDAO();
         boolean isUpdated =  renterDAO.update(currentUser);
         if(isUpdated){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
         } else {
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
         }
         clearAllField();
         submit_btn.setDisable(false);
+        currentUser.addSentNotification(request);
     };
 
     private void resetErrorLabels() {
@@ -392,8 +391,12 @@ public class Renter_makeRentalAgreementController implements Initializable {
     }
 
     private void prevImg_btn() {
+        if(selectedImage.get() == null){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            return;
+        }
         if(selectedImage.get().size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImage.get().size();
@@ -404,8 +407,12 @@ public class Renter_makeRentalAgreementController implements Initializable {
     }
 
     private void nextImg_btn() {
+        if(selectedImage.get() == null){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            return;
+        }
         if(selectedImage.get().size() == 0){
-            ModelCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
         int selectedImagesSize = selectedImage.get().size();
