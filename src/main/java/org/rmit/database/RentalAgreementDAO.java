@@ -191,14 +191,6 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
     }
 
 
-
-    public EntityGraph<RentalAgreement> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
-        personSubgraph(entityGraph.addSubgraph("host"));
-        return entityGraph;
-    }
-
     @Override
     public List<RentalAgreement> search(String keyword, Function<Session, EntityGraph<RentalAgreement>> entityGraphFunction) {
         return null;

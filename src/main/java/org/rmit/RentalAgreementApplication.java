@@ -15,7 +15,7 @@ public class RentalAgreementApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             InetAddress address = InetAddress.getByName("www.google.com"); // check internet connection
-            if (!address.isReachable(2000)){
+            if (!address.isReachable(5000)){
                 ViewCentral.getInstance().getStartViewFactory().startNoInternetConnection();
                 return;
             }
@@ -27,7 +27,6 @@ public class RentalAgreementApplication extends Application {
             ViewCentral.getInstance().getStartViewFactory().startNoInternetConnection();
         }
     }
-
     public static void main(String[] args) {
         launch(args);
     }

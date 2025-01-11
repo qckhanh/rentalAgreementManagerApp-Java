@@ -195,18 +195,6 @@ public class RenterDAO extends DAOInterface<Renter> implements ValidateLoginDAO<
         }
     }
 
-    public EntityGraph<Renter> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<Renter> entityGraph = emf.createEntityGraph(Renter.class);
-        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "password", "profileAvatar");
-
-        rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
-        rentalAgreementSubgraph(entityGraph.addSubgraph("subAgreements"));
-        paymentGraph(entityGraph.addSubgraph("payments"));
-        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
-        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
-        return entityGraph;
-    }
 
     @Override
     public List<Renter> search(String keyword, Function<Session, EntityGraph<Renter>> sessionEntityGraphFunction) {

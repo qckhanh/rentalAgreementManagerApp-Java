@@ -1,5 +1,7 @@
 package org.rmit.controller.Admin;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -9,9 +11,12 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.AdminDAO;
 import org.rmit.database.DAOInterface;
+import org.rmit.database.RenterDAO;
+import org.rmit.model.Persons.Renter;
 import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Admin;
 import org.rmit.model.Persons.Person;
@@ -192,7 +197,7 @@ public class Admin_EditProfileController implements Initializable {
 
     private void saveChanges() {
         // Save the changes to the currentUser object
-        DAOInterface dao = new AdminDAO();
+        DAOInterface<Admin> dao = new AdminDAO();
 
         currentUser.setName(newName_input.getText());
         currentUser.setUsername(newUsername_input.getText());
@@ -201,16 +206,23 @@ public class Admin_EditProfileController implements Initializable {
         currentUser.setPassword(newPassword_input.getText());
         if(SELECTED_PATH != ImageUtils.DEFAULT_IMAGE) currentUser.setProfileAvatar(ImageUtils.getByte(SELECTED_PATH));
 
-        boolean isUpdated =  dao.update((Admin)currentUser);
-        if(isUpdated){
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
-        } else {
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
-        }
-        setDisableAll(true);
-        edit_btn.setText("Edit");
-        edit_btn.setDisable(false);
-        isAvatarChange = false;
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Updating profile...");
+        Task<Boolean> task = TaskUtils.createTask(() ->{
+            Platform.runLater(() -> setDisableAll(true));
+            return dao.update((Admin) currentUser);
+        });
+        TaskUtils.run(task);
+        task.setOnSucceeded(e -> Platform.runLater(() -> {
+            if(task.getValue()){
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Profile updated successfully");
+            } else {
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Profile update failed. Try again");
+            }
+            setDisableAll(true);
+            edit_btn.setText("Edit");
+            edit_btn.setDisable(false);
+            isAvatarChange = false;
+        }));
     }
 
     private void checkForChanges() {

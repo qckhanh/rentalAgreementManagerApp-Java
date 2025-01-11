@@ -15,6 +15,7 @@ import org.rmit.Helper.NotificationUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
+import org.rmit.model.Persons.Owner;
 import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Property.CommercialProperty;
@@ -102,6 +103,15 @@ public class Host_ManagePropertyController implements Initializable {
         });
         saveChangesButton.setOnAction(e-> saveChanges());
 
+        property_listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                propertyStatusCbox.setDisable(true);
+                selectedProperty.set(newValue);
+                isManagingThisProperty(newValue);
+                showPropertyDetail(newValue);
+            }
+        });
+
         // Create clickable rows with a custom cell factory
         property_listView.setCellFactory(listView -> new ListCell<>() {
             @Override
@@ -114,13 +124,11 @@ public class Host_ManagePropertyController implements Initializable {
                 } else {
 //                    selectedProperty.set(property);
                     setText(property.getAddress()); // Display the address or another property field
-                    setOnMouseClicked(event -> {
-                        if (event.getClickCount() == 1) { // Single click
-                            selectedProperty.set(property);
-                            isManagingThisProperty(property);
-                            showPropertyDetail(property);
-                        }
-                    });
+//                    setOnMouseClicked(event -> {
+//                        if (event.getClickCount() == 1) { // Single click
+//
+//                        }
+//                    });
                 }
             }
         });
@@ -144,7 +152,6 @@ public class Host_ManagePropertyController implements Initializable {
             int id = Integer.parseInt(selected.getId() + "");
             propertyMap.get(id).setStatus(selected.getStatus());
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Status updated successfully");
-
         }
         else {
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update status. Please try again");
@@ -171,6 +178,10 @@ public class Host_ManagePropertyController implements Initializable {
         List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao2.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
         res.addAll(ans2);
         property_listView.setItems(getPropertyList(res));
+
+        for(Property p: res){
+            propertyMap.put(Integer.parseInt(p.getId() + ""), p);
+        }
 
         ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + res.size() + " property(s)");
         search_btn.setDisable(false);
@@ -223,9 +234,11 @@ public class Host_ManagePropertyController implements Initializable {
                         : NotificationUtils.DAFT_PROPERTY_RESIDENTIAL),
                 property.getId()
         );
+        OwnerDAO ownerDAO = new OwnerDAO();
+        Owner owner = ownerDAO.get(Integer.parseInt(property.getOwner().getId() + ""), EntityGraphUtils::OwnerForEmailSent);
         Request request = (Request) NotificationUtils.createRequest(
                 currentUser,
-                new ArrayList<>(Collections.singletonList(property.getOwner())),
+                new ArrayList<>(Collections.singletonList(owner)),
                 header,
                 content,
                 draftObject
@@ -267,11 +280,12 @@ public class Host_ManagePropertyController implements Initializable {
         clearDataResidential();
     }
 
-    private void isManagingThisProperty(Property property){
+    private void  isManagingThisProperty(Property property){
         for(Property p: managedProperties.get()){
             if(p.getId() == property.getId()){
                 UIDecorator.setDangerButton(manageProperty_btn, UIDecorator.DELETE(), "Unmanaged");
                 manageProperty_btn.setOnAction(event -> unmanageProperty(property));
+                propertyStatusCbox.setDisable(false);
                 return;
             }
         }
@@ -283,17 +297,16 @@ public class Host_ManagePropertyController implements Initializable {
         clearDataProperty();
         int id = Integer.parseInt(property.getId()+"");
         ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loading property details...");
-
         if(propertyMap.containsKey(id)){
             property = propertyMap.get(id);
         }else{
             if(property.getType().toString().equals("COMMERCIAL")){
                 CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-                property = (CommercialProperty)commercialPropertyDAO.get(id, EntityGraphUtils::commercialPropertyForSearching);
+                property = (CommercialProperty)commercialPropertyDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
             }
             else{
                 ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-                property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::residentalPropertyForSearching);
+                property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
             }
         }
         ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loaded property details");

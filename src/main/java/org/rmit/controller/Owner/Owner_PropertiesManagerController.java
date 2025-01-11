@@ -241,7 +241,7 @@ public class Owner_PropertiesManagerController implements Initializable {
         Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
         ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
         Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
-        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+//        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
         loadData(updatedProperties);
 
         properties_tableView.refresh();

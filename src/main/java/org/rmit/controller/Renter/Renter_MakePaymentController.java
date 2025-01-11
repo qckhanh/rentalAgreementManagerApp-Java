@@ -1,10 +1,12 @@
 package org.rmit.controller.Renter;
 
 import atlantafx.base.controls.ModalPane;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 
 import javafx.scene.control.*;
@@ -18,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.database.PaymentDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.model.Agreement.AgreementStatus;
@@ -191,19 +194,27 @@ public class Renter_MakePaymentController implements Initializable {
         newPayment.setDate(purchaseDate_datepicker.getValue());
         newPayment.setMainRenter((Renter) Session.getInstance().getCurrentUser());
         PaymentDAO dao = new PaymentDAO();
-        if (dao.add(newPayment)) {
-            clearLabels();
-            System.out.println("Payment successful");
-            RenterDAO renterDAO = new RenterDAO();
-            int id = (int)Session.getInstance().getCurrentUser().getId();
-            Renter currentRenter = renterDAO.get(id, EntityGraphUtils::RenterFULL);
-            Session.getInstance().setCurrentUser(currentRenter);
+        RenterDAO renterDAO = new RenterDAO();
+        int id = (int)Session.getInstance().getCurrentUser().getId();
+
+        Task<Boolean> paymentTask = TaskUtils.createTask(() -> dao.add(newPayment));
+        Task<Renter> updateRenter = TaskUtils.createTask(() -> renterDAO.get(id, EntityGraphUtils::RenterFULL));
+        updateRenter.setOnSucceeded(e -> Platform.runLater(() -> {
+            Session.getInstance().setCurrentUser(updateRenter.getValue());
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Purchased successfully");
-        } else {
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
-        }
-        submit_btn.setDisable(false);
-        clearAllFields();
+        }));
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Creating payment ....");
+        paymentTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            if (paymentTask.getValue()) {
+                clearLabels();
+                TaskUtils.run(updateRenter);
+            } else {
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
+            }
+            submit_btn.setDisable(false);
+            clearAllFields();
+        }));
+        TaskUtils.run(paymentTask);
     }
 
     private void clearAllFields() {

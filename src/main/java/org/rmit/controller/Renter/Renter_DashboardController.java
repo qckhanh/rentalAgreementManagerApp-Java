@@ -1,12 +1,15 @@
 package org.rmit.controller.Renter;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.model.Agreement.Payment;
@@ -66,10 +69,14 @@ public class Renter_DashboardController implements Initializable {
     private void refreshData() {
         RenterDAO renterDAO = new RenterDAO();
         int id = Integer.parseInt(Session.getInstance().getCurrentUser().getId()+"");
-        Renter renter = renterDAO.get(id, EntityGraphUtils::SimpleRenterFull);
-        agreementsNumber.setText(String.valueOf(renter.getAgreementList().size()));
-        paymentsNumber.setText(String.valueOf(renter.getPayments().size()));
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Date now up to date");
+        refreshButton.setDisable(true);
+        Task<Renter> renterTask = TaskUtils.createTask(() -> renterDAO.get(id, EntityGraphUtils::SimpleRenterFull));
+        renterTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            agreementsNumber.setText(String.valueOf(renterTask.getValue().getAgreementList().size()));
+            paymentsNumber.setText(String.valueOf(renterTask.getValue().getPayments().size()));
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Date now up to date");
+            refreshButton.setDisable(false);
+        }));
     }
 
     private TableColumn<Notification, ?> createColumn(String columnName, String propertyName) {

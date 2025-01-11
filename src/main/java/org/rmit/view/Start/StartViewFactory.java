@@ -1,10 +1,12 @@
 package org.rmit.view.Start;
 
 import atlantafx.base.controls.Notification;
+import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
@@ -187,6 +189,77 @@ public class StartViewFactory {
         );
         autoDismiss.setCycleCount(1); // Execute once
         autoDismiss.play();
+
+
+        Timeline slideIn = Animations.slideInDown(notification, Duration.millis(250));
+        if (!pane.getChildren().contains(notification)) {
+            pane.getChildren().add(notification);
+        }
+        slideIn.playFromStart();
+
+    }
+
+    public void standOnNotification(NOTIFICATION_TYPE type, Pane pane, String message){
+        if (pane.getChildren().size() > 0) {
+            for (Node node : pane.getChildren()) {
+                if (node instanceof Notification) {
+                    pane.getChildren().remove(node);
+                    break;
+                }
+            }
+        }
+
+        FontIcon icon = null;
+        String style = null;
+
+        if(type == NOTIFICATION_TYPE.SUCCESS){
+            icon = new FontIcon(Material2OutlinedAL.CHECK_CIRCLE);
+            style = Styles.SUCCESS;
+        } else if (type == NOTIFICATION_TYPE.ERROR){
+            icon = UIDecorator.FAIL();
+            style = Styles.DANGER;
+        } else if (type == NOTIFICATION_TYPE.INFO){
+            icon = UIDecorator.INFO();
+            style = Styles.ACCENT;
+        }
+        else if (type == NOTIFICATION_TYPE.WARNING){
+            icon = UIDecorator.WARNING();
+            style = Styles.WARNING;
+        }
+
+
+        Notification notification = new Notification(
+                message,
+                icon
+        );
+        notification.getStyleClass().addAll(
+                style, Styles.ELEVATED_1
+        );
+
+        notification.setPrefHeight(Region.USE_PREF_SIZE);
+        notification.setMaxHeight(Region.USE_PREF_SIZE);
+//        StackPane.setAlignment(notification, Pos.BOTTOM_LEFT);
+
+        notification.setLayoutY(10); // 10px from the top
+        notification.setLayoutX(pane.getWidth() - notification.getPrefWidth() - 10); // 10px from the right
+
+        // Listen to the width and height changes of the pane
+        pane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            notification.setLayoutX(pane.getWidth() - notification.getPrefWidth() - 10); // Recalculate X position
+        });
+
+        pane.heightProperty().addListener((obs, oldVal, newVal) -> {
+            notification.setLayoutY(pane.getHeight() - notification.getPrefHeight() - 10); // Recalculate Y position
+        });
+
+        StackPane.setMargin(notification, new Insets(10, 10, 0, 0));
+
+
+        notification.setOnClose(e -> {
+            Timeline out = Animations.slideOutUp(notification, Duration.millis(300));
+            out.setOnFinished(f -> pane.getChildren().remove(notification));
+            out.playFromStart();
+        });
 
 
         Timeline slideIn = Animations.slideInDown(notification, Duration.millis(250));
