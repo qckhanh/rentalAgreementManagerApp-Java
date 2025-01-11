@@ -1,3 +1,21 @@
 Manifest-Version: 1.0
-Main-Class: org.rmit.RentalAgreementApplication
+Main-Class: org.rmit.Main
+Class-Path: jakarta.xml.bind-api-4.0.0.jar javafx-fxml-17.0.6-win.jar hi
+ bernate-c3p0-6.5.2.Final.jar byte-buddy-1.14.15.jar mchange-commons-jav
+ a-0.2.19.jar istack-commons-runtime-4.1.1.jar slf4j-simple-2.0.9.jar ha
+ mcrest-core-1.3.jar jaxb-core-4.0.2.jar ikonli-fontawesome5-pack-12.3.1
+ .jar javafx-controls-17.0.6.jar javafx-base-17.0.6-win.jar javafx-graph
+ ics-17.0.6-win.jar angus-activation-2.0.0.jar classmate-1.5.1.jar ikonl
+ i-material2-pack-12.3.1.jar testfx-core-4.0.16-alpha.jar jboss-logging-
+ 3.5.0.Final.jar fontawesomefx-commons-9.1.2.jar javafx-graphics-17.0.6.
+ jar javafx-fxml-17.0.6.jar txw2-4.0.2.jar validatorfx-0.5.0.jar javafx-
+ controls-17.0.6-win.jar assertj-core-3.13.2.jar postgresql-42.7.3.jar t
+ estfx-junit5-4.0.16-alpha.jar jakarta.activation-api-2.1.0.jar javafx-b
+ ase-17.0.6.jar jandex-3.1.2.jar ikonli-javafx-12.3.1.jar c3p0-0.9.5.5.j
+ ar ikonli-feather-pack-12.3.1.jar hibernate-core-6.5.2.Final.jar jakart
+ a.annotation-api-2.1.1.jar atlantafx-base-2.0.1.jar jaxb-runtime-4.0.2.
+ jar antlr4-runtime-4.13.0.jar fontawesomefx-fontawesome-4.7.0-9.1.2.jar
+  slf4j-api-2.0.9.jar jakarta.transaction-api-2.0.1.jar hibernate-common
+ s-annotations-6.0.6.Final.jar ikonli-core-12.3.1.jar checker-qual-3.42.
+ 0.jar jakarta.inject-api-2.0.1.jar jakarta.persistence-api-3.1.0.jar
 
