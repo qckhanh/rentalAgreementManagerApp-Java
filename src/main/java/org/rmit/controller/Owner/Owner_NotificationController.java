@@ -1,13 +1,16 @@
 package org.rmit.controller.Owner;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.NormalNotification;
 import org.rmit.Notification.Notification;
@@ -29,6 +32,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
 import static org.rmit.view.Host.ROLE_FILTER.*;
@@ -55,6 +60,10 @@ public class Owner_NotificationController implements Initializable {
     public ObjectProperty<NOTI_TYPE_FILTER> notiTypeProperty = new SimpleObjectProperty<>(NOTI_TYPE_FILTER.NONE);
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Owner> currentUser = new SimpleObjectProperty<>((Owner) Session.getInstance().getCurrentUser());
+
+    public Host host;
+    public Property property;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -166,80 +175,132 @@ public class Owner_NotificationController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to approve this request?")) return;
 
         currentUser.get().acceptRequest(request);
+        request.setAllApproved(true);
         int draftID = NotificationUtils.getDraftID(request.getDraftObject());
         String draftType = NotificationUtils.getDraftType(request.getDraftObject());
         HostDAO hostDAO = new HostDAO();
         OwnerDAO ownerDAO = new OwnerDAO();
-        Property property = null;
 
-        Host host = hostDAO.get(Integer.parseInt(request.getSender().getId() + ""), EntityGraphUtils::SimpleHostFull);
 
         if(draftType.equals("CommercialProperty") || draftType.equals("ResidentialProperty")){
-            if(draftType.equals("CommercialProperty")){
-                CommercialPropertyDAO dao = new CommercialPropertyDAO();
-                property = (CommercialProperty) dao.get(draftID, EntityGraphUtils::SimpleCommercialProperty);
-            }
-            else{
-                ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
-                property = (ResidentialProperty) dao.get(draftID, EntityGraphUtils::SimpleResidentialProperty);
-            }
+            CountDownLatch latch = new CountDownLatch(2);
+            Task<Boolean> updateHostTask = TaskUtils.createTask(() -> hostDAO.update(host));
+            Task<Host> hostTask = TaskUtils.createTask(() -> hostDAO.get(Integer.parseInt(request.getSender().getId() + ""), EntityGraphUtils::SimpleHostFull));        // this
+            Task<Property> propertyTask = TaskUtils.createTask(() -> {
+                if(draftType.equals("CommercialProperty")){
+                    CommercialPropertyDAO dao = new CommercialPropertyDAO();
+                    return dao.get(draftID, EntityGraphUtils::SimpleCommercialProperty);              // this
+                }
+                else{
+                    ResidentialPropertyDAO dao = new ResidentialPropertyDAO();
+                    return dao.get(draftID, EntityGraphUtils::SimpleResidentialProperty);        // this
+                }
+            });
 
-            if(property == null){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                        NOTIFICATION_TYPE.ERROR,
-                        anchorPane,
-                        "Cannot found property with ID: " + draftID + ". Cannot approve request"
-                );
-                denyRequest();
-                return;
-            }
-            host.addProperty(property);
-            boolean isUpadated = hostDAO.update(host);
-            if(!isUpadated){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                        NOTIFICATION_TYPE.ERROR,
-                        anchorPane,
-                        "Fail to add property to host. Please try again"
-                );
-                return;
-            }
-            String header = String.format(
-                    NotificationUtils.HEADER_REQUEST_PROPERTY,
-                    property.getId(),
-                    property.getAddress()
-            );
+            TaskUtils.run(hostTask);
+            TaskUtils.run(propertyTask);
 
-            String content = String.format(
-                    NotificationUtils.CONTENT_APPROVE_PROPERTY,
-                    request.getSender().getName(),
-                    currentUser.get().getName(),
-                    property.getId(),
-                    property.getAddress()
-            );
-            NormalNotification notification = (NormalNotification) NotificationUtils.createNormalNotification(
-                    currentUser.get(),
-                    Arrays.asList(request.getSender()),
-                    header,
-                    content
-            );
-            currentUser.get().sentNotification(notification);
-            boolean isSent =  ownerDAO.update(currentUser.get());
-            NotificationDAO notificationDAO = new NotificationDAO();
-            notificationDAO.update(notification);
-            if(isSent){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                        NOTIFICATION_TYPE.SUCCESS,
-                        anchorPane,
-                        "Notification successfully sent"
-                );
-            }
-            else{
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                        NOTIFICATION_TYPE.ERROR,
-                        anchorPane,
-                        "Notification failed to send. Please try again"
-                );
-            }
+            hostTask.setOnSucceeded(e -> Platform.runLater(() -> {
+                host = hostTask.getValue();
+                latch.countDown();
+            }));
+            propertyTask.setOnSucceeded(e -> Platform.runLater(() -> {
+                property = propertyTask.getValue();
+                latch.countDown();
+            }));
+
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Approving request ...");
+
+            Callable<Void> task = () -> {
+                try{
+                    if(property == null){
+                         Platform.runLater(() -> {
+                             ViewCentral.getInstance().getStartViewFactory().pushNotification(
+                                     NOTIFICATION_TYPE.ERROR,
+                                     anchorPane,
+                                     "Cannot found property with ID: " + draftID + ". Cannot approve request"
+                             );
+                             denyRequest();
+                         });
+                         return null;
+                    }
+                    host.addProperty(property);
+                    TaskUtils.run(updateHostTask);
+                    updateHostTask.setOnSucceeded(e -> Platform.runLater(() -> {
+                        if(updateHostTask.getValue()){
+                            ViewCentral.getInstance().getStartViewFactory().pushNotification(
+                                    NOTIFICATION_TYPE.SUCCESS,
+                                    anchorPane,
+                                    "Property successfully added to host"
+                            );
+
+                            String header = String.format(
+                                    NotificationUtils.HEADER_REQUEST_PROPERTY,
+                                    property.getId(),
+                                    property.getAddress()
+                            );
+
+                            String content = String.format(
+                                    NotificationUtils.CONTENT_APPROVE_PROPERTY,
+                                    request.getSender().getName(),
+                                    currentUser.get().getName(),
+                                    property.getId(),
+                                    property.getAddress()
+                            );
+                            NormalNotification notification = (NormalNotification) NotificationUtils.createNormalNotification(
+                                    currentUser.get(),
+                                    Arrays.asList(new HostDAO().get(Integer.parseInt(request.getSender().getId() + ""), EntityGraphUtils::HostForEmailSent)),        // this
+                                    header,
+                                    content
+                            );
+                            currentUser.get().sentNotification(notification);
+
+
+                            Task<Boolean> updateRequest = TaskUtils.createTask(() -> {
+                                return new NotificationDAO().update(request);                                  // this
+                            });
+                            Task<Boolean> ownerUpdate = TaskUtils.createTask(() -> ownerDAO.update(currentUser.get()));                   // this
+                            Task<Boolean> notificationUpdate = TaskUtils.createTask(() -> {
+                                NotificationDAO notificationDAO = new NotificationDAO();
+                                return notificationDAO.update(notification);                                  // this
+                            });
+                            TaskUtils.run(ownerUpdate);
+                            TaskUtils.run(notificationUpdate);
+//                            TaskUtils.run(updateRequest);
+                            ownerUpdate.setOnSucceeded(e1 -> Platform.runLater(() -> {
+                                if(ownerUpdate.getValue()){
+                                    ViewCentral.getInstance().getStartViewFactory().pushNotification(
+                                            NOTIFICATION_TYPE.SUCCESS,
+                                            anchorPane,
+                                            "Notification successfully sent"
+                                    );
+                                    TaskUtils.run(updateRequest);
+                                }
+                                else{
+                                    ViewCentral.getInstance().getStartViewFactory().pushNotification(
+                                            NOTIFICATION_TYPE.ERROR,
+                                            anchorPane,
+                                            "Notification failed to send. Please try again"
+                                    );
+                                }
+                            }));
+                        }
+                        else{
+                            ViewCentral.getInstance().getStartViewFactory().pushNotification(
+                                    NOTIFICATION_TYPE.ERROR,
+                                    anchorPane,
+                                    "Fail to add property to host. Please try again"
+                            );
+                        }
+                    }));
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            };
+            TaskUtils.countDown(latch, task);
         }
 
     }
@@ -251,36 +312,23 @@ public class Owner_NotificationController implements Initializable {
             return;
         }
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to deny this request?")) return;
-
         currentUser.get().denyRequest(request);
-        String header = "DENY REQUEST";
-        String content = "Dear %s, \n"
-                + "Your request to manage the property with ID: "+ NotificationUtils.getDraftID(request.getDraftObject())
-                + " has been denied by " + currentUser.get().getName();
+        OwnerDAO hostDAO = new OwnerDAO();
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Denying request...");
 
-        NormalNotification notification = (NormalNotification) NotificationUtils.createNormalNotification(
-                currentUser.get(),
-                Arrays.asList(request.getSender()),
-                header,
-                content
-        );
-        currentUser.get().sentNotification(notification);
-        OwnerDAO ownerDAO = new OwnerDAO();
-        boolean isUpdated =  ownerDAO.update(currentUser.get());
-        if(isUpdated){
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                    NOTIFICATION_TYPE.SUCCESS,
-                    anchorPane,
-                    "Notification successfully sent");
-        }
-        else{
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(
-                    NOTIFICATION_TYPE.ERROR,
-                    anchorPane,
-                    "Notification failed to send. Please try again"
-            );
-        }
+        Task<Boolean> update = TaskUtils.createTask(() -> new NotificationDAO().update(request));
+        TaskUtils.run(update);
 
+        update.setOnSucceeded(e -> Platform.runLater(() -> {
+            if(update.getValue()){
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Request denied successfully");
+                Task<Boolean> update2 = TaskUtils.createTask(() -> new OwnerDAO().update(currentUser.get()));
+                TaskUtils.run(update2);
+            }
+            else{
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Fail to deny request. Please try again");
+            }
+        }));
     }
 
     private void deleteNoti() {

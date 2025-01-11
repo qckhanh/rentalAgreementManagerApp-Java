@@ -44,12 +44,8 @@ public class Request extends Notification {
 
     //Helper
     public boolean approve(Person receiver) {
-        if(totalReceivers <= 0) return false;
-        totalReceivers--;
-        if(totalReceivers == 0) {
-            isAllApproved = true;
-            isAllApprovedP.set(this.isAllApproved);
-        }
+        isAllApproved = true;
+        isAllApprovedP.set(this.isAllApproved);
         return true;
     }
     public boolean deny(Person receiver) {

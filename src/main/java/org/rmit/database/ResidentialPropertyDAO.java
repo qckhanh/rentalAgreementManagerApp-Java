@@ -176,52 +176,6 @@ public class ResidentialPropertyDAO extends DAOInterface<ResidentialProperty> {
         return Collections.emptyList(); // Fallback return (should not reach here)
     }
 
-
-
-    public EntityGraph<ResidentialProperty> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<ResidentialProperty> entityGraph = emf.createEntityGraph(ResidentialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "totalRoom", "totalBedroom", "isPetAllowed","hasGarden"); // Add only the name of the Owner
-
-        personSubgraph(entityGraph.addSubgraph("owner"));
-        personSubgraph(entityGraph.addSubgraph("hosts"));
-
-
-        return entityGraph;
-    }
-
-    @Override
-    protected <T extends Person> void personSubgraph(Subgraph<T> graph){
-        super.personSubgraph(graph);
-        notificationGraph(graph.addSubgraph("receivedNotifications"));
-    }
-
-//    @Override
-//    public List<ResidentialProperty> search(String keyword, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
-//        Session session = DatabaseUtil.getSession();
-//        List<ResidentialProperty> result = Collections.emptyList(); // Properly initialized
-//
-//        try {
-//            // JPQL to search by address (partial match) or ID (exact match)
-//            String jpql = "SELECT c FROM ResidentialProperty c " +
-//                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
-//                    "OR c.id = :idKeyword";
-//
-//            result = session.createQuery(jpql, ResidentialProperty.class)
-//                    .setMaxResults(10) // Limit results
-//                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
-//                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
-//                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))  // Apply EntityGraph
-//                    .list();
-//            DatabaseUtil.shutdown(session);
-//        } catch (Exception e) {
-//            e.printStackTrace(); // Replace with proper logging
-//        } finally {
-//            DatabaseUtil.shutdown(session); // Ensure session is closed
-//        }
-//        return result;
-//    }
-
     @Override
     public List<ResidentialProperty> search(String keyword, Function<Session, EntityGraph<ResidentialProperty>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();

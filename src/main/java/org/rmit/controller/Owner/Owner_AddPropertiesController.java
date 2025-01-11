@@ -1,7 +1,9 @@
 package org.rmit.controller.Owner;
 
 import atlantafx.base.layout.DeckPane;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -9,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
 import org.rmit.Helper.ImageUtils;
 import org.rmit.Helper.InputValidator;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.DAOInterface;
@@ -352,20 +355,27 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void addProperty() {
-            DAOInterface dao = null;
             if (typeOfProperty_choiceBox.getValue() == PropertyType.COMMERCIAL) {
                 if (!validatorCP.validate()){
                     ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                     return;
                 }
                 if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
-                dao = new CommercialPropertyDAO();
+                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
                 CommercialProperty cp = new CommercialProperty();
                 CommercialPropertyFactory(cp);
                 for(byte[] img : selectedImages) cp.addImages(img);
 
-                if (dao.add(cp)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
-                else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                Task<Boolean> addProperty = TaskUtils.createTask(() -> commercialPropertyDAO.add(cp));
+                TaskUtils.run(addProperty);
+                addProperty.setOnSucceeded(e -> Platform.runLater(() -> {
+                    if (addProperty.getValue()){
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Commercial property successfully created");
+                    }
+                    else{
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                    }
+                }));
 
             } else if (typeOfProperty_choiceBox.getValue() == PropertyType.RESIDENTIAL) {
                 if (!validatorRP.validate()){
@@ -373,12 +383,20 @@ public class Owner_AddPropertiesController implements Initializable {
                     return;
                 }
                 if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Save changes?")) return;
-                dao = new ResidentialPropertyDAO();
+                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
                 ResidentialProperty rp = new ResidentialProperty();
                 for(byte[] img : selectedImages) rp.addImages(img);
                 ResidentialPropertyFactory(rp);
-                if (dao.add(rp)) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "New property created");
-                else ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                Task<Boolean> addProperty = TaskUtils.createTask(() -> residentialPropertyDAO.add(rp));
+                TaskUtils.run(addProperty);
+                addProperty.setOnSucceeded(e -> Platform.runLater(() -> {
+                    if (addProperty.getValue()){
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Residential property successfully created");
+                    }
+                    else{
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to create new property. Try again");
+                    }
+                }));
             }
     }
 
@@ -460,7 +478,7 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void prevImg_btn() {
-        if(selectedImages.size() == 0){
+        if(selectedImages.size() == 0 || selectedImages == null){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }
@@ -471,7 +489,7 @@ public class Owner_AddPropertiesController implements Initializable {
     }
 
     private void nextImg_btn() {
-        if(selectedImages.size() == 0){
+        if(selectedImages.size() == 0 || selectedImages == null){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No images to display");
             return;
         }

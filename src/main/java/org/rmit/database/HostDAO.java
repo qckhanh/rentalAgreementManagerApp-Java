@@ -207,19 +207,6 @@ public class HostDAO extends DAOInterface<Host> implements ValidateLoginDAO<Host
         }
     }
 
-    public EntityGraph<Host> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
-
-        propertySubgraph(entityGraph.addSubgraph("propertiesManaged"));
-        personSubgraph(entityGraph.addSubgraph("cooperatingOwners"));
-        rentalAgreementSubgraph(entityGraph.addSubgraph("rentalAgreements"));
-        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
-        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
-
-        return entityGraph;
-    }
-
     @Override
     public List<Host> search(String keyword, Function<Session, EntityGraph<Host>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();

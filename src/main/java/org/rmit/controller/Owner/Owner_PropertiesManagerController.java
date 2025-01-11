@@ -1,10 +1,12 @@
 package org.rmit.controller.Owner;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -12,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.OwnerDAO;
@@ -25,9 +28,7 @@ import org.rmit.view.Owner.OWNER_MENU_OPTION;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public class Owner_PropertiesManagerController implements Initializable {
@@ -46,6 +47,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     public Button addPropertyButton;
     public Button updatePropertyButton;
     public Button deletePropertyButton;
+    public static Map<Integer, Property> propertyMap = new HashMap<>();
 
 
     @Override
@@ -163,8 +165,8 @@ public class Owner_PropertiesManagerController implements Initializable {
 
         updatePropertyButton.setOnAction(e-> {
             updateProperty();
-            refreshData();
-            properties_tableView.refresh();
+//            refreshData();
+//            properties_tableView.refresh();
         });
 
         refresh.setOnAction(e -> {
@@ -176,12 +178,17 @@ public class Owner_PropertiesManagerController implements Initializable {
     private void refreshData() {
         OwnerDAO ownerDAO = new OwnerDAO();
         int id = Integer.parseInt(currentUser.get().getId()+"");
-        Owner owner = ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull);
-        Set<Property> updatedProperties = owner.getPropertiesOwned();
-        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
-        loadData(updatedProperties);
-        properties_tableView.refresh();
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Refreshing data ... ");
+        Task<Owner> task = TaskUtils.createTask(() -> ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull));
+        TaskUtils.run(task);
+        task.setOnSucceeded(e -> Platform.runLater(() -> {
+            Owner owner = task.getValue();
+            Set<Property> updatedProperties = owner.getPropertiesOwned();
+            properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
+            loadData(updatedProperties);
+            properties_tableView.refresh();
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
+        }));
     }
 
     private void decor(){
@@ -192,7 +199,7 @@ public class Owner_PropertiesManagerController implements Initializable {
     }
 
     private void deleteProperty(){
-        Property selectedProperty = (Property) properties_tableView.getSelectionModel().getSelectedItem();
+        Property selectedProperty = properties_tableView.getSelectionModel().getSelectedItem();
         if(selectedProperty == null){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please select a property to delete");
             return;
@@ -205,25 +212,55 @@ public class Owner_PropertiesManagerController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
         boolean success = false;
         int id = Integer.parseInt(selectedProperty.getId()+"");
+        CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+        ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
 
-        if (selectedProperty instanceof ResidentialProperty) {
-            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            ResidentialProperty rp = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
-            if (rpDAO.delete(rp)) success = true;
-        } else if (selectedProperty instanceof CommercialProperty) {
-            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            CommercialProperty cp = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
-            if (cpDAO.delete(cp)) success = true;
-        }
+        Task<Property> propertyTaskLoad = TaskUtils.createTask(() -> {
+//            if(propertyMap.containsKey(id)) {
+//                return propertyMap.get(id);
+//            }
+            if(selectedProperty instanceof CommercialProperty) {
+                return cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+            }
+            else if(selectedProperty instanceof ResidentialProperty) {
+                return rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+            }
+            return null;
+        });
+        TaskUtils.run(propertyTaskLoad);
+        propertyTaskLoad.setOnSucceeded(e -> Platform.runLater(() -> {
+            Property p = propertyTaskLoad.getValue();
+            if(p == null) return;
+            if(p instanceof CommercialProperty){
+                Task<Boolean> task = TaskUtils.createTask(() -> cpDAO.delete((CommercialProperty) p));
+                TaskUtils.run(task);
+                task.setOnSucceeded(e1 -> {
+                    if(task.getValue()) {
+                        properties_tableView.getItems().remove(selectedProperty);
+                        properties_tableView.refresh();
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property deleted successfully");
+                    }
+                    else{
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to delete property. Try again later");
+                    }
+                });
 
-        if (success) {
-            properties_tableView.getItems().remove(selectedProperty);
-            properties_tableView.refresh();
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property deleted successfully");
-        }
-        else{
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to delete property. Try again later");
-        }
+            }
+            else if(p instanceof ResidentialProperty){
+                Task<Boolean> task = TaskUtils.createTask(() -> rpDAO.delete((ResidentialProperty) p));
+                TaskUtils.run(task);
+                task.setOnSucceeded(e1 -> {
+                    if(task.getValue()) {
+                        properties_tableView.getItems().remove(selectedProperty);
+                        properties_tableView.refresh();
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property deleted successfully");
+                    }
+                    else{
+                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to delete property. Try again later");
+                    }
+                });
+            }
+        }));
     }
 
     private void addProperty() {
@@ -238,13 +275,43 @@ public class Owner_PropertiesManagerController implements Initializable {
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Please select a property to update");
             return;
         }
-        Owner_UpdatePropertiesController.setSelectedProperty(selectedProperty);
-        ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
-        Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
-        properties_tableView.setItems(FXCollections.observableArrayList(updatedProperties));
-        loadData(updatedProperties);
+        System.out.println(selectedProperty);
+        int id = Integer.parseInt(selectedProperty.getId() + "");
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Loading property ...");
+        Task<Property> propertyTaskLoad = TaskUtils.createTask(() -> {
+            if(propertyMap.containsKey(id)) {
+                return (Property) propertyMap.get(id);
+            }
+            if(selectedProperty instanceof CommercialProperty) {
+                CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+                return (Property) cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+            }
+            else if(selectedProperty instanceof ResidentialProperty) {
+                ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+                return (Property)rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+            }
+            return null;
+        });
+        TaskUtils.run(propertyTaskLoad);
+        propertyTaskLoad.setOnSucceeded(e -> Platform.runLater(() -> {
+            propertyMap.put(id, propertyTaskLoad.getValue());
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property loaded successfully");
+            Owner_UpdatePropertiesController.setSelectedProperty(propertyTaskLoad.getValue());
+            ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.UPDATE_PROPERTY);
+            System.out.println("Property loaded successfully");
+            Set<Property> updatedProperties = ((Owner) currentUser.get()).getPropertiesOwned();
+            loadData(updatedProperties);
+            properties_tableView.refresh();
+        }));
 
-        properties_tableView.refresh();
+        propertyTaskLoad.setOnFailed(e -> {
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to load property. Try again later");
+        });
+        propertyTaskLoad.setOnCancelled(e -> {
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to load property  2. Try again later");
+        });
+        System.out.println("button clicked 2");
+
     }
 
     private Set<Property> noFilter() {
@@ -253,6 +320,7 @@ public class Owner_PropertiesManagerController implements Initializable {
 
     private void loadData(Set<Property> propertySet) {
         propertiesObservableList.setAll(propertySet);
+        properties_tableView.setItems(propertiesObservableList);
     }
 
     private <T> TableColumn<Property, String> createColumn(String columnName, Function<Property, T> propertyExtractor) {

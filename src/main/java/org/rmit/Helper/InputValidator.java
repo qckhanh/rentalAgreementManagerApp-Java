@@ -40,19 +40,19 @@ public class InputValidator {
             return false;
         }
         if(!isCheckinDB) return true;
-        if (!DAOInterface.isValidUsername(Admin.class, username)) {
+        if (!DAOInterface.isExistedUsername(Admin.class, username)) {
             setLabelError(username_err, RED, "Username already exists");
             return false;
         }
-        if (!DAOInterface.isValidUsername(Renter.class, username)) {
+        if (!DAOInterface.isExistedUsername(Renter.class, username)) {
             setLabelError(username_err, RED, "Username already exists");
             return false;
         }
-        if (!DAOInterface.isValidUsername(Host.class, username)) {
+        if (!DAOInterface.isExistedUsername(Host.class, username)) {
             setLabelError(username_err, RED, "Username already exists");
             return false;
         }
-        if (!DAOInterface.isValidUsername(Owner.class, username)) {
+        if (!DAOInterface.isExistedUsername(Owner.class, username)) {
             setLabelError(username_err, RED, "Username already exists");
             return false;
         }

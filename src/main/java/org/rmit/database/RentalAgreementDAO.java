@@ -183,21 +183,13 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
                 try {
                     Thread.sleep(1000); // 1-second delay
                 } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+//                    Thread.currentThread().interrupt();
                 }
             }
         }
         return Collections.emptyList(); // Fallback return (should not reach here)
     }
 
-
-
-    public EntityGraph<RentalAgreement> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<RentalAgreement> entityGraph = emf.createEntityGraph(RentalAgreement.class);
-        personSubgraph(entityGraph.addSubgraph("host"));
-        return entityGraph;
-    }
 
     @Override
     public List<RentalAgreement> search(String keyword, Function<Session, EntityGraph<RentalAgreement>> entityGraphFunction) {

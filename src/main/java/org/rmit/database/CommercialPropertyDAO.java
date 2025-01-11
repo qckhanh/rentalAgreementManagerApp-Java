@@ -179,55 +179,6 @@ public class CommercialPropertyDAO extends DAOInterface<CommercialProperty> {
         return Collections.emptyList(); // Fallback return (should not reach here)
     }
 
-
-
-    public EntityGraph<CommercialProperty> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<CommercialProperty> entityGraph = emf.createEntityGraph(CommercialProperty.class);
-        entityGraph.addAttributeNodes("address", "price", "type", "id", "businessType", "totalParkingSpace", "squareMeters"); // Add only the name of the Owner
-
-        personSubgraph(entityGraph.addSubgraph("owner"));
-        personSubgraph(entityGraph.addSubgraph("hosts"));
-
-
-        rentalAgreementSubgraph(entityGraph.addSubgraph("agreementList"));
-        return entityGraph;
-    }
-
-    @Override
-    protected <T extends Person> void personSubgraph(Subgraph<T> graph){
-        super.personSubgraph(graph);
-        notificationGraph(graph.addSubgraph("receivedNotifications"));
-    }
-
-//    @Override
-//    public List<CommercialProperty> search(String keyword, Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
-//        Session session = DatabaseUtil.getSession();
-//        List<CommercialProperty> result = Collections.emptyList(); // Properly initialized
-//
-//        try {
-//            String jpql = "SELECT c FROM CommercialProperty c " +
-//                    "WHERE LOWER(c.address) LIKE :addressKeyword " +
-//                    "OR c.id = :idKeyword";
-//
-//            result = session.createQuery(jpql, CommercialProperty.class)
-//                    .setMaxResults(10) // Limit results
-//                    .setParameter("addressKeyword", "%" + keyword.toLowerCase() + "%")
-//                    .setParameter("idKeyword", parseId(keyword)) // Handle ID as a long
-//                    .setHint("jakarta.persistence.fetchgraph", entityGraphFunction.apply(session))
-//                    .list();
-//            DatabaseUtil.shutdown(session);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
-
-
-
-    // Helper method to parse the ID from the keyword
-
-
     @Override
     public List<CommercialProperty> search(String keyword, Function<Session, EntityGraph<CommercialProperty>> entityGraphFunction) {
         Session session = DatabaseUtil.getSession();

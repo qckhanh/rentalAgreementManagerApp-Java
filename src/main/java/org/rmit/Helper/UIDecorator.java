@@ -19,28 +19,6 @@ import org.kordamp.ikonli.material2.Material2RoundMZ;
 import java.awt.*;
 
 public class UIDecorator {
-//    public static Node DANGER = new FontIcon(Feather.TRASH);
-//    public static Node SUCCESS = new FontIcon(Feather.CHECK_CIRCLE);
-//    public static FontIcon EDIT = new FontIcon(Feather.EDIT);
-//    public static FontIcon LOG_IN = new FontIcon(Feather.LOG_IN);
-//    public static Node INFO = new FontIcon(Feather.INFO);
-//    public static FontIcon DELETE = new FontIcon(Material2RoundAL.DELETE_FOREVER);
-//    public static FontIcon ADD = new FontIcon(Feather.PLUS_CIRCLE);
-//    public static FontIcon MANAGE = new FontIcon(Feather.TOOL);
-//    public static FontIcon NOTIFICATION = new FontIcon(Feather.BELL);
-//
-//    //Menu
-//    public static FontIcon USER = new FontIcon(Material2AL.ACCOUNT_CIRCLE);
-//    public static FontIcon PROFILE = new FontIcon(Feather.EDIT_2);
-//    public static FontIcon LOG_OUT = new FontIcon(Feather.LOG_OUT);
-//    public static FontIcon PAYMENT = new FontIcon(Material2AL.ATTACH_MONEY);
-//    public static FontIcon NEW_PAYMENT = new FontIcon(Material2AL.CREDIT_CARD);
-//    public static FontIcon RENTAL = new FontIcon(Feather.FILE_TEXT);
-//    public static FontIcon SEARCH = new FontIcon(Material2MZ.SEARCH);
-//    public static FontIcon PROPERTY = new FontIcon(Material2AL.HOME);
-//    public static FontIcon OTHER_PERSON = new FontIcon(Material2AL.GROUP);
-//    public static FontIcon REGISTER = new FontIcon(Feather.USER_PLUS);
-//    public static FontIcon GUEST = new FontIcon(FontAwesomeSolid.USER_SECRET);
 
     public static void setApplicationTheme(){
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());

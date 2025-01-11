@@ -3,15 +3,13 @@ package org.rmit.controller.Owner;
 import atlantafx.base.layout.DeckPane;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import net.synedra.validatorfx.Validator;
-import org.rmit.Helper.EntityGraphUtils;
-import org.rmit.Helper.ImageUtils;
-import org.rmit.Helper.InputValidator;
-import org.rmit.Helper.UIDecorator;
+import org.rmit.Helper.*;
 import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.ResidentialPropertyDAO;
 import org.rmit.view.ViewCentral;
@@ -25,6 +23,7 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class Owner_UpdatePropertiesController implements Initializable {
@@ -62,8 +61,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
     public Button clearImage_btn;
     public AnchorPane anchorPane;
     public Button saveChange;
-    Validator validatorCP = new Validator();
-    Validator validatorRP = new Validator();
+
 
 
     private int totalNumberBedrooms = 0;
@@ -75,39 +73,41 @@ public class Owner_UpdatePropertiesController implements Initializable {
     }
 
     public static void setSelectedProperty(Property property) {       // need optimization
-        int id = Integer.parseInt(property.getId() + "");
-        if(property instanceof CommercialProperty) {
-            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            property = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
-        }
-        else if(property instanceof ResidentialProperty) {
-            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            property = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+//        int id = Integer.parseInt(property.getId() + "");
 
-        }
-
+//        if(propertyMap.containsKey(id)) {
+//            selectedProperty.set(propertyMap.get(id));
+//            selectedProperty.set(property);
+//            return;
+//        }
+//
+//        if(property instanceof CommercialProperty) {
+//            CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
+//            property = cpDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+//        }
+//        else if(property instanceof ResidentialProperty) {
+//            ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
+//            property = rpDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+//
+//        }
+//        selectedProperty.set(property);
+//        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane , "Loading property ...");
         selectedProperty.set(property);
+
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        resetErrorLabels();
+        decor();
         loadPropertyData();
         setDisableTextField(true);
         editProperty.setOnAction(e-> editProperty());
-
         nextImg_btn.setOnAction(e -> nextImg_btn());
         prevImg_btn.setOnAction(e -> prevImg_btn());
         clearImage_btn.setOnAction(e -> clearSelectedImage());
         addImage_btn.setOnAction(e -> addImage());
         saveChange.setOnAction(e -> saveChanges());
-
-//        addListener();
-        resetErrorLabels();
-        validateCP();
-        validateRP();
-
-        decor();
         returnTableView_btn.setOnAction(e-> {
             ViewCentral.getInstance().getOwnerViewFactory().setOwnerSelectedMenuItem(OWNER_MENU_OPTION.PROPERTIES_MANAGER);
         });
@@ -120,8 +120,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         UIDecorator.setNormalButton(clearImage_btn, UIDecorator.DELETE(), null);
         UIDecorator.setNormalButton(returnTableView_btn, UIDecorator.BACK_PREVIOUS_PAGE(), null);
         UIDecorator.setNormalButton(editProperty, UIDecorator.SEND(), "Update");
+        UIDecorator.setSuccessButton(saveChange, UIDecorator.SEND(), "Save");
     }
-
 
     private boolean isChange(Property property){
         if(!property.getAddress().equals(propertyAddress_txtf.getText())) return true;
@@ -142,7 +142,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         return false;
     }
 
-    private void validateCP() {
+    private void buildValidatorCP(Validator validatorCP) {
         validatorCP.createCheck()
                 .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
                 .withMethod(context -> {
@@ -213,7 +213,7 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
     }
 
-    private void validateRP() {
+    private void buildValidatorRP(Validator validatorRP) {
         validatorRP.createCheck()
                 .dependsOn("propertyAddress", propertyAddress_txtf.textProperty())
                 .withMethod(context -> {
@@ -283,76 +283,30 @@ public class Owner_UpdatePropertiesController implements Initializable {
 
     }
 
-//    private void addListener() {
-//        propertyAddress_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//            if (!newValue.equals(oldValue)) address_err.setText("");
-//            checkChanges();
-//        });
-//        propertyPrice_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//            if (!newValue.equals(oldValue)) price_err.setText("");
-//            checkChanges();
-//        });
-//        propertyStatus_cbox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            if (!Objects.equals(oldValue, newValue)) status_err.setText("");
-//            checkChanges();
-//        });
-//        if (selectedProperty.get() instanceof CommercialProperty) {
-//            propertyBtype_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!newValue.equals(oldValue)) businessType_err.setText("");
-//                checkChanges();
-//            });
-//            propertySquareMeters_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!newValue.equals(oldValue)) squareMeters_err.setText("");
-//                checkChanges();
-//            });
-//            propertyPSpaces_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!newValue.equals(oldValue)) parkingSpace_err.setText("");
-//                checkChanges();
-//            });
-//        } else if (selectedProperty.get() instanceof ResidentialProperty) {
-//            propertyGarden_chbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!Objects.equals(oldValue, newValue)) checkChanges();
-//            });
-//            propertyPet_chBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!Objects.equals(oldValue, newValue)) checkChanges();
-//            });
-//            propertyBedrooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!newValue.equals(oldValue)) bedroom_err.setText("");
-//                checkChanges();
-//            });
-//            propertyRooms_txtf.textProperty().addListener((observable, oldValue, newValue) -> {
-//                if (!newValue.equals(oldValue)) room_err.setText("");
-//                checkChanges();
-//            });
-//        }
-//    }
-
     private void editProperty() {
         boolean isDisable = propertyAddress_txtf.isDisable();
         setDisableTextField(!isDisable);
         saveChange.setVisible(isDisable);
-
-
     }
 
     private void saveChanges() {
-//        validatorRP.clear();
-//        validatorCP.clear();
-        validateCP();
-        validateRP();
-
         if(selectedProperty.get() instanceof CommercialProperty) {
+            Validator validatorCP = new Validator();
+            buildValidatorCP(validatorCP);
             if (!validatorCP.validate()) {
                 ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                 return;
             }
         }
         else if(selectedProperty.get() instanceof ResidentialProperty) {
+            Validator validatorRP = new Validator();
+            buildValidatorRP(validatorRP);
             if (!validatorRP.validate()) {
                 ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Invalid input. Please check again");
                 return;
             }
         }
+
         if(!isChange(selectedProperty.get())){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No changes detected");
             return;
@@ -365,9 +319,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         selectedProperty.get().setPrice(Double.parseDouble(propertyPrice_txtf.getText()));
         selectedProperty.get().setStatus(propertyStatus_cbox.getValue());
 
-        for(byte[] bytes: images){
-            selectedProperty.get().addImages(bytes);
-        }
+        for(byte[] bytes: images) selectedProperty.get().addImages(bytes);
+
         if (selectedProperty.get() instanceof CommercialProperty) {
             ((CommercialProperty) selectedProperty.get()).setBusinessType(propertyBtype_txtf.getText());
             ((CommercialProperty) selectedProperty.get()).setSquareMeters(Double.parseDouble(propertySquareMeters_txtf.getText()));
@@ -379,26 +332,39 @@ public class Owner_UpdatePropertiesController implements Initializable {
             ((ResidentialProperty) selectedProperty.get()).setTotalBedroom(Integer.parseInt(propertyBedrooms_txtf.getText()));
             ((ResidentialProperty) selectedProperty.get()).setTotalRoom(Integer.parseInt(propertyRooms_txtf.getText()));
         }
-        boolean isUpdated = false;
+
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Updating property ...");
         if (selectedProperty.get() instanceof CommercialProperty) {
             CommercialPropertyDAO cpDAO = new CommercialPropertyDAO();
-            isUpdated = cpDAO.update((CommercialProperty) selectedProperty.get());
+
+            Task<Boolean> updateCPTask = TaskUtils.createTask(() -> cpDAO.update((CommercialProperty) selectedProperty.get()));
+            TaskUtils.run(updateCPTask);
+            updateCPTask.setOnSucceeded(e -> {
+                if(updateCPTask.getValue()) {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
+                }
+                else {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
+                }
+                setDisableTextField(true);
+                saveChange.setVisible(false);
+            });
         }
         else if (selectedProperty.get() instanceof ResidentialProperty) {
             ResidentialPropertyDAO rpDAO = new ResidentialPropertyDAO();
-            isUpdated = rpDAO.update((ResidentialProperty) selectedProperty.get());
+            Task<Boolean> updateRPTask = TaskUtils.createTask(() -> rpDAO.update((ResidentialProperty) selectedProperty.get()));
+            TaskUtils.run(updateRPTask);
+            updateRPTask.setOnSucceeded(e -> {
+                if(updateRPTask.getValue()) {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
+                }
+                else {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
+                }
+                setDisableTextField(true);
+                saveChange.setVisible(false);
+            });
         }
-        if(isUpdated) {
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property updated successfully");
-        }
-        else {
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to update property. Try again");
-        }
-        setDisableTextField(true);
-        saveChange.setVisible(false);
-
-        validatorRP.clear();
-        validatorCP.clear();
     }
 
     public void loadPropertyData() {
@@ -407,18 +373,16 @@ public class Owner_UpdatePropertiesController implements Initializable {
                 System.out.println("Selected property has changed.");
                 clearData();
                 setDisableTextField(true);
-                updateFormFields(newValue);
+                populateData(newValue);
                 saveChange.setVisible(false);
             }
         });
 
         if (selectedProperty.get() != null) {
             clearData();
-            updateFormFields(selectedProperty.get());
+            populateData(selectedProperty.get());
         }
     }
-
-
 
     void setDisableTextField(boolean status) {
             propertyAddress_txtf.setDisable(status);
@@ -437,15 +401,16 @@ public class Owner_UpdatePropertiesController implements Initializable {
             }
     }
 
-    private void updateFormFields(Property property) {
+    private void populateData(Property property) {
+        System.out.println("Hihi " + property);
         images.clear();
-        if(images.size() > 0) {
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
+        if(!property.getImages().isEmpty()) {
             currentImageIndex = 0;
+            images.addAll(property.getImages());
             imageView_propertyImg.setImage(ImageUtils.byteToImage(images.get(0)));
         }
-        else{
-            imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
-        }
+
         propertyAddress_txtf.setText(property.getAddress());
         propertyPrice_txtf.setText(String.valueOf(property.getPrice()));
         propertyStatus_cbox.getItems().addAll(PropertyStatus.values());
@@ -463,34 +428,8 @@ public class Owner_UpdatePropertiesController implements Initializable {
         }
 
 
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Information loaded");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Information loaded");
 
-    }
-
-    private void enableCommercialFields() {
-        propertyBtype_txtf.setDisable(false);
-        propertySquareMeters_txtf.setDisable(false);
-        propertyPSpaces_txtf.setDisable(false);
-    }
-
-    private void disableCommercialFields() {
-        propertyBtype_txtf.setDisable(true);
-        propertySquareMeters_txtf.setDisable(true);
-        propertyPSpaces_txtf.setDisable(true);
-    }
-
-    private void enableResidentialFields() {
-        propertyGarden_chbox.setDisable(false);
-        propertyPet_chBox.setDisable(false);
-        propertyBedrooms_txtf.setDisable(false);
-        propertyRooms_txtf.setDisable(false);
-    }
-
-    private void disableResidentialFields() {
-        propertyGarden_chbox.setDisable(true);
-        propertyPet_chBox.setDisable(true);
-        propertyBedrooms_txtf.setDisable(true);
-        propertyRooms_txtf.setDisable(true);
     }
 
     private void clearData() {
@@ -505,24 +444,6 @@ public class Owner_UpdatePropertiesController implements Initializable {
         propertyRooms_txtf.clear();
         images.clear();
         currentImageIndex = 0;
-    }
-
-    private void updateTotalNumbersOfRooms() {
-        try {
-            totalNumberBedrooms = Integer.parseInt(propertyBedrooms_txtf.getText());
-        } catch (NumberFormatException e) {
-            totalNumberBedrooms = 0; // Default to 0 if input is invalid
-        }
-
-        try {
-            totalNumberRooms = Integer.parseInt(propertyRooms_txtf.getText());
-        } catch (NumberFormatException e) {
-            totalNumberRooms = 0; // Default to 0 if input is invalid
-        }
-
-        // Optionally, you can update some UI elements or perform other actions based on the new totals
-        System.out.println("Total Bedrooms: " + totalNumberBedrooms);
-        System.out.println("Total Rooms: " + totalNumberRooms);
     }
 
     private void resetErrorLabels() {

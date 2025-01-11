@@ -197,21 +197,6 @@ public class OwnerDAO extends DAOInterface<Owner> implements ValidateLoginDAO<Ow
         }
     }
 
-    public EntityGraph<Owner> createEntityGraph(Session session) {
-        EntityManager emf = session.unwrap(EntityManager.class);
-        EntityGraph<Owner> entityGraph = emf.createEntityGraph(Owner.class);
-        propertySubgraph(entityGraph.addSubgraph("propertiesOwned"));
-        personSubgraph(entityGraph.addSubgraph("hosts"));
-        notificationGraph(entityGraph.addSubgraph("sentNotifications"));
-        notificationGraph(entityGraph.addSubgraph("receivedNotifications"));
-
-        return entityGraph;
-    }
-
-    @Override
-    protected void propertySubgraph(Subgraph<Property> graph ){
-        graph.addAttributeNodes("address", "price", "type", "id");
-    }
 
     @Override
     public List<Owner> search(String keyword, Function<Session, EntityGraph<Owner>> entityGraphFunction) {

@@ -1,13 +1,16 @@
 package org.rmit.controller.Renter;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
@@ -156,26 +159,37 @@ public class Renter_NotificationController implements Initializable {
     private void approveRequest() {
     }
 
-    private void denyRequest() {}
+    private void denyRequest() {
+    }
 
     private void deleteNoti() {
+        Notification notification = notificationTableView.getSelectionModel().getSelectedItem();
+        if(notification == null){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No notification selected");
+            return;
+        }
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
-        Notification notification = selectedNotificationProperty.get();
+
         int id = Integer.parseInt(notification.getId() + "");
         NotificationDAO notificationDAO = new NotificationDAO();
-        notificationDAO.delete(notification);
-        if (currentUser.get().getSentNotifications().contains(notification)) {
-            currentUser.get().getSentNotifications().remove(notification);
-        } else {
-            currentUser.get().getReceivedNotifications().remove(notification);
-        }
 
-        currentUser.get().getSentNotifications().remove(notification);
-        currentUser.get().getReceivedNotifications().remove(notification);
-
-        loadListView(getNoFilter());
-
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+        Task<Boolean> deleteTask = TaskUtils.createTask(() -> notificationDAO.delete(notification));
+        TaskUtils.run(deleteTask);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Deleting notification...");
+        deleteTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            if(deleteTask.getValue()){
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+                if (currentUser.get().getSentNotifications().contains(notification)) {
+                    currentUser.get().getSentNotifications().remove(notification);
+                } else {
+                    currentUser.get().getReceivedNotifications().remove(notification);
+                }
+                loadListView(getNoFilter());
+            }
+            else {
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Notification deleted failed. Try again");
+            }
+        }));
     }
 
     // Helper

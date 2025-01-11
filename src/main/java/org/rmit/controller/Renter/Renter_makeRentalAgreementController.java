@@ -1,8 +1,10 @@
 package org.rmit.controller.Renter;
 
 import atlantafx.base.layout.DeckPane;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -14,6 +16,8 @@ import org.rmit.database.CommercialPropertyDAO;
 import org.rmit.database.HostDAO;
 import org.rmit.database.RenterDAO;
 import org.rmit.database.ResidentialPropertyDAO;
+import org.rmit.model.Property.CommercialProperty;
+import org.rmit.model.Property.ResidentialProperty;
 import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Host;
 import org.rmit.model.Persons.Owner;
@@ -25,6 +29,8 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 public class Renter_makeRentalAgreementController implements Initializable {
     public Renter currentUser = (Renter) Session.getInstance().getCurrentUser();
@@ -63,6 +69,7 @@ public class Renter_makeRentalAgreementController implements Initializable {
     public AnchorPane anchorPane;
     Validator validator = new Validator();
     List<Renter> listSubrenter_found = new ArrayList<>();
+    List<Property> listPropertyFound = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -75,6 +82,8 @@ public class Renter_makeRentalAgreementController implements Initializable {
         propertySearch_input.setOnAction(e -> searchProperty());
         subRenterSearch_input.setOnAction(e -> searchRenter());
         searchRenter_btn.setOnAction(e -> searchRenter());
+        imageView_propertyImg.setImage(ImageUtils.byteToImage(null));
+
         property_ComboBox.setOnAction(e -> {
             if(property_ComboBox.getSelectionModel().getSelectedItem() == null) return;
             selectedProperty.set(property_ComboBox.getSelectionModel().getSelectedItem());
@@ -183,14 +192,20 @@ public class Renter_makeRentalAgreementController implements Initializable {
 
     private void searchRenter() {
         if(subRenterSearch_input.getText().isBlank()) return;
-        searchRenter_btn.setDisable(true);
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Searching for renter...");
         RenterDAO renterDAO = new RenterDAO();
-        listSubrenter_found = renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
-        subRenter_listView.getItems().clear();
-        subRenter_listView.getItems().addAll(listSubrenter_found);
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  listSubrenter_found.size() + " results(s) found");
-        searchRenter_btn.setDisable(false);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Searching...");
+        Task<List<Renter>> task = TaskUtils.createTask(() -> {
+            Platform.runLater(() -> searchRenter_btn.setDisable(true));
+            return renterDAO.search(subRenterSearch_input.getText(), EntityGraphUtils::SimpleRenterNotification);
+        });
+        TaskUtils.run(task);
+        task.setOnSucceeded(event -> Platform.runLater(() -> {
+                listSubrenter_found = task.getValue();
+                subRenter_listView.getItems().clear();
+                subRenter_listView.getItems().addAll(listSubrenter_found);
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  listSubrenter_found.size() + " results(s) found");
+                searchRenter_btn.setDisable(false);
+        }));
     }
 
     private void customCellFactory(){
@@ -285,7 +300,6 @@ public class Renter_makeRentalAgreementController implements Initializable {
         });
     }
 
-
     private void reloadRenterListView(Set<Renter> renters){
         subRenter_listView.getItems().clear();
         subRenter_listView.getItems().addAll(renters);
@@ -294,19 +308,57 @@ public class Renter_makeRentalAgreementController implements Initializable {
 
     private void searchProperty() {
         if(propertySearch_input.getText().isBlank()) return;
+        listPropertyFound.clear();
         searchProperty_btn.setDisable(true);
         propertySearch_input.setDisable(true);
         property_ComboBox.getItems().clear();
-        List<Property> list = new ArrayList<>();
+
+        CountDownLatch latch = new CountDownLatch(2);  // Wait for 2 tasks to complete
         CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-        list.addAll(commercialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleCommercialProperty));
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-        list.addAll(residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleResidentialProperty));
-        property_ComboBox.getItems().addAll(list);
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  list.size() + " results(s) found");
-        searchProperty_btn.setDisable(false);
-        propertySearch_input.setDisable(false);
-        propertySearch_input.clear();
+
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Searching...");
+        Task<List<CommercialProperty>> commercial = TaskUtils.createTask(() -> {
+            return commercialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
+        });
+        Task<List<ResidentialProperty>> residential = TaskUtils.createTask(() -> {
+            return residentialPropertyDAO.search(propertySearch_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
+        });
+        TaskUtils.run(commercial);
+        TaskUtils.run(residential);
+
+        residential.setOnSucceeded(e -> Platform.runLater(() -> {
+            listPropertyFound.addAll(residential.getValue());
+            property_ComboBox.getItems().addAll(listPropertyFound);
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  "Search: 50% ... ");
+            latch.countDown();
+        }));
+        commercial.setOnSucceeded(e -> Platform.runLater(() -> {
+            listPropertyFound.addAll(commercial.getValue());
+            property_ComboBox.getItems().addAll(listPropertyFound);
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane,  "Search: 50% ... ");
+            latch.countDown();
+        }));
+
+        Callable<Void> task = () -> {
+            try {
+                latch.await(); // Wait for the latch countdown to complete
+                Platform.runLater(() -> {
+                    // UI updates after tasks are completed
+                    property_ComboBox.getItems().clear();
+                    property_ComboBox.getItems().addAll(listPropertyFound);
+                    searchProperty_btn.setDisable(false);
+                    propertySearch_input.setDisable(false);
+                    propertySearch_input.clear();
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, listPropertyFound.size() + " result(s) found");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null; // Return null for Void
+        };
+
+        TaskUtils.countDown(latch, task);
     }
 
     private void submitRA() {
@@ -317,50 +369,61 @@ public class Renter_makeRentalAgreementController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
         submit_btn.setDisable(true);
         HostDAO hostDAO = new HostDAO();
-        int id = Integer.parseInt(selectedHost.get().getId() + "");
-        selectedHost.set(hostDAO.get(id, EntityGraphUtils::HostForEmailSent));
-
-        String s = NotificationUtils.buildDaft_RentalAgreement(
-                selectedProperty.get().getId(),
-                selectedHost.get().getId(),
-                selectedProperty.get().getOwner().getId(),
-                selectedRentalPeriod.get(),
-                selectedSubRenters
-                );
-
-        String header = String.format(
-                NotificationUtils.HEADER_REQUEST_AGREEMENT,
-                selectedProperty.get().getId(),
-                selectedProperty.get().getAddress()
-        );
-
-        String content = NotificationUtils.buildContent_REQUEST_AGREEMENT(
-                selectedHost.get().getName(),
-                currentUser.getName(),
-                selectedProperty.get().getId() + "",
-                selectedProperty.get().getAddress(),
-                selectedRentalPeriod.get(),
-                selectedProperty.get().getPrice()
-        );
-
-        Request request = new Request();
-        request.setTimestamp(DateUtils.currentTimestamp());
-        request.setSender(currentUser);
-        request.addReceiver(selectedHost.get());
-        request.setHeader(header);
-        request.setContent(content);
-        request.setDraftObject(s);
-        currentUser.sentNotification(request);
         RenterDAO renterDAO = new RenterDAO();
-        boolean isUpdated =  renterDAO.update(currentUser);
-        if(isUpdated){
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
-        } else {
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
-        }
-        clearAllField();
-        submit_btn.setDisable(false);
-        currentUser.addSentNotification(request);
+
+        int id = Integer.parseInt(selectedHost.get().getId() + "");
+        Task<Host> findHost = TaskUtils.createTask(() -> hostDAO.get(id, EntityGraphUtils::HostForEmailSent));
+        Task<Boolean> submit = TaskUtils.createTask(() -> renterDAO.update(currentUser));
+
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Connecting to Host ...");
+        TaskUtils.run(findHost);
+        findHost.setOnSucceeded(e -> Platform.runLater(() -> {
+            selectedHost.set(findHost.getValue());
+
+            String s = NotificationUtils.buildDaft_RentalAgreement(
+                    selectedProperty.get().getId(),
+                    selectedHost.get().getId(),
+                    selectedProperty.get().getOwner().getId(),
+                    selectedRentalPeriod.get(),
+                    selectedSubRenters
+            );
+
+            String header = String.format(
+                    NotificationUtils.HEADER_REQUEST_AGREEMENT,
+                    selectedProperty.get().getId(),
+                    selectedProperty.get().getAddress()
+            );
+
+            String content = NotificationUtils.buildContent_REQUEST_AGREEMENT(
+                    selectedHost.get().getName(),
+                    currentUser.getName(),
+                    selectedProperty.get().getId() + "",
+                    selectedProperty.get().getAddress(),
+                    selectedRentalPeriod.get(),
+                    selectedProperty.get().getPrice()
+            );
+
+            Request request = new Request();
+            request.setTimestamp(DateUtils.currentTimestamp());
+            request.setSender(currentUser);
+            request.addReceiver(selectedHost.get());
+            request.setHeader(header);
+            request.setContent(content);
+            request.setDraftObject(s);
+            currentUser.sentNotification(request);
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Sending request...");
+            TaskUtils.run(submit);
+            submit.setOnSucceeded(event -> Platform.runLater(() -> {
+                if(submit.getValue()){
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
+                } else {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
+                }
+                clearAllField();
+                submit_btn.setDisable(false);
+                currentUser.addSentNotification(request);
+            }));
+        }));
     };
 
     private void resetErrorLabels() {
