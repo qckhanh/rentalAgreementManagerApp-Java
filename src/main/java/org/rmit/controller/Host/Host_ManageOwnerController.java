@@ -1,6 +1,8 @@
 package org.rmit.controller.Host;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -8,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.OwnerDAO;
 import org.rmit.view.ViewCentral;
@@ -80,11 +83,17 @@ public class Host_ManageOwnerController implements Initializable {
         if(search_input.getText().isBlank()) return;
         search_btn.setDisable(true);
         OwnerDAO ownerDAO = new OwnerDAO();
-        List<Owner> lists = ownerDAO.search(search_input.getText(), EntityGraphUtils::SimpleOwner);
-        loadOwner(new HashSet<>(lists));
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + lists.size() + " owner(s)");
-        search_btn.setDisable(false);
-//        search_input.clear();
+        Task<List<Owner>> searchTask = TaskUtils.createTask(() -> {
+            return ownerDAO.search(search_input.getText(), EntityGraphUtils::SimpleOwner);
+        });
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Searching...");
+        searchTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            List<Owner> lists = searchTask.getValue();
+            loadOwner(new HashSet<>(lists));
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + lists.size() + " owner(s)");
+            search_btn.setDisable(false);
+        }));
+        TaskUtils.run(searchTask);
     }
 
     private void loadOwner(Set<Owner> set){
@@ -101,22 +110,32 @@ public class Host_ManageOwnerController implements Initializable {
     private void showDetails(Owner owner){
         if(owner == null) return;
         int id = Integer.parseInt(owner.getId()+"");
-        if(ownerMap.containsKey(id)) owner = ownerMap.get(id);
-        else{
-            OwnerDAO ownerDAO = new OwnerDAO();
-            owner = ownerDAO.get(id, EntityGraphUtils::ownerForSearching);
-            ownerMap.put(id, owner);
-        }
-        if(owner == null) return;
+        OwnerDAO ownerDAO = new OwnerDAO();
 
-        D_input.setText(owner.getId()+"");
-        username_input.setText(owner.getUsername());
-        fullName_input.setText(owner.getName());
-        contact_input.setText(owner.getContact());
-        dob_input.setText(owner.getDateOfBirth().toString());
-        managingProperty_listView.getItems().clear();
-        managingProperty_listView.getItems().addAll(owner.getPropertiesOwned());
-        avatarOwner_imageView.setImage(ImageUtils.byteToImage(owner.getProfileAvatar()));
+        Task<Owner> findOwner = TaskUtils.createTask(() -> {
+            if(ownerMap.containsKey(id)) return ownerMap.get(id);
+            else{
+                Owner o = ownerDAO.get(id, EntityGraphUtils::ownerForSearching);
+                if(o == null) return null;
+                ownerMap.put(id, o);
+                return o;
+            }
+        });
+        findOwner.setOnSucceeded(e -> {
+            Owner ownerFound = findOwner.getValue();
+            if(ownerFound == null) return;
+
+            D_input.setText(ownerFound.getId()+"");
+            username_input.setText(ownerFound.getUsername());
+            fullName_input.setText(ownerFound.getName());
+            contact_input.setText(ownerFound.getContact());
+            dob_input.setText(ownerFound.getDateOfBirth().toString());
+            managingProperty_listView.getItems().clear();
+            managingProperty_listView.getItems().addAll(ownerFound.getPropertiesOwned());
+            avatarOwner_imageView.setImage(ImageUtils.byteToImage(ownerFound.getProfileAvatar()));
+        });
+        TaskUtils.run(findOwner);
+
     }
 
 }

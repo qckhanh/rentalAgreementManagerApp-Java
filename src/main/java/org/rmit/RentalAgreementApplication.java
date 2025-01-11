@@ -15,9 +15,17 @@ public class RentalAgreementApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             InetAddress address = InetAddress.getByName("www.google.com"); // check internet connection
-            if (!address.isReachable(5000)){
-                ViewCentral.getInstance().getStartViewFactory().startNoInternetConnection();
-                return;
+            int attempt = 0;
+            while(attempt < 5){
+                if(!address.isReachable(5000)){
+                    System.out.println("No internet connection. Attempting to reconnect...");
+                    attempt++;
+                    Thread.sleep(1000);
+                }
+                else{
+                    break;
+                }
+
             }
             DatabaseUtil.getSession();
             DatabaseUtil.warmUp();

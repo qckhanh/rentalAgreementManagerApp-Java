@@ -201,6 +201,8 @@ public class Renter_MakePaymentController implements Initializable {
         Task<Renter> updateRenter = TaskUtils.createTask(() -> renterDAO.get(id, EntityGraphUtils::RenterFULL));
         updateRenter.setOnSucceeded(e -> Platform.runLater(() -> {
             Session.getInstance().setCurrentUser(updateRenter.getValue());
+            submit_btn.setDisable(false);
+            clearAllFields();
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Purchased successfully");
         }));
         ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Creating payment ....");
@@ -211,8 +213,7 @@ public class Renter_MakePaymentController implements Initializable {
             } else {
                 ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to purchase. Try again");
             }
-            submit_btn.setDisable(false);
-            clearAllFields();
+
         }));
         TaskUtils.run(paymentTask);
     }

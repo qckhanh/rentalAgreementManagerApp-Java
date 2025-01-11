@@ -5,14 +5,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import org.rmit.Helper.EntityGraphUtils;
-import org.rmit.Helper.ImageUtils;
-import org.rmit.Helper.NotificationUtils;
-import org.rmit.Helper.UIDecorator;
+import org.rmit.Helper.*;
 import org.rmit.Notification.Request;
 import org.rmit.database.*;
 import org.rmit.model.Persons.Owner;
@@ -27,6 +25,8 @@ import org.rmit.view.Start.NOTIFICATION_TYPE;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 public class Host_ManagePropertyController implements Initializable {
     //preview
@@ -68,13 +68,12 @@ public class Host_ManagePropertyController implements Initializable {
     public ObjectProperty<List<byte[]>> selectedImage = new SimpleObjectProperty<>();
     public int currentImageIndex = 0;
     public AnchorPane anchorPane;
+    public List<Property> listPropertyFound = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         decor();
-
-
         saveChangesButton.setDisable(true);
         nextImg_btn.setOnAction(e -> nextImg_btn());
         prevImg_btn.setOnAction(e -> prevImg_btn());
@@ -169,23 +168,55 @@ public class Host_ManagePropertyController implements Initializable {
     private void searchProperty() {
         if(search_input.getText().isBlank()) return;
         search_btn.setDisable(true);
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Searching...");
-        Set<Property> res = new HashSet<>();
+
         CommercialPropertyDAO dao = new CommercialPropertyDAO();
-        List<CommercialProperty> ans = (List<CommercialProperty>)dao.search(search_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
-        res.addAll(ans);
         ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
-        List<ResidentialProperty> ans2 = (List<ResidentialProperty>)dao2.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
-        res.addAll(ans2);
-        property_listView.setItems(getPropertyList(res));
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Searching...");
 
-        for(Property p: res){
-            propertyMap.put(Integer.parseInt(p.getId() + ""), p);
-        }
+        listPropertyFound.clear();
+        CountDownLatch latch = new CountDownLatch(2);
+        Task<List<CommercialProperty>> commercialTask = TaskUtils.createTask(() -> {
+            return dao.search(search_input.getText(), EntityGraphUtils::SimpleCommercialProperty);
+        });
+        Task<List<ResidentialProperty>> residentialTask = TaskUtils.createTask(() -> {
+            return dao2.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
+        });
+//        TaskUtils.run(commercialTask);
+        TaskUtils.run(residentialTask);
 
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + res.size() + " property(s)");
-        search_btn.setDisable(false);
-//        search_input.clear();
+        commercialTask.setOnSucceeded(e -> {
+            System.out.println("Commercial task done");
+            listPropertyFound.addAll(commercialTask.getValue());
+//            for(Property p: commercialTask.getValue()){
+//                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
+//            }
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Search: 50% completed");
+            latch.countDown();
+        });
+        residentialTask.setOnSucceeded(e -> {
+            System.out.println("Residental task done");
+            listPropertyFound.addAll(residentialTask.getValue());
+//            for(Property p: residentialTask.getValue()){
+//                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
+//            }
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Search: 50% completed");
+            latch.countDown();
+        });
+
+        Callable<Void> task = () -> {
+            try{
+                latch.await();
+                property_listView.setItems(getPropertyList(new HashSet<>(listPropertyFound)));
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + listPropertyFound.size() + " property(s)");
+                search_btn.setDisable(false);
+                System.out.println("doneeeeeeeee");
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return null;
+        };
+        TaskUtils.countDown(latch, task);
     }
 
     public ObservableList<Property> getPropertyList(Set<Property> pList){
@@ -342,7 +373,7 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void prevImg_btn() {
-        if(selectedImage.get().size() == 0){
+        if(selectedImage.get().size() == 0 || selectedImage.get() == null){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
             return;
         }
@@ -353,7 +384,7 @@ public class Host_ManagePropertyController implements Initializable {
     }
 
     private void nextImg_btn() {
-        if(selectedImage.get().size() == 0){
+        if(selectedImage.get().size() == 0 || selectedImage.get() == null){
             ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "No images to display");
             return;
         }

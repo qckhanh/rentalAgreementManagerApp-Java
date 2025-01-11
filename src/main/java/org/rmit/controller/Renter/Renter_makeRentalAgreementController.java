@@ -312,8 +312,8 @@ public class Renter_makeRentalAgreementController implements Initializable {
         searchProperty_btn.setDisable(true);
         propertySearch_input.setDisable(true);
         property_ComboBox.getItems().clear();
-        CountDownLatch latch = new CountDownLatch(2);  // Wait for 2 tasks to complete
 
+        CountDownLatch latch = new CountDownLatch(2);  // Wait for 2 tasks to complete
         CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
 
@@ -369,57 +369,60 @@ public class Renter_makeRentalAgreementController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to send this rental agreement request?")) return;
         submit_btn.setDisable(true);
         HostDAO hostDAO = new HostDAO();
+        RenterDAO renterDAO = new RenterDAO();
+
         int id = Integer.parseInt(selectedHost.get().getId() + "");
         Task<Host> findHost = TaskUtils.createTask(() -> hostDAO.get(id, EntityGraphUtils::HostForEmailSent));
+        Task<Boolean> submit = TaskUtils.createTask(() -> renterDAO.update(currentUser));
+
         ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Connecting to Host ...");
+        TaskUtils.run(findHost);
         findHost.setOnSucceeded(e -> Platform.runLater(() -> {
             selectedHost.set(findHost.getValue());
-        }));
 
-        String s = NotificationUtils.buildDaft_RentalAgreement(
-                selectedProperty.get().getId(),
-                selectedHost.get().getId(),
-                selectedProperty.get().getOwner().getId(),
-                selectedRentalPeriod.get(),
-                selectedSubRenters
-                );
+            String s = NotificationUtils.buildDaft_RentalAgreement(
+                    selectedProperty.get().getId(),
+                    selectedHost.get().getId(),
+                    selectedProperty.get().getOwner().getId(),
+                    selectedRentalPeriod.get(),
+                    selectedSubRenters
+            );
 
-        String header = String.format(
-                NotificationUtils.HEADER_REQUEST_AGREEMENT,
-                selectedProperty.get().getId(),
-                selectedProperty.get().getAddress()
-        );
+            String header = String.format(
+                    NotificationUtils.HEADER_REQUEST_AGREEMENT,
+                    selectedProperty.get().getId(),
+                    selectedProperty.get().getAddress()
+            );
 
-        String content = NotificationUtils.buildContent_REQUEST_AGREEMENT(
-                selectedHost.get().getName(),
-                currentUser.getName(),
-                selectedProperty.get().getId() + "",
-                selectedProperty.get().getAddress(),
-                selectedRentalPeriod.get(),
-                selectedProperty.get().getPrice()
-        );
+            String content = NotificationUtils.buildContent_REQUEST_AGREEMENT(
+                    selectedHost.get().getName(),
+                    currentUser.getName(),
+                    selectedProperty.get().getId() + "",
+                    selectedProperty.get().getAddress(),
+                    selectedRentalPeriod.get(),
+                    selectedProperty.get().getPrice()
+            );
 
-        Request request = new Request();
-        request.setTimestamp(DateUtils.currentTimestamp());
-        request.setSender(currentUser);
-        request.addReceiver(selectedHost.get());
-        request.setHeader(header);
-        request.setContent(content);
-        request.setDraftObject(s);
-        currentUser.sentNotification(request);
-        RenterDAO renterDAO = new RenterDAO();
-        Task<Boolean> submit = TaskUtils.createTask(() -> renterDAO.update(currentUser));
-        TaskUtils.run(submit);
-        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Sending request...");
-        submit.setOnSucceeded(e -> Platform.runLater(() -> {
-            if(submit.getValue()){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
-            } else {
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
-            }
-            clearAllField();
-            submit_btn.setDisable(false);
-            currentUser.addSentNotification(request);
+            Request request = new Request();
+            request.setTimestamp(DateUtils.currentTimestamp());
+            request.setSender(currentUser);
+            request.addReceiver(selectedHost.get());
+            request.setHeader(header);
+            request.setContent(content);
+            request.setDraftObject(s);
+            currentUser.sentNotification(request);
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Sending request...");
+            TaskUtils.run(submit);
+            submit.setOnSucceeded(event -> Platform.runLater(() -> {
+                if(submit.getValue()){
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Rental agreement request sent successfully");
+                } else {
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to send rental agreement request. Please try again");
+                }
+                clearAllField();
+                submit_btn.setDisable(false);
+                currentUser.addSentNotification(request);
+            }));
         }));
     };
 
