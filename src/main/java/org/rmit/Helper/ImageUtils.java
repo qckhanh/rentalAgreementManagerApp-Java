@@ -5,17 +5,14 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class ImageUtils {
     public static long MB = 1024 * 1024;
     public static long MAX_IMAGE_SIZE = 1 * MB;
     public static long MAX_WIDTH = 300;
     public static long MAX_HEIGHT = 300;
-    public static String DEFAULT_IMAGE = "src/main/resources/org/rmit/demo/Image/DEFAULT_AVT.jpg";
+    public static String DEFAULT_IMAGE = "/org/rmit/demo/Image/DEFAULT_AVT.jpg";
 
 
     public static Image byteToImage(byte[] bytes) {
@@ -35,19 +32,47 @@ public class ImageUtils {
         return imageView;
     }
 
-    public static byte[] getByte(String imagePath){
-        File imageFile = new File(imagePath);
-        if(!imageFile.exists()) return new byte[0];
+//    public static byte[] getByte(String imagePath){
+//        File imageFile = new File(imagePath);
+//        if(!imageFile.exists()) return new byte[0];
+//
+//        byte[] imageData = new byte[(int) imageFile.length()];
+//        try (FileInputStream fis = new FileInputStream(imageFile)) {
+//            fis.read(imageData);
+//        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//        }
+//        return imageData;
+//    }
 
-        byte[] imageData = new byte[(int) imageFile.length()];
-        try (FileInputStream fis = new FileInputStream(imageFile)) {
-            fis.read(imageData);
+    public static byte[] getByte(String path) {
+        // Try to load as a file from the file system
+        File file = new File(path);
+        if (file.exists() && file.isFile()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                byte[] fileData = new byte[(int) file.length()];
+                fis.read(fileData);
+                return fileData;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new byte[0];
+            }
         }
-        catch (IOException e){
+
+        // Try to load as a resource from the classpath
+        try (InputStream is = ImageUtils.class.getResourceAsStream(path)) {
+            if (is != null) {
+                return is.readAllBytes();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return imageData;
+
+        // Return empty array if both attempts fail
+        return new byte[0];
     }
+
 
     public static Image imageFromPath(String imagePath){
         Image img =  byteToImage(getByte(imagePath));
