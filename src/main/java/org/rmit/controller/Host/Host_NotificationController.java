@@ -178,6 +178,7 @@ public class Host_NotificationController implements Initializable {
             HostDAO hostDAO = new HostDAO();
             OwnerDAO ownerDAO = new OwnerDAO();
 
+            // this
             Renter mainRenter = renterDAO.get(Integer.parseInt(mainRenterId + ""), EntityGraphUtils::SimpleRenter);
             Owner owner = ownerDAO.get(Integer.parseInt(ownerID + ""), EntityGraphUtils::SimpleOwner);
 
@@ -187,6 +188,7 @@ public class Host_NotificationController implements Initializable {
                 ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
                 property = (Property) dao2.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleResidentialProperty);
             }
+            // this
 
             RentalAgreement rentalAgreement = new RentalAgreement();
             rentalAgreement.setMainTenant(mainRenter);
@@ -197,7 +199,7 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setContractDate(LocalDate.now());
             Set<Renter> subRentersSet = new HashSet<>();
             for(int id: subRenters){
-                Renter subRenter = renterDAO.get(id, EntityGraphUtils::SimpleRenter);
+                Renter subRenter = renterDAO.get(id, EntityGraphUtils::SimpleRenter);        // this
                 subRentersSet.add(subRenter);
             }
             rentalAgreement.setSubTenants(subRentersSet);
@@ -205,18 +207,18 @@ public class Host_NotificationController implements Initializable {
             rentalAgreement.setRentingFee(property.getPrice());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
 
-            rentalAgreementDAO.add(rentalAgreement);
+            rentalAgreementDAO.add(rentalAgreement);      // this
             mainRenter.addAgreement(rentalAgreement);
-            renterDAO.update(mainRenter);
+            renterDAO.update(mainRenter);                  // this
             for (Renter r : subRentersSet) {
                 r.addSubAgreement(rentalAgreement);
-                renterDAO.update(r);
+                renterDAO.update(r);                       // this
             }
             currentUser.get().addAgreement(rentalAgreement);
-            boolean isUpdated =  hostDAO.update(currentUser.get());
+            boolean isUpdated =  hostDAO.update(currentUser.get());    // this
             NotificationDAO notificationDAO = new NotificationDAO();
             request.setAllApproved(true);
-            boolean isSaved =  notificationDAO.update(request);
+            boolean isSaved =  notificationDAO.update(request);       // this
             if(isSaved){
                 ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS,anchorPane, "Request approved successfully");
             }
@@ -245,7 +247,7 @@ public class Host_NotificationController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to deny this request?")) return;
         currentUser.get().denyRequest(request);
         HostDAO hostDAO = new HostDAO();
-        hostDAO.update(currentUser.get());
+        hostDAO.update(currentUser.get());          // this
         ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Request denied successfully");
     }
 
@@ -254,7 +256,7 @@ public class Host_NotificationController implements Initializable {
         Notification notification = selectedNotificationProperty.get();
         int id = Integer.parseInt(notification.getId() + "");
         NotificationDAO notificationDAO = new NotificationDAO();
-        notificationDAO.delete(notification);
+        notificationDAO.delete(notification);       // this
         if (currentUser.get().getSentNotifications().contains(notification)) {
             currentUser.get().getSentNotifications().remove(notification);
         } else {

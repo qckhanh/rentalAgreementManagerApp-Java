@@ -1,6 +1,7 @@
 package org.rmit.controller.Host;
 
 import atlantafx.base.layout.DeckPane;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -68,7 +69,7 @@ public class Host_ManagePropertyController implements Initializable {
     public ObjectProperty<List<byte[]>> selectedImage = new SimpleObjectProperty<>();
     public int currentImageIndex = 0;
     public AnchorPane anchorPane;
-    public List<Property> listPropertyFound = new ArrayList<>();
+    public Set<Property> listPropertyFound = new HashSet<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -134,6 +135,7 @@ public class Host_ManagePropertyController implements Initializable {
 
     }
 
+    // x
     private void saveChanges() {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to save changes?")) return;
         selectedProperty.get().setStatus(propertyStatusCbox.getValue());
@@ -181,35 +183,37 @@ public class Host_ManagePropertyController implements Initializable {
         Task<List<ResidentialProperty>> residentialTask = TaskUtils.createTask(() -> {
             return dao2.search(search_input.getText(), EntityGraphUtils::SimpleResidentialProperty);
         });
-//        TaskUtils.run(commercialTask);
+        TaskUtils.run(commercialTask);
         TaskUtils.run(residentialTask);
 
-        commercialTask.setOnSucceeded(e -> {
+        commercialTask.setOnSucceeded(e -> Platform.runLater(() -> {
             System.out.println("Commercial task done");
             listPropertyFound.addAll(commercialTask.getValue());
-//            for(Property p: commercialTask.getValue()){
-//                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
-//            }
+            for(Property p: commercialTask.getValue()){
+                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
+            }
             ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Search: 50% completed");
             latch.countDown();
-        });
-        residentialTask.setOnSucceeded(e -> {
+        }));
+        residentialTask.setOnSucceeded(e -> Platform.runLater(() ->  {
             System.out.println("Residental task done");
             listPropertyFound.addAll(residentialTask.getValue());
-//            for(Property p: residentialTask.getValue()){
-//                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
-//            }
+            for(Property p: residentialTask.getValue()){
+                propertyMap.put(Integer.parseInt(p.getId() + ""), p);
+            }
             ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Search: 50% completed");
             latch.countDown();
-        });
+        }));
 
         Callable<Void> task = () -> {
             try{
                 latch.await();
-                property_listView.setItems(getPropertyList(new HashSet<>(listPropertyFound)));
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + listPropertyFound.size() + " property(s)");
-                search_btn.setDisable(false);
-                System.out.println("doneeeeeeeee");
+                Platform.runLater(() -> {
+                    property_listView.setItems(getPropertyList(listPropertyFound));
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Found " + listPropertyFound.size() + " property(s)");
+                    search_btn.setDisable(false);
+                    System.out.println("doneeeeeeeee");
+                });
             }
             catch (Exception ex){
                 ex.printStackTrace();
@@ -225,65 +229,87 @@ public class Host_ManagePropertyController implements Initializable {
         return list;
     }
 
-    private void unmanageProperty(Property property){
-        if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?")) return;
+    private void unmanageProperty(Property property) {
+        if (!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to unmanage this property?"))
+            return;
         manageProperty_btn.setDisable(true);
-        ((Host)Session.getInstance().getCurrentUser()).removeProperty(property);
-        managedProperties.get().remove(property);
-        property_listView.setItems(getPropertyList(managedProperties.get()));
+        ((Host) Session.getInstance().getCurrentUser()).removeProperty(property);
         DAOInterface dao = new HostDAO();
-        boolean isUpdated =  dao.update(Session.getInstance().getCurrentUser());
-        if(isUpdated){
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully unmanaged property");
-        }
-        else{
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to unmanage property");
-        }
-        manageProperty_btn.setDisable(false);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Unmanaging property...");
+        Task<Boolean> update = TaskUtils.createTask(() -> dao.update(Session.getInstance().getCurrentUser()));
+        TaskUtils.run(update);
+        update.setOnSucceeded(event -> Platform.runLater(() -> {
+            boolean isUpdated = update.getValue();
+            if(isUpdated){
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully unmanaged property");
+                managedProperties.get().remove(property);
+                property_listView.setItems(getPropertyList(managedProperties.get()));
+            }
+            else{
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to unmanage property");
+            }
+            manageProperty_btn.setDisable(false);
+        }));
     }
-
+    //x
     private void requestManageProperty(int propertyID){
         Property property = propertyMap.get(propertyID);
         System.out.println(property);
+        if(property == null){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Property has not been loaded yet");
+            return;
+        }
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to request manage this property?")) return;
         manageProperty_btn.setDisable(true);
-        String content = String.format(
-                NotificationUtils.CONTENT_REQUEST_PROPERTY,
-                property.getOwner().getName(),
-                currentUser.getName(),
-                property.getId(),
-                property.getAddress()
-        );
-        String header = String.format(
-                NotificationUtils.HEADER_REQUEST_PROPERTY,
-                property.getId(),
-                property.getAddress()
-        );
-        String draftObject = String.format(
-                ((property instanceof CommercialProperty)
-                        ? NotificationUtils.DAFT_PROPERTY_COMMERCIAL
-                        : NotificationUtils.DAFT_PROPERTY_RESIDENTIAL),
-                property.getId()
-        );
-        OwnerDAO ownerDAO = new OwnerDAO();
-        Owner owner = ownerDAO.get(Integer.parseInt(property.getOwner().getId() + ""), EntityGraphUtils::OwnerForEmailSent);
-        Request request = (Request) NotificationUtils.createRequest(
-                currentUser,
-                new ArrayList<>(Collections.singletonList(owner)),
-                header,
-                content,
-                draftObject
-        );
-        currentUser.sentNotification(request);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Requesting manage property...");
+
+
         HostDAO hostDAO = new HostDAO();
-        boolean isUpdated =  hostDAO.update(currentUser);
-        if(isUpdated){
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully requested manage property");
-        }
-        else{
-            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to request manage property");
-        }
-        manageProperty_btn.setDisable(false);
+        OwnerDAO ownerDAO = new OwnerDAO();
+
+        Task<Owner> ownerEmail = TaskUtils.createTask(() -> ownerDAO.get(Integer.parseInt(property.getOwner().getId() + ""), EntityGraphUtils::OwnerForEmailSent));
+        Task<Boolean> update = TaskUtils.createTask(() -> hostDAO.update(currentUser));
+        TaskUtils.run(ownerEmail);
+        ownerEmail.setOnSucceeded(e -> Platform.runLater(() -> {
+            String content = String.format(
+                    NotificationUtils.CONTENT_REQUEST_PROPERTY,
+                    property.getOwner().getName(),
+                    currentUser.getName(),
+                    property.getId(),
+                    property.getAddress()
+            );
+            String header = String.format(
+                    NotificationUtils.HEADER_REQUEST_PROPERTY,
+                    property.getId(),
+                    property.getAddress()
+            );
+            String draftObject = String.format(
+                    ((property instanceof CommercialProperty)
+                            ? NotificationUtils.DAFT_PROPERTY_COMMERCIAL
+                            : NotificationUtils.DAFT_PROPERTY_RESIDENTIAL),
+                    property.getId()
+            );
+            Request request = (Request) NotificationUtils.createRequest(
+                    currentUser,
+                    new ArrayList<>(Collections.singletonList(ownerEmail.getValue())),
+                    header,
+                    content,
+                    draftObject
+            );
+
+            currentUser.sentNotification(request);
+            TaskUtils.run(update);
+            update.setOnSucceeded(event -> Platform.runLater(() -> {
+                boolean isUpdated = update.getValue();
+                if(isUpdated){
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Successfully requested manage property");
+                }
+                else{
+                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Failed to request manage property");
+                }
+                manageProperty_btn.setDisable(false);
+            }));
+        }));
     }
 
     private void clearDataCommercial(){
@@ -327,49 +353,57 @@ public class Host_ManagePropertyController implements Initializable {
     private void showPropertyDetail(Property property){
         clearDataProperty();
         int id = Integer.parseInt(property.getId()+"");
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loading property details...");
-        if(propertyMap.containsKey(id)){
-            property = propertyMap.get(id);
-        }else{
-            if(property.getType().toString().equals("COMMERCIAL")){
-                CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
-                property = (CommercialProperty)commercialPropertyDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loading property details...");
+        boolean isCommercial = property.getType().toString().equals("COMMERCIAL");
+        Task<Property> loadProperty = TaskUtils.createTask(() -> {
+            if(propertyMap.containsKey(id)){
+                return propertyMap.get(id);
             }
             else{
-                ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
-                property = (ResidentialProperty)residentialPropertyDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+                if(isCommercial){
+                    CommercialPropertyDAO commercialPropertyDAO = new CommercialPropertyDAO();
+                    return commercialPropertyDAO.get(id, EntityGraphUtils::SimpleCommercialProperty);
+                }
+                else{
+                    ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
+                    return residentialPropertyDAO.get(id, EntityGraphUtils::SimpleResidentialProperty);
+                }
             }
-        }
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Loaded property details");
-        currentImageIndex = 0;
-        selectedImage.set(property.getImages());
-        if(selectedImage.get().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(currentImageIndex)));
-        propertyMap.put(id, property);
-        propertyID_input.setText(property.getId()+"");
-        address_input.setText(property.getAddress());
-        price_input.setText(property.getPrice()+"");
-        ownerName_input.setText(property.getOwner().getName());
-        propertyType_input.setText(property.getType().toString());
-        propertyStatusCbox.setValue(property.getStatus());
-        propertyStatusCbox.setItems(FXCollections.observableArrayList(
-                PropertyStatus.AVAILABLE,
-                PropertyStatus.UNAVAILABLE
-        ));
-//        totalAgremeent_input.setText(property.getAgreementList().size()+"");
-        if(property.getType().toString().equals("COMMERCIAL")){
-            CommercialProperty commercialProperty = (CommercialProperty) property;
-            bussinessType_input.setText(commercialProperty.getBusinessType());
-            parkingSlot_input.setText(commercialProperty.getTotalParkingSpace()+"");
-            squareArea_input.setText(commercialProperty.getSquareMeters()+"");
-        }
-        else if(property.getType().toString().equals("RESIDENTIAL")){
-            ResidentialProperty residentialProperty = (ResidentialProperty) property;
-            totalRoom_input.setText(residentialProperty.getTotalRoom()+"");
-            totalBedroom_input.setText(residentialProperty.getTotalBedroom()+"");
-            petAllow_input.setText(residentialProperty.isPetAllowed()+"");
-            gadern_input.setText(residentialProperty.isHasGarden()+"");
-        }
+        });
 
+        TaskUtils.run(loadProperty);
+        loadProperty.setOnSucceeded(e -> Platform.runLater(() -> {
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Property details loaded");
+            Property property1 = loadProperty.getValue();
+            currentImageIndex = 0;
+            selectedImage.set(property1.getImages());
+            if(selectedImage.get().size() != 0) imageView_propertyImg.setImage(ImageUtils.byteToImage(selectedImage.get().get(currentImageIndex)));
+            propertyMap.put(id, property1);
+            propertyID_input.setText(property1.getId()+"");
+            address_input.setText(property1.getAddress());
+            price_input.setText(property1.getPrice()+"");
+            ownerName_input.setText(property1.getOwner().getName());
+            propertyType_input.setText(property1.getType().toString());
+            propertyStatusCbox.setValue(property1.getStatus());
+            propertyStatusCbox.setItems(FXCollections.observableArrayList(
+                    PropertyStatus.AVAILABLE,
+                    PropertyStatus.UNAVAILABLE
+            ));
+//        totalAgremeent_input.setText(property.getAgreementList().size()+"");
+            if(property1.getType().toString().equals("COMMERCIAL")){
+                CommercialProperty commercialProperty = (CommercialProperty) property1;
+                bussinessType_input.setText(commercialProperty.getBusinessType());
+                parkingSlot_input.setText(commercialProperty.getTotalParkingSpace()+"");
+                squareArea_input.setText(commercialProperty.getSquareMeters()+"");
+            }
+            else if(property1.getType().toString().equals("RESIDENTIAL")){
+                ResidentialProperty residentialProperty = (ResidentialProperty) property1;
+                totalRoom_input.setText(residentialProperty.getTotalRoom()+"");
+                totalBedroom_input.setText(residentialProperty.getTotalBedroom()+"");
+                petAllow_input.setText(residentialProperty.isPetAllowed()+"");
+                gadern_input.setText(residentialProperty.isHasGarden()+"");
+            }
+        }));
     }
 
     private void prevImg_btn() {

@@ -134,8 +134,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hibernate.version>6.5.2.Final</hibernate.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javafx.version>17.0.6</javafx.version>
     <junit.version>5.10.2</junit.version>
   </properties>
