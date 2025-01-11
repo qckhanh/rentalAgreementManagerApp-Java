@@ -65,7 +65,7 @@ public class EntityGraphUtils {
 
         EntityManager emf = session.unwrap(EntityManager.class);
         EntityGraph<Host> entityGraph = emf.createEntityGraph(Host.class);
-        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username");
+        entityGraph.addAttributeNodes("id", "name","dateOfBirth", "contact", "username", "profileAvatar");
         simpleProperty(entityGraph.addSubgraph("propertiesManaged"));
 
         return entityGraph;
@@ -301,7 +301,7 @@ public class EntityGraphUtils {
 
         rentalAgreementSubgraph.addAttributeNodes("id");
         mainTenantSubgraph.addAttributeNodes("name");
-        hostEntityGraph.addSubgraph("receivedNotifications");
+//        hostEntityGraph.addSubgraph("receivedNotifications");
 
         simplePerson(entityGraph.addSubgraph("owner"));
         simplePerson(hostEntityGraph);
@@ -321,7 +321,7 @@ public class EntityGraphUtils {
 
         rentalAgreementSubgraph.addAttributeNodes("id");
         mainTenantSubgraph.addAttributeNodes("name");
-        hostEntityGraph.addSubgraph("receivedNotifications");
+//        hostEntityGraph.addSubgraph("receivedNotifications");
 
         simplePerson(entityGraph.addSubgraph("owner"));
         simplePerson(hostEntityGraph);

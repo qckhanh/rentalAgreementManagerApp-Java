@@ -2,12 +2,15 @@ package org.rmit.controller.Owner;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.database.OwnerDAO;
@@ -62,12 +65,19 @@ public class Owner_DashboardController implements Initializable {
     }
 
     private void refreshData() {
+
         OwnerDAO ownerDAO = new OwnerDAO();
         int id = Integer.parseInt(currentUser.get().getId()+"");
-        Owner owner = ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull);
-        propertiesValueLabel.setText(String.valueOf(owner.getPropertiesOwned().size()));
-        hostsValueLabel.setText(String.valueOf(owner.getHosts().size()));
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
+
+        Task<Owner> task = TaskUtils.createTask(() -> ownerDAO.get(id, EntityGraphUtils::SimpleOwnerFull));
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Refreshing data ... ");
+        TaskUtils.run(task);
+        task.setOnSucceeded(e -> {
+            Owner owner = task.getValue();
+            propertiesValueLabel.setText(String.valueOf(owner.getPropertiesOwned().size()));
+            hostsValueLabel.setText(String.valueOf(owner.getHosts().size()));
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Data refreshed");
+        });
     }
 
     private void loadRecentNotification(Set<Notification> s) {

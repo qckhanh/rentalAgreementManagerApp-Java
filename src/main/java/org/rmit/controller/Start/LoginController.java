@@ -16,6 +16,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.*;
+import org.rmit.view.Admin.AdminViewFactory;
 import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.*;
 import org.rmit.model.Persons.Renter;
@@ -132,11 +133,11 @@ public class LoginController implements Initializable {
                 loginUser = validate.getValue();
                 if(loginUser == null) ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Incorrect username or password");
                 else {
-                    ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
+                    ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Login successful. Loading data");
                     Session.getInstance().setCurrentUser(loginUser);
                     Stage currentStage = (Stage) signIn_btn.getScene().getWindow();
-                    ViewCentral.getInstance().getAdminViewFactory().startAdminView();
-                    ViewCentral.getInstance().getStartViewFactory().closeStage(currentStage);
+                    AdminViewFactory.setLoginStage(currentStage);
+                    ViewCentral.getInstance().getAdminViewFactory();
                 }
             }));
         }

@@ -1,11 +1,17 @@
 package org.rmit.controller.Owner;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
+import org.rmit.Helper.ImageUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.HostDAO;
 import org.rmit.view.ViewCentral;
@@ -35,6 +41,7 @@ public class Owner_HostManagerController implements Initializable {
     public ObjectProperty<Person> currentPerson = Session.getInstance().currentUserProperty();
     public ObjectProperty<Set<Host>> hosts = ((Owner) currentPerson.get()).hostsPropertyProperty();
     public AnchorPane anchorPane;
+    public ImageView avatar_imageView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -46,6 +53,7 @@ public class Owner_HostManagerController implements Initializable {
                 loadHost(hosts.get());
             }
         });
+        host_tableView.setItems(FXCollections.observableArrayList(hosts.get()));
         host_tableView.setOnMouseClicked(e -> showDetails(host_tableView.getSelectionModel().getSelectedItem()));
         host_tableView.getColumns().addAll(
                 newColumn("ID", "id"),
@@ -64,17 +72,25 @@ public class Owner_HostManagerController implements Initializable {
                 }
             }
         });
+        avatar_imageView.setImage(ImageUtils.byteToImage(null));
+
     }
 
     private void searchHost() {
         if (search_input.getText().isBlank()) return;
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Searching for host(s) ...");
         search_btn.setDisable(true);
+
         HostDAO hostDAO = new HostDAO();
-        List<Host> lists = hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost);
-        Set<Host> hostSet = new HashSet<>(lists);
-        loadHost(hostSet);
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, lists.size() + " host(s) found");
-        search_btn.setDisable(false);
+        Task<List<Host>> loadHostTask = TaskUtils.createTask(() -> hostDAO.search(search_input.getText(), EntityGraphUtils::SimpleHost));
+        TaskUtils.run(loadHostTask);
+
+        loadHostTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            Set<Host> hostSet = new HashSet<>(loadHostTask.getValue());
+            loadHost(hostSet);
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, hostSet.size() + " host(s) found");
+            search_btn.setDisable(false);
+        }));
     }
 
     private void loadHost(Set<Host> h) {
@@ -91,23 +107,28 @@ public class Owner_HostManagerController implements Initializable {
 
     private void showDetails(Host h) {
         if (h == null)  return;
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "Loading data...");
+        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Loading data...");
         int id = Integer.parseInt(h.getId()+"");
-        if (hostMap.containsKey(id)) {
-            h = hostMap.get(id);
-        }
-        else{
-            HostDAO hostDAO = new HostDAO();
-            h = hostDAO.get(id, EntityGraphUtils::hostForSearching);
-            hostMap.put(id, h);
-        }
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host details loaded");
-        D_input.setText(h.getId()+"");
-        username_input.setText(h.getUsername());
-        fullName_input.setText(h.getName());
-        contact_input.setText(h.getContact());
-        dob_input.setText(h.getDateOfBirth().toString());
-        managingProperty_listView.getItems().clear();
-        managingProperty_listView.getItems().addAll(h.getPropertiesManaged());
+        HostDAO hostDAO = new HostDAO();
+
+        Task<Host> loadHostTask = TaskUtils.createTask(() -> {
+            if (hostMap.containsKey(id)) return hostMap.get(id);
+            else return hostDAO.get(id, EntityGraphUtils::hostForSearching);
+        });
+        TaskUtils.run(loadHostTask);
+        loadHostTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Host details loaded");
+
+            Host host = loadHostTask.getValue();
+            hostMap.put(id, host);
+            avatar_imageView.setImage(ImageUtils.byteToImage(host.getProfileAvatar()));
+            D_input.setText(host.getId()+"");
+            username_input.setText(host.getUsername());
+            fullName_input.setText(host.getName());
+            contact_input.setText(host.getContact());
+            dob_input.setText(host.getDateOfBirth().toString());
+            managingProperty_listView.getItems().clear();
+            managingProperty_listView.getItems().addAll(host.getPropertiesManaged());
+        }));
     }
 }

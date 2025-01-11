@@ -183,7 +183,7 @@ public class RentalAgreementDAO extends DAOInterface<RentalAgreement>{
                 try {
                     Thread.sleep(1000); // 1-second delay
                 } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+//                    Thread.currentThread().interrupt();
                 }
             }
         }

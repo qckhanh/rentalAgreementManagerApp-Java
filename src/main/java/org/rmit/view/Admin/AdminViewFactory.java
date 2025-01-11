@@ -1,6 +1,7 @@
 package org.rmit.view.Admin;
 
 import atlantafx.base.controls.ModalPane;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
@@ -43,7 +44,7 @@ public class AdminViewFactory {
     private AnchorPane admin_paymentManagerView;
     private AnchorPane admin_adminManagerView;
     private AnchorPane admin_propertyManagerView;
-
+    private static Stage loginStage = new Stage();
     private Admin_DashboardController adminDashboardController;
 
     private ObjectProperty<List<Renter>> allRenter = new SimpleObjectProperty<>();
@@ -58,7 +59,8 @@ public class AdminViewFactory {
     private ObjectProperty<List<RentalAgreement>> allRentalAgreement = new SimpleObjectProperty<>();
 
     public AdminViewFactory() {
-        selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD);      // default view
+        selectedMenuItem = new SimpleObjectProperty<>(ADMIN_MENU_OPTION.DASHBOARD); // default view
+
         RenterDAO renterDAO = new RenterDAO();
         HostDAO hostDAO = new HostDAO();
         OwnerDAO ownerDAO = new OwnerDAO();
@@ -67,7 +69,6 @@ public class AdminViewFactory {
         ResidentialPropertyDAO residentialPropertyDAO = new ResidentialPropertyDAO();
         RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
         PaymentDAO paymentDAO = new PaymentDAO();
-
         Task<List<Renter>> loadRenterTask = TaskUtils.createTask(() -> renterDAO.getAll(EntityGraphUtils::SimpleRenterFull));
         Task<List<Host>> loadHostTask = TaskUtils.createTask(() -> hostDAO.getAll(EntityGraphUtils::SimpleHostFull));
         Task<List<Owner>> loadOwnerTask = TaskUtils.createTask(() -> ownerDAO.getAll(EntityGraphUtils::SimpleOwnerFull));
@@ -76,58 +77,86 @@ public class AdminViewFactory {
         Task<List<ResidentialProperty>> loadResidentialPropertyTask = TaskUtils.createTask(() -> residentialPropertyDAO.getAll(EntityGraphUtils::SimpleResidentialPropertyFull));
         Task<List<RentalAgreement>> loadRentalAgreementTask = TaskUtils.createTask(() -> rentalAgreementDAO.getAll(EntityGraphUtils::SimpleRentalAgreementFull));
         Task<List<Payment>> loadPaymentTask = TaskUtils.createTask(() -> paymentDAO.getAll(EntityGraphUtils::SimplePaymentFull));
+        // Parent Task to ensure all data is loaded
+        Task<Boolean> loadAllDataTask = TaskUtils.createTask(() -> {
+            CountDownLatch latch = new CountDownLatch(8);
 
-        CountDownLatch latch = new CountDownLatch(2);
-        loadRenterTask.setOnSucceeded(e -> {
-            allRenter.set(loadRenterTask.getValue());
-        });
-        loadHostTask.setOnSucceeded(e -> {
-            allHost.set(loadHostTask.getValue());
-        });
-        loadOwnerTask.setOnSucceeded(e -> {
-            allOwner.set(loadOwnerTask.getValue());
-        });
-        loadAdminTask.setOnSucceeded(e -> {
-            allAdmin.set(loadAdminTask.getValue());
-        });
-        loadCommercialPropertyTask.setOnSucceeded(e -> {
-            allCommercialProperty.set(loadCommercialPropertyTask.getValue());
-            latch.countDown();
-        });
-        loadResidentialPropertyTask.setOnSucceeded(e -> {
-            allResidentialProperty.set(loadResidentialPropertyTask.getValue());
-            latch.countDown();
-        });
-        loadRentalAgreementTask.setOnSucceeded(e -> {
-            allRentalAgreement.set(loadRentalAgreementTask.getValue());
-        });
-        loadPaymentTask.setOnSucceeded(e -> {
-            allPayment.set(loadPaymentTask.getValue());
+            // Bind data when tasks succeed
+            loadRenterTask.setOnSucceeded(e ->{
+                allRenter.set(loadRenterTask.getValue());
+                latch.countDown();
+            });
+            loadHostTask.setOnSucceeded(e ->{
+                allHost.set(loadHostTask.getValue());
+                latch.countDown();
+            });
+            loadOwnerTask.setOnSucceeded(e ->{
+                allOwner.set(loadOwnerTask.getValue());
+                latch.countDown();
+            });
+            loadAdminTask.setOnSucceeded(e ->{
+                allAdmin.set(loadAdminTask.getValue());
+                latch.countDown();
+            });
+            loadCommercialPropertyTask.setOnSucceeded(e -> {;
+                allCommercialProperty.set(loadCommercialPropertyTask.getValue());
+                System.out.println("number of com: " + allCommercialProperty.get().size());
+                latch.countDown();
+            });
+            loadResidentialPropertyTask.setOnSucceeded(e -> {
+                allResidentialProperty.set(loadResidentialPropertyTask.getValue());
+                System.out.println("number of res: " + allResidentialProperty.get().size());
+                latch.countDown();
+            });
+            loadRentalAgreementTask.setOnSucceeded(e ->{
+                allRentalAgreement.set(loadRentalAgreementTask.getValue());
+                System.out.println(allRentalAgreement.get().size());
+                latch.countDown();
+            });
+            loadPaymentTask.setOnSucceeded(e ->{
+                allPayment.set(loadPaymentTask.getValue());
+                latch.countDown();
+            });
+
+            // Run all tasks
+            TaskUtils.run(loadRenterTask);
+            TaskUtils.run(loadHostTask);
+            TaskUtils.run(loadOwnerTask);
+            TaskUtils.run(loadAdminTask);
+            TaskUtils.run(loadCommercialPropertyTask);
+            TaskUtils.run(loadResidentialPropertyTask);
+            TaskUtils.run(loadRentalAgreementTask);
+            TaskUtils.run(loadPaymentTask);
+
+            latch.await();
+            Platform.runLater(() -> {
+                List<Property> combinedProperties = new ArrayList<>();
+                combinedProperties.addAll(loadCommercialPropertyTask.getValue());
+                combinedProperties.addAll(loadResidentialPropertyTask.getValue());
+                allProperty.set(combinedProperties);
+            });
+            return true;
         });
 
-        Callable<Void> task = (() -> {
-            try {
-                latch.await();
-                List<Property> combine = new ArrayList<>();
-                combine.addAll(allCommercialProperty.get());
-                combine.addAll(allResidentialProperty.get());
-                allProperty.set(combine);
-                return null;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                return null;
-            }
+        // Run the parent task
+        loadAllDataTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            close();
+            startAdminView();
+        }));
+
+        TaskUtils.run(loadAllDataTask);
+
+        loadAllDataTask.setOnCancelled(e -> {
+            System.out.println("Cancelled loading data xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         });
 
-        TaskUtils.run(loadRenterTask);
-        TaskUtils.run(loadHostTask);
-        TaskUtils.run(loadOwnerTask);
-        TaskUtils.run(loadAdminTask);
-        TaskUtils.run(loadCommercialPropertyTask);
-        TaskUtils.run(loadResidentialPropertyTask);
-        TaskUtils.run(loadRentalAgreementTask);
-        TaskUtils.run(loadPaymentTask);
-        TaskUtils.countDown(latch, task);
+        // Handle task failure
+        loadAllDataTask.setOnFailed(e -> Platform.runLater(() -> {
+            System.out.println("Failed to load data");
+            Throwable error = loadAllDataTask.getException();
+            error.printStackTrace();
+//            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, null, "Failed to load data");
+        }));
     }
 
     // start admin view when user login as admin
@@ -180,7 +209,7 @@ public class AdminViewFactory {
             try {
                 admin_agreementManagerView = new FXMLLoader(getClass().getResource(ADMIN_PATH + "agreementManager.fxml")).load();
             } catch (Exception e){
-                System.out.println("Error loading agreement manager.fxml");
+                e.printStackTrace();
             }
         }
         return admin_agreementManagerView;
@@ -389,5 +418,13 @@ public class AdminViewFactory {
 
     public Admin_DashboardController getAdminDashboardController() {
         return adminDashboardController;
+    }
+
+    public static void setLoginStage(Stage stage){
+        loginStage = stage;
+    }
+
+    private static void close (){
+        loginStage.close();
     }
 }

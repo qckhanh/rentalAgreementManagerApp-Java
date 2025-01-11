@@ -1,13 +1,16 @@
 package org.rmit.controller.Host;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.rmit.Helper.EntityGraphUtils;
 import org.rmit.Helper.NotificationUtils;
+import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.Notification.Notification;
 import org.rmit.Notification.Request;
@@ -24,9 +27,12 @@ import org.rmit.view.Host.NOTI_TYPE_FILTER;
 import org.rmit.view.Host.ROLE_FILTER;
 import org.rmit.view.Start.NOTIFICATION_TYPE;
 
+import javax.swing.plaf.multi.MultiOptionPaneUI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
 import static org.rmit.view.Host.ROLE_FILTER.*;
@@ -52,6 +58,11 @@ public class Host_NotificationController implements Initializable {
     public ObjectProperty<NOTI_TYPE_FILTER> notiTypeProperty = new SimpleObjectProperty<>(NOTI_TYPE_FILTER.NONE);
     public ObjectProperty<Notification> selectedNotificationProperty = new SimpleObjectProperty<>(null);
     public ObjectProperty<Host> currentUser = new SimpleObjectProperty<>((Host) Session.getInstance().getCurrentUser());
+
+    Set<Renter> subRentersSet = new HashSet<>();
+    Renter mainRenter;
+    Owner owner;
+    Property property;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -159,10 +170,19 @@ public class Host_NotificationController implements Initializable {
             return;
         }
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to approve this request? By accept this request, you will approve the request action.")) return;
+
+        //reset
+        mainRenter = null;
+        owner = null;
+        property = null;
+        subRentersSet.clear();
+
         approve_btn.setDisable(true);
         currentUser.get().acceptRequest(request);
+
         String draft = request.getDraftObject();
         if(NotificationUtils.getDraftType(draft).equals("RentalAgreement")){
+            //set up entity
             List<String> ids = NotificationUtils.draftID_RentalAgreement(draft);
             long mainRenterId = request.getSender().getId();
             long propertyID = Long.parseLong(ids.get(0));
@@ -174,67 +194,141 @@ public class Host_NotificationController implements Initializable {
                 subRenters.add(Integer.parseInt(ids.get(i)));
             }
 
+            // get entity
             RenterDAO renterDAO = new RenterDAO();
             HostDAO hostDAO = new HostDAO();
             OwnerDAO ownerDAO = new OwnerDAO();
-
-            // this
-            Renter mainRenter = renterDAO.get(Integer.parseInt(mainRenterId + ""), EntityGraphUtils::SimpleRenter);
-            Owner owner = ownerDAO.get(Integer.parseInt(ownerID + ""), EntityGraphUtils::SimpleOwner);
-
-            CommercialPropertyDAO dao = new CommercialPropertyDAO();
-            Property property = (Property) dao.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleCommercialProperty);
-            if(property == null){
-                ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
-                property = (Property) dao2.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleResidentialProperty);
-            }
-            // this
-
-            RentalAgreement rentalAgreement = new RentalAgreement();
-            rentalAgreement.setMainTenant(mainRenter);
-            rentalAgreement.setProperty(property);
-            property.setStatus(PropertyStatus.RENTED);
-            rentalAgreement.setHost(currentUser.get());
-            rentalAgreement.setPeriod(rentalPeriod);
-            rentalAgreement.setContractDate(LocalDate.now());
-            Set<Renter> subRentersSet = new HashSet<>();
-            for(int id: subRenters){
-                Renter subRenter = renterDAO.get(id, EntityGraphUtils::SimpleRenter);        // this
-                subRentersSet.add(subRenter);
-            }
-            rentalAgreement.setSubTenants(subRentersSet);
-            rentalAgreement.setStatus(AgreementStatus.NEW);
-            rentalAgreement.setRentingFee(property.getPrice());
             RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-
-            rentalAgreementDAO.add(rentalAgreement);      // this
-            mainRenter.addAgreement(rentalAgreement);
-            renterDAO.update(mainRenter);                  // this
-            for (Renter r : subRentersSet) {
-                r.addSubAgreement(rentalAgreement);
-                renterDAO.update(r);                       // this
-            }
-            currentUser.get().addAgreement(rentalAgreement);
-            boolean isUpdated =  hostDAO.update(currentUser.get());    // this
-            NotificationDAO notificationDAO = new NotificationDAO();
-            request.setAllApproved(true);
-            boolean isSaved =  notificationDAO.update(request);       // this
-            if(isSaved){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS,anchorPane, "Request approved successfully");
-            }
-            else {
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Request approved failed. Try again");
-            }
-
-            if(isUpdated){
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS,anchorPane, "Request approved successfully");
-            }
-            else {
-                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Request approved failed. Try again");
+            ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Approving request...");
+            CountDownLatch latch = new CountDownLatch(3 + subRenters.size());
+            Task<Renter> getMainRenter = TaskUtils.createTask(() -> renterDAO.get(Integer.parseInt(mainRenterId + ""), EntityGraphUtils::SimpleRenter));
+            Task<Owner> getOwner = TaskUtils.createTask(() -> ownerDAO.get(Integer.parseInt(ownerID + ""), EntityGraphUtils::SimpleOwner));
+            Task<Property> getProperty = TaskUtils.createTask(() -> {
+                CommercialPropertyDAO dao = new CommercialPropertyDAO();
+                Property property = (Property) dao.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleCommercialProperty);
+                if(property == null){
+                    ResidentialPropertyDAO dao2 = new ResidentialPropertyDAO();
+                    property = (Property) dao2.get(Integer.parseInt(propertyID + ""), EntityGraphUtils::SimpleResidentialProperty);
+                }
+                return property;
+            });
+            for(int id: subRenters){
+                Task<Renter> getSubRenter = TaskUtils.createTask(() -> renterDAO.get(id, EntityGraphUtils::SimpleRenter));
+                TaskUtils.run(getSubRenter);
+                getSubRenter.setOnSucceeded(e -> Platform.runLater(() -> {
+                    Renter subRenter = getSubRenter.getValue();
+                    subRentersSet.add(subRenter);
+                    latch.countDown();
+                }));
             }
 
-            approve_btn.setDisable(false);
+            TaskUtils.run(getMainRenter);
+            TaskUtils.run(getOwner);
+            TaskUtils.run(getProperty);
 
+            getMainRenter.setOnSucceeded(e -> Platform.runLater(() -> {
+                mainRenter = getMainRenter.getValue();
+                latch.countDown();
+            }));
+            getOwner.setOnSucceeded(e -> Platform.runLater(() -> {
+                owner = getOwner.getValue();
+                latch.countDown();
+            }));
+            getProperty.setOnSucceeded(e -> Platform.runLater(() -> {
+                property = getProperty.getValue();
+                latch.countDown();
+            }));
+
+            Callable<Void> task = () -> {
+                try {
+                    latch.await();
+
+                    RentalAgreement rentalAgreement = new RentalAgreement();
+                    rentalAgreement.setMainTenant(mainRenter);
+                    rentalAgreement.setProperty(property);
+                    property.setStatus(PropertyStatus.RENTED);
+                    rentalAgreement.setHost(currentUser.get());
+                    rentalAgreement.setPeriod(rentalPeriod);
+                    rentalAgreement.setContractDate(LocalDate.now());
+                    rentalAgreement.setSubTenants(subRentersSet);
+                    rentalAgreement.setStatus(AgreementStatus.NEW);
+                    rentalAgreement.setRentingFee(property.getPrice());
+
+
+                    Task<Boolean> addRentalAgreement = TaskUtils.createTask(() -> rentalAgreementDAO.add(rentalAgreement));
+                    TaskUtils.run(addRentalAgreement);
+
+                    Platform.runLater(() -> {
+                        addRentalAgreement.setOnSucceeded(e -> Platform.runLater(() -> {
+                            CountDownLatch latch2 = new CountDownLatch(3 + subRentersSet.size());
+
+                            //main renter
+                            Task<Boolean> updateMainRenter = TaskUtils.createTask(() -> {
+                                mainRenter.addAgreement(rentalAgreement);
+                                return renterDAO.update(mainRenter);
+                            });
+                            updateMainRenter.setOnSucceeded(e2 -> Platform.runLater(() -> {
+                                latch2.countDown();
+                            }));
+
+                            //sub renter
+                            for (Renter r : subRentersSet) {
+                                Task<Boolean> addSubAgreement = TaskUtils.createTask(() -> {
+                                    r.addSubAgreement(rentalAgreement);
+                                    return renterDAO.update(r);
+                                });
+                                addSubAgreement.setOnSucceeded(e2 -> Platform.runLater(() -> {
+                                    latch2.countDown();
+                                }));
+                                TaskUtils.run(addSubAgreement);
+                            }
+
+                            // update current user
+                            Task<Boolean> updateCurrentUser = TaskUtils.createTask(() -> {
+                                currentUser.get().addAgreement(rentalAgreement);
+                                return hostDAO.update(currentUser.get());
+                            });
+
+                            // update notification
+                            Task<Boolean> updateNotification = TaskUtils.createTask(() -> {
+                                request.setAllApproved(true);
+                                return new NotificationDAO().update(request);
+                            });
+
+                            //on success
+                            updateNotification.setOnSucceeded(e2 -> Platform.runLater(() -> {
+                                latch2.countDown();
+                            }));
+                            updateCurrentUser.setOnSucceeded(e2 -> Platform.runLater(() -> {
+                                latch2.countDown();
+                            }));
+
+                            //run
+                            TaskUtils.run(updateCurrentUser);
+                            TaskUtils.run(updateNotification);
+                            TaskUtils.run(updateMainRenter);
+
+                            Callable<Void> task2 = () -> {
+                                try {
+                                    latch2.await();
+                                    Platform.runLater(() -> {
+                                        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Request approved successfully");
+                                    });
+                                } catch (InterruptedException e3) {
+                                    e3.printStackTrace();
+                                }
+                                return null;
+                            };
+                            TaskUtils.countDown(latch2, task2);
+                        }));
+                    });
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            };
+            TaskUtils.countDown(latch, task);
         }
     }
 
@@ -247,28 +341,42 @@ public class Host_NotificationController implements Initializable {
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to deny this request?")) return;
         currentUser.get().denyRequest(request);
         HostDAO hostDAO = new HostDAO();
-        hostDAO.update(currentUser.get());          // this
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Request denied successfully");
+        Task<Boolean> update = TaskUtils.createTask(() -> hostDAO.update(currentUser.get()));
+        TaskUtils.run(update);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Denying request...");
+        update.setOnSucceeded(e -> Platform.runLater(() -> {
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Request denied successfully");
+        }));
     }
 
     private void deleteNoti() {
+        Notification notification = notificationTableView.getSelectionModel().getSelectedItem();
+        if(notification == null){
+            ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.WARNING, anchorPane, "No notification selected");
+            return;
+        }
         if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Are you sure you want to delete this notification?")) return;
-        Notification notification = selectedNotificationProperty.get();
+
         int id = Integer.parseInt(notification.getId() + "");
         NotificationDAO notificationDAO = new NotificationDAO();
-        notificationDAO.delete(notification);       // this
-        if (currentUser.get().getSentNotifications().contains(notification)) {
-            currentUser.get().getSentNotifications().remove(notification);
-        } else {
-            currentUser.get().getReceivedNotifications().remove(notification);
-        }
 
-        currentUser.get().getSentNotifications().remove(notification);
-        currentUser.get().getReceivedNotifications().remove(notification);
-
-        loadListView(getNoFilter());
-
-        ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+        Task<Boolean> deleteTask = TaskUtils.createTask(() -> notificationDAO.delete(notification));
+        TaskUtils.run(deleteTask);
+        ViewCentral.getInstance().getStartViewFactory().standOnNotification(NOTIFICATION_TYPE.INFO, anchorPane, "Deleting notification...");
+        deleteTask.setOnSucceeded(e -> Platform.runLater(() -> {
+            if(deleteTask.getValue()){
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.SUCCESS, anchorPane, "Notification deleted successfully");
+                if (currentUser.get().getSentNotifications().contains(notification)) {
+                    currentUser.get().getSentNotifications().remove(notification);
+                } else {
+                    currentUser.get().getReceivedNotifications().remove(notification);
+                }
+                loadListView(getNoFilter());
+            }
+            else {
+                ViewCentral.getInstance().getStartViewFactory().pushNotification(NOTIFICATION_TYPE.ERROR, anchorPane, "Notification deleted failed. Try again");
+            }
+        }));
     }
 
     // Helper
