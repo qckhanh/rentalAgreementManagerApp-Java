@@ -21,7 +21,6 @@ public class Guest_MenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        ModelCentral.getInstance().getGuestViewFactory().setSelectedMenuItem(GUEST_MENU_OPTION.DASHBOARD);
         signUp_btn.setOnAction(e -> signUp());
         rentalManager_btn.setOnAction(e -> rentalManager());
         browseProperty_btn.setOnAction(e -> browseProperty());

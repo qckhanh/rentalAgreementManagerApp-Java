@@ -338,7 +338,6 @@ public class PaymentManagerController implements Initializable {
         paymentObservableList.setAll(list);
     }
 
-
     private <S, T> TableColumn<S, T> createColumn(String columnName, String propertyName) {
         TableColumn<S, T> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
