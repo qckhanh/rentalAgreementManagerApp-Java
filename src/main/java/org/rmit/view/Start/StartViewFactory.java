@@ -30,6 +30,7 @@ public class StartViewFactory {
     private InitController initController;
     private AnchorPane loginView;
     private AnchorPane registerView;
+    private Stage connectingStage = null;
 
     //Constructor
     public StartViewFactory() {
@@ -48,6 +49,22 @@ public class StartViewFactory {
         FXMLLoader noInternet = new FXMLLoader(getClass().getResource(FXML_PATH + "noInternet.fxml"));
         createStage(noInternet);
 //        initController = initLoad.getController();
+    }
+
+    public void loadingView(){
+        FXMLLoader loading = new FXMLLoader(getClass().getResource(FXML_PATH + "loading.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(loading.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage();
+        connectingStage = stage;
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
     }
 
     public void loading(){
@@ -296,5 +313,9 @@ public class StartViewFactory {
 
     public void setIsLogin(boolean isLogin) {
         this.isLogin.set(isLogin);
+    }
+
+    public void closeConnecting(){
+        connectingStage.close();
     }
 }

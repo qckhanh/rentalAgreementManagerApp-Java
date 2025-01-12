@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="418.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@../../Style/Start/login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="146.0" layoutY="181.0" prefHeight="38.0" prefWidth="125.0" text="Loading...">
+      <VBox alignment="CENTER" layoutX="325.0" layoutY="27.0" prefHeight="107.0" prefWidth="376.0" spacing="10.0">
+         <children>
+            <Label prefHeight="58.0" prefWidth="379.0" text="4Knights of Houses">
+               <font>
+                  <Font name="System Bold" size="40.0" />
+               </font>
+            </Label>
+            <Label text="Protecting Your Quest for the Right Lease">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <ImageView fitHeight="397.0" fitWidth="506.0" layoutX="315.0" layoutY="178.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../Image/connecting.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="351.0" layoutY="576.0" prefHeight="58.0" prefWidth="317.0" text="Intializing the application ...">
          <font>
-            <Font size="26.0" />
+            <Font size="27.0" />
          </font>
       </Label>
    </children>
