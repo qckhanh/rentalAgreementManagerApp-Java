@@ -56,7 +56,6 @@ public class HostManagerController implements Initializable {
     List<Host> persons = ViewCentral.getInstance().getAdminViewFactory().getAllHost();
 
     Label noneLabel = new Label();
-//    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

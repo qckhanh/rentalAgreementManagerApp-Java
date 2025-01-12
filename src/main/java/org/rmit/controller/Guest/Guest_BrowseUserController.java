@@ -25,7 +25,6 @@ public class Guest_BrowseUserController implements Initializable {
     public TextField fullName_input;
     public TextField contact_input;
     public TextField dob_input;
-//    public ListView<Property> managingProperty_listView;
     public TableView<Person> host_tableView;
     public TextField search_input;
     public Button search_btn;
@@ -33,7 +32,6 @@ public class Guest_BrowseUserController implements Initializable {
 
     public ObjectProperty<Person> currentPerson = Session.getInstance().currentUserProperty();
     public ImageView avatar;
-//    public ObjectProperty<Set<Owner>> owners = ((Host)currentPerson.get()).cooperatingOwnersPropertyProperty();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

@@ -54,16 +54,12 @@ public class OwnerManagerController implements Initializable {
     List<Owner> owners = ViewCentral.getInstance().getAdminViewFactory().getAllOwner();
 
     Label noneLabel = new Label();
-//    Validator validator = new Validator();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         decor();
         revealPassword(password_PasswordTextField);
         setEditableTextField(true);
-//        avatarImageView.getStyleClass().addAll(
-//                Styles.ROUNDED
-//        );
         create_btn.setOnAction(e -> createNewPerson());
         update_btn.setOnAction(e -> {
             updatePerson();

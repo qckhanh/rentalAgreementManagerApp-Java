@@ -15,8 +15,6 @@ import org.rmit.Helper.TaskUtils;
 import org.rmit.Helper.UIDecorator;
 import org.rmit.database.DAOInterface;
 import org.rmit.database.OwnerDAO;
-import org.rmit.database.RenterDAO;
-import org.rmit.model.Persons.Renter;
 import org.rmit.view.ViewCentral;
 import org.rmit.model.Persons.Owner;
 import org.rmit.model.Persons.Person;

@@ -20,8 +20,6 @@ public class GuestController implements Initializable {
                 case DASHBOARD -> borderPane.setCenter(ViewCentral.getInstance().getGuestViewFactory().getGuest_dashboardView());
                 case BROWSE_USER -> borderPane.setCenter(ViewCentral.getInstance().getGuestViewFactory().getGuest_BrowsePersonView());
                 case BROWSE_PROPERTY -> borderPane.setCenter(ViewCentral.getInstance().getGuestViewFactory().getGuest_BrowsePropertyView());
-//                case REGISTER -> borderPane.setCenter(ModelCentral.getInstance().getStartViewFactory().getRegisterView());
-//                case LOG_OUT -> System.out.println("Log out");
             }
         });
     }

@@ -32,14 +32,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
+/**
+ * @author 4Knights
+ * Controller class for the Admin Dashboard.
+ * This class handles the initialization and updating of the dashboard UI components.
+ */
 public class Admin_DashboardController implements Initializable {
     public TextField search_input;
     public Button search_button;
     public Label welcomeLabel;
     public Label totalAgreement_label;
     public Label totalPayments_label;
-    public ListView upcommingPayment_listView;
     public PieChart pieChartPersonObject;
     public ObservableList<PieChart.Data> pieChartData;
     public LineChart<String, Number> lineChart;
@@ -50,7 +53,13 @@ public class Admin_DashboardController implements Initializable {
     public AnchorPane anchorPane;
 
     LocalDate currentDate = LocalDate.now();
-
+    /**
+     * Initializes the controller class.
+     * Sets up the welcome label, graphs, and event handlers.
+     *
+     * @param url The location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param resourceBundle The resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         welcomeLabel.setText("Welcome " + Session.getInstance().getCurrentUser().getName());
@@ -77,7 +86,9 @@ public class Admin_DashboardController implements Initializable {
         });
         decor();
     }
-
+    /**
+     * Applies UI decorations to the refresh button.
+     */
     private void decor(){
        UIDecorator.setNormalButton(refreshAdminDashBoard, UIDecorator.REFRESH(), null);
     }

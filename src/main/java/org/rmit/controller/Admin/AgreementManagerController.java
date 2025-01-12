@@ -26,12 +26,6 @@ import java.util.*;
 import java.util.function.Function;
 
 public class AgreementManagerController implements Initializable {
-    public Button addAgreementButton;
-    public Button updateAgreeementButton;
-    public Button deleteAgreementButton;
-    public Button saveToDB_btn;
-
-
     public TableView<RentalAgreement> agreements_tableView;
     public ComboBox<AgreementStatus> agreementStatusFilter_comboBox;
     public ComboBox<Property> propertyFilter_comboBox;
@@ -67,82 +61,7 @@ public class AgreementManagerController implements Initializable {
     }
 
     private void setUpButtonAction(){
-//        saveToDB_btn.setVisible(false);
-//        saveToDB_btn.setOnAction(e -> saveToDB());
-//        addAgreementButton.setOnAction(e -> addAgreement());
-//        updateAgreeementButton.setOnAction(e -> updateAgreement());
-//        deleteAgreementButton.setOnAction(e -> deleteAgreement());
         del_btn.setOnAction(e -> deleteAgreement());
-    }
-
-    private void saveToDB() {
-        if(isTextFieldChanged(new RentalAgreement())){
-            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
-            RentalAgreement ra = new RentalAgreement();
-            ra.setProperty(selectedProperty.get());
-            ra.setPeriod(rentalPeriod_comboBox.getValue());
-            ra.setRentingFee(Double.parseDouble(fee_input.getText()));
-            ra.setStatus(status_comboBox.getValue());
-            ra.setContractDate(contractDate_datePicker.getValue());
-            ra.setHost(selectedHost.get());
-            ra.setMainTenant(selectedMainRenter.get());
-            ra.setSubTenants(selectedSubRenters);
-
-            RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            DatabaseUtil.warmUp();
-            boolean isUpdate = rentalAgreementDAO.update(ra);
-            if(isUpdate){
-                rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
-                rentalAgreementsObservableList.setAll(rentalAgreementsList);
-                System.out.println("Agreement updated");
-            }
-            else{
-                System.out.println("Agreement not updated");
-            }
-        }
-    }
-
-    private void addAgreement() {
-        clearInput();
-//        saveToDB_btn.setVisible(true);
-        setEditable(true);
-
-        mainRenter_comboBox.getItems().clear();
-        mainRenter_comboBox.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
-
-        subRenter_listView.getItems().clear();
-        subRenter_listView.getItems().addAll(ViewCentral.getInstance().getAdminViewFactory().getAllRenter());
-    }
-
-    private void updateAgreement() {
-        boolean isEditable = fee_input.isEditable();
-        setEditable(!isEditable);
-        if(isTextFieldChanged(selectedRentalAgreement.get())){
-            if(!ViewCentral.getInstance().getStartViewFactory().confirmMessage("Do you want to save this agreement?")) return;
-            RentalAgreement ra = selectedRentalAgreement.get();
-            ra.setProperty(selectedProperty.get());
-            ra.setPeriod(rentalPeriod_comboBox.getValue());
-            ra.setRentingFee(Double.parseDouble(fee_input.getText()));
-            ra.setStatus(status_comboBox.getValue());
-            ra.setContractDate(contractDate_datePicker.getValue());
-            ra.setHost(selectedHost.get());
-            ra.setMainTenant(selectedMainRenter.get());
-            ra.setSubTenants(selectedSubRenters);
-
-            RentalAgreementDAO rentalAgreementDAO = new RentalAgreementDAO();
-            DatabaseUtil.warmUp();
-            boolean isUpdate = rentalAgreementDAO.update(ra);
-            if(isUpdate){
-                rentalAgreementsList.set(rentalAgreementsList.indexOf(ra), ra);
-                rentalAgreementsObservableList.setAll(rentalAgreementsList);
-                System.out.println("Agreement updated");
-            }
-            else{
-                System.out.println("Agreement not updated");
-            }
-
-        }
-
     }
 
     private void setUpDataBehavior() {
@@ -385,32 +304,6 @@ public class AgreementManagerController implements Initializable {
         subRenter_listView.setDisable(!isEditable);
     }
 
-    private void clearInput() {
-        id_input.clear();
-        fee_input.clear();
-        contractDate_datePicker.setValue(null);
-        host_comboBox.setValue(null);
-        host_comboBox.getItems().clear();
-
-        property_comboBox.setValue(null);
-        rentalPeriod_comboBox.setValue(null);
-        status_comboBox.setValue(null);
-        mainRenter_comboBox.setValue(null);
-        subRenter_listView.getItems().clear();
-    }
-
-    private boolean isTextFieldChanged(RentalAgreement ra){
-        if(ra == null) return false;
-        if(!property_comboBox.getValue().equals(ra.getProperty())) return true;
-        if(!rentalPeriod_comboBox.getValue().equals(ra.periodPropertyProperty().get())) return true;
-        if(!status_comboBox.getValue().equals(ra.statusPropertyProperty().get())) return true;
-        if(!host_comboBox.getValue().equals(ra.getHost())) return true;
-        if(!mainRenter_comboBox.getValue().equals(ra.mainTenantPropertyProperty().get())) return true;
-        for(Renter renter: selectedSubRenters){
-            if(!ra.getSubTenants().contains(renter)) return true;
-        }
-        return false;
-    }
     // Helper Method:
     private void deleteAgreement() {
         RentalAgreement ra = selectedRentalAgreement.get();

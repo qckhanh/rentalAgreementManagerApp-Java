@@ -27,7 +27,22 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
+/**
+ * @author 4Knights
+ *
+ * This class, Admin_EditProfileController, manages the edit profile functionality
+ * for an admin user in a JavaFX application. It allows admins to update their
+ * personal details such as name, username, contact information, date of birth,
+ * password, and profile avatar. The class also handles input validation, UI updates,
+ * and database integration for saving the changes.
+ *
+ * Key functionalities:
+ * - Display current user details for editing.
+ * - Validate user inputs using a Validator.
+ * - Update profile information in the database.
+ * - Handle profile avatar updates.
+ * - Provide feedback to the user through notifications and error labels.
+ */
 public class Admin_EditProfileController implements Initializable {
     public TextField newName_input;
     public TextField newContact_input;

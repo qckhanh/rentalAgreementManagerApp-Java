@@ -14,7 +14,38 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
+/**
+ * @author 4Knights
+ *
+ * The `Admin_MenuController` class is responsible for controlling the admin menu
+ * functionality in the application. It serves as the link between the admin menu UI and
+ * the underlying business logic. This class ensures a seamless interaction with various
+ * admin functionalities such as editing profiles, managing users, agreements, and properties.
+ *
+ * Key Responsibilities:
+ * - Initialize UI elements such as labels, buttons, and image views with the admin's profile data.
+ * - Set up event handlers for the admin menu buttons to navigate to different admin functionalities.
+ * - Update UI elements dynamically when changes occur in the admin's session or profile.
+ * - Apply consistent styles and decorations to buttons using the `UIDecorator` helper class.
+ *
+ * Main Features:
+ * - Displays admin profile details, including name and avatar.
+ * - Provides navigation to manage renters, agreements, hosts, owners, payments, and properties.
+ * - Handles logout functionality and resets views.
+ *
+ * Dependencies:
+ * - `Session`: Retrieves the current admin session data.
+ * - `ImageUtils`: Handles image conversions for the profile avatar.
+ * - `UIDecorator`: Applies styling and decorations to UI components.
+ * - `ViewCentral`: Manages view transitions for different admin functionalities.
+ *
+ * Methods Overview:
+ * - `initialize(URL url, ResourceBundle resourceBundle)`: Initializes the UI and sets up event listeners.
+ * - `setActionButton()`: Assigns actions to menu buttons.
+ * - `decor()`: Applies styles and decorations to buttons.
+ * - Navigation methods (`manageRenter()`, `manageAgreement()`, etc.): Direct to specific admin management views.
+ * - `logOut()`: Logs out the admin and resets the view.
+ */
 public class Admin_MenuController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(Admin_MenuController.class);
 
