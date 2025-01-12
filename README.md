@@ -91,7 +91,8 @@
 Orcale OpenJDK 21+
 
 - MacOS:
-Oracle Open JDK 21
+Oracle Open JDK 21.0.5: [Download here](https://www.oracle.com/java/technologies/downloads/#java21)  
+JavaFX JDK 21.0.5 : [Download here](https://gluonhq.com/products/javafx/)  
 
 ### Dependencies
 - Jakarta Persistence API
@@ -125,4 +126,49 @@ Oracle Open JDK 21
 4. Observer Pattern (JavaFX Properties)
 5. DAO Pattern (Database Access)
 
+## Program Running Instructions  
 
+#### For Windows  
+1. **Unzip the program files**:  
+   - Locate the `.zip` file containing the program. After unzipping, you should see a folder containing the program’s main `.jar` file and its dependencies.  
+
+2. **Run the main executable file**:  
+   - Locate the `RENTAL_AGREEMENT_MANAGER_APPLICATION.jar` file.  
+   - Double-click on the file to launch the application.  
+
+3. **If the application does not start**:  
+   - Open the terminal and navigate to the folder containing the `.jar` file using the `cd` command.  
+   - Verify the `.jar` file is present using:  
+     ```bash
+     dir
+     ```  
+   - Run the application with the following command:  
+     ```bash
+     java -jar RENTAL_AGREEMENT_MANAGER_APPLICATION.jar
+     ```  
+
+#### For macOS  
+1. **Unzip the program files**:  
+   - After unzipping, ensure the `.jar` file and its dependencies are in the same directory.  
+
+2. **Run the application**:  
+   - Open the terminal and navigate to the folder using the `cd` command.  
+   - Verify the files using:  
+     ```bash
+     ls
+     ```  
+   - Run the application with the following command:  
+     ```bash
+     java -jar RENTAL_AGREEMENT_MANAGER_APPLICATION.jar
+     ```  
+3. **For macOS with JavaFX dependencies**:  
+   - Ensure that you have JavaFX SDK installed and placed in `/Library/Java/JavaVirtualMachines/`.  
+   - Run the application using the following command:  
+     ```bash
+     java --module-path /Library/Java/JavaVirtualMachines/javafx-sdk-21.0.5/lib --add-modules javafx.controls,javafx.fxml -jar RENTAL_AGREEMENT_MANAGER_APPLICATION.jar
+     ```  
+   - Wait for 15 seconds, and the application should launch successfully.  
+
+#### Notes  
+- The main program executable `.jar` file **must stay in the same folder** as its dependencies.  
+- A stable internet connection is required to run the application. If the application cannot connect to the internet, it may fail to launch.  
