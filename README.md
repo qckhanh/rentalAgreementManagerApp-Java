@@ -157,11 +157,6 @@ JavaFX JDK 21.0.5 : [Download here](https://gluonhq.com/products/javafx/)
      ```bash
      ls
      ```  
-   - Run the application with the following command:  
-     ```bash
-     java -jar RENTAL_AGREEMENT_MANAGER_APPLICATION.jar
-     ```  
-3. **For macOS with JavaFX dependencies**:  
    - Ensure that you have JavaFX SDK installed and placed in `/Library/Java/JavaVirtualMachines/`.  
    - Run the application using the following command:  
      ```bash
