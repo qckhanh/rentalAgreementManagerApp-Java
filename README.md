@@ -6,24 +6,6 @@
 ### Github repository
 [Github repository - Cick me](https://github.com/RMIT-Vietnam-Teaching/further-programming-assignment-2-build-a-backend-4knights)  
 
-## Group: 4Knights
-| Student Name     | Student ID  |
-|------------------|-------------|
-| Khong Quoc Khanh | S4021494    |
-| Dao Duc Lam      | S4019052    |
-| Luong Chi Bach   | S4029308    |
-| Duong Bao Ngoc   | S3425449    |
-
-## Contribution
-| Student Name     | Student ID  | Task             | Contribution score | 
-|------------------|-------------|------------------|------------|  
-| Khong Quoc Khanh | S4021494    | Report, Video, Project management, backend development, database integration, implementing the notification system, Frontend development (JavaFX)     | 25% ( 3 ) |  
-| Dao Duc Lam      | S4019052    | Report, Video,  Property management module, rental agreement logic, Hibernate ORM configuration, code optimization     | 25% ( 3)  | 
-| Luong Chi Bach   | S4029308    | Report, Video,  Writing documentation, UI design, integrating user interfaces with backend, managing user authentication     | 25% ( 3 )  |  
-| Duong Bao Ngoc   | S3425449    | Report, Video, Database schema design, DAO pattern implementation, handling database transactions, testing and debugging     | 25% ( 3 )|  
-
-
-
 ## Project Structure
 ```
 ├── src/
